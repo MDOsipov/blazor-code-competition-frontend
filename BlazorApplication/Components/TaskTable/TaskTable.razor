@@ -1,0 +1,32 @@
+﻿@if (Tasks.Count > 0)
+{
+	<table class="table">
+		<thead>
+			<th scope="col">Task name</th>
+			<th scope="col">Task description</th>
+			<th scope="col">Task content</th>
+		</thead>
+		<tbody>
+			@foreach (var task in Tasks)
+			{
+				<tr>
+					<td class="align-middle">
+						@task.TaskName
+					</td>
+					<td class="align-middle">
+						@task.TaskDescription
+					</td>
+					<td class="align-middle">
+						@task.TaskContent
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<span>
+		Loading products...
+	</span>
+}
