@@ -31,5 +31,18 @@ namespace BlazorApplication.Pages
 			TaskList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
 		}
+
+		private async System.Threading.Tasks.Task SearchChanged(string searchString)
+		{
+			_taskParameters.PageNumber = 1;
+			_taskParameters.SearchString = searchString;
+			await GetTasks();
+		}
+
+		private async System.Threading.Tasks.Task SortChanged(string orderBy)
+		{
+			_taskParameters.OrderBy = orderBy;
+			await GetTasks();
+		}
 	}
 }
