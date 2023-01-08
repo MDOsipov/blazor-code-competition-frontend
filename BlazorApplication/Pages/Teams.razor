@@ -1,0 +1,22 @@
+﻿@page "/teams"
+@using BlazorApplication.Components.TeamTable
+@using BlazorApplication.Components
+
+<div class="row">
+    <div class="col-md-10">
+        @*Place for search and sort*@
+    </div>
+    <div class="col-md-2">
+        <a href="/createTeam">Create Team</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <TeamTable Teams="TeamList" />
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+    </div>
+</div>
