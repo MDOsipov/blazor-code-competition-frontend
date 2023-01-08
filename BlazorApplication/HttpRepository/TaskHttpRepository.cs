@@ -23,7 +23,7 @@ namespace BlazorApplication.HttpRepository
 				["pageNumber"] = taskParameters.PageNumber.ToString()
 			};
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString("Task", queryStringParam));
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString("Task/extended", queryStringParam));
 			var content = await response.Content.ReadAsStringAsync();
 
 			if(!response.IsSuccessStatusCode) 

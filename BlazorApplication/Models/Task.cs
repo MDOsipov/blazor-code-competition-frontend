@@ -10,6 +10,8 @@
 		public int TaskCategoryId { get; set; }
 		public TimeSpan? Timeframe { get; set; }
 		public int Points { get; set; }
+		public string? TaskCategoryName { get; set; }
+
 		public DateTime CreateDate { get; set; }
 		public DateTime UpdateDate { get; set; }
 		public int CreateUserId { get; set; }
