@@ -1,0 +1,72 @@
+﻿@page "/createTask"
+
+<h2>Create Task Form</h2>
+
+<EditForm Model="_task" OnValidSubmit="Create" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <SuccessNotification @ref="_notification"/>
+
+    <div class="mb-3 row">
+        <label for="name" class="col-md-2 col-form-label">Task name:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="_task.TaskName" />
+            <ValidationMessage For="@(() => _task.TaskName)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="supplier" class="col-md-2 col-form-label">Task description:</label>
+        <div class="col-md-10">
+            <InputText id="supplier" class="form-control" @bind-Value="_task.TaskDescription" />
+            <ValidationMessage For="@(() => _task.TaskDescription)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="price" class="col-md-2 col-form-label">Task content:</label>
+        <div class="col-md-10">
+            <InputText id="price" class="form-control" @bind-Value="_task.TaskContent" />
+            <ValidationMessage For="@(() => _task.TaskContent)"></ValidationMessage>
+        </div>
+    </div>
+
+
+    <div class="mb-3 row">
+        <label for="price" class="col-md-2 col-form-label">Points:</label>
+        <div class="col-md-10">
+            <InputNumber id="price" class="form-control" @bind-Value="_task.Points" />
+            <ValidationMessage For="@(() => _task.Points)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="price" class="col-md-2 col-form-label">Task category:</label>
+        <div class="col-md-10">
+            <select class="form-select" aria-label="Choose category" @bind="_taskCategory">
+                <option value=@Enums.TaskCategory.Easy>Easy</option>
+                <option value=@Enums.TaskCategory.Normal>Normal</option>
+                <option value=@Enums.TaskCategory.Hard>Hard</option>
+                <option value=@Enums.TaskCategory.Expert>Expert</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="price" class="col-md-2 col-form-label">Task timeframe:</label>
+        <div class="col-md-10">
+            <select class="form-select" aria-label="Choose timeframe" @bind="_timeFrameMode">
+                <option value="1">0:30</option>
+                <option value="2">1:00</option>
+                <option value="3">1:30</option>
+                <option value="4">2:00</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Create</button>
+        </div>
+    </div>
+
+</EditForm>
