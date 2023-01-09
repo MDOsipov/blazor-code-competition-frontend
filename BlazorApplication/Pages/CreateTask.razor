@@ -4,7 +4,7 @@
 
 <EditForm Model="_task" OnValidSubmit="Create" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
-    <SuccessNotification @ref="_notification"/>
+    <SuccessNotification @ref="_notification" _navUrl="/tasks" />
 
     <div class="mb-3 row">
         <label for="name" class="col-md-2 col-form-label">Task name:</label>
