@@ -25,6 +25,8 @@ builder.Services.AddHttpClient<TeamHttpRepository>(client =>
 builder.Services.AddScoped<ITaskHttpRepository, TaskHttpRepository>();
 builder.Services.AddScoped<ITeamHttpRepository, TeamHttpRepository>();
 builder.Services.AddScoped<ICompetitionHttpRepository, CompetitionHttpRepository>();
+builder.Services.AddScoped<IParticipantHttpRepository, ParticipantHttpRepository>();
+
 
 
 

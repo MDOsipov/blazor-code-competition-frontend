@@ -2,7 +2,7 @@
 {
     public class Competition
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         public string CompetitionName { get; set; } = null!;
         public int CompetitionAdministratorId { get; set; }
         public int maxTaskPerGroups { get; set; }

@@ -23,20 +23,24 @@
     </div>
 
     <div class="mb-3 row">
-        <label for="supplier" class="col-md-2 col-form-label">Leader id:</label>
+        <label for="price" class="col-md-2 col-form-label">Team leader:</label>
         <div class="col-md-10">
-            <InputNumber id="supplier" class="form-control" @bind-Value="_team.TeamLeaderId" />
-            <ValidationMessage For="@(() => _team.TeamLeaderId)"></ValidationMessage>
+            <select class="form-select" aria-label="Choose team leader" @bind="leaderId">
+                @foreach (var participant in participantList)
+                {
+                    <option value=@participant.id>@participant.email</option>
+                }
+            </select>
         </div>
     </div>
 
     <div class="mb-3 row">
         <label for="price" class="col-md-2 col-form-label">Competition:</label>
         <div class="col-md-10">
-            <select class="form-select" aria-label="Choose competition" @bind="_team.CompetitionId">
+            <select class="form-select" aria-label="Choose competition" @bind="competitionId">
                 @foreach (var competition in competitionList)
                 {
-                    <option value="@competition.Id">"@competition.CompetitionName"</option>
+                    <option value=@competition.id>@competition.CompetitionName</option>
                 }
             </select>
         </div>
