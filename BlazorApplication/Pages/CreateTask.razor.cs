@@ -17,11 +17,11 @@ namespace BlazorApplication.Pages
 
 		private async void Create()
 		{
-			_task.CreateDate = DateTime.Now;	
-			_task.UpdateDate = DateTime.Now;
-			_task.CreateUserId = 1;
-			_task.UpdateUserId = 1;
-			_task.StatusId = 1;
+			//_task.CreateDate = DateTime.Now;	
+			//_task.UpdateDate = DateTime.Now;
+			//_task.CreateUserId = 1;
+			//_task.UpdateUserId = 1;
+			//_task.StatusId = 1;
 			_task.TaskCategoryId = (int)_taskCategory;
 
 			switch (_timeFrameMode)

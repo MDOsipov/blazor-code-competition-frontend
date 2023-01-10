@@ -33,25 +33,36 @@ namespace BlazorApplication.HttpRepository
 
 		public async Task<PagingResponse<Models.Task>> GetTasks(TaskParameters taskParameters)
 		{
-			var queryStringParam = new Dictionary<string, string>
+			var queryStringParam = new Dictionary<string, string> { };
+			
+			if (taskParameters.PageNumber > 0)
 			{
-				["pageNumber"] = taskParameters.PageNumber.ToString()
+				queryStringParam.Add("pageNumber", taskParameters.PageNumber.ToString());
 			};
 
+			if (taskParameters.SearchString != string.Empty)
+			{
+				queryStringParam.Add("searchString", taskParameters.SearchString);
+			};
+
+			if (taskParameters.OrderBy != string.Empty)
+			{
+				queryStringParam.Add("orderby", taskParameters.OrderBy);
+			};
+
+			
 			var response = await _client.GetAsync(QueryHelpers.AddQueryString("Task/extended", queryStringParam));
 			var content = await response.Content.ReadAsStringAsync();
-
-			if(!response.IsSuccessStatusCode) 
+			
+			if (!response.IsSuccessStatusCode) 
 			{
 				throw new ApplicationException(content);
 			}
-
 			var pagingResponse = new PagingResponse<Models.Task>
 			{
 				Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
 				MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
-
 			return pagingResponse;
 		}
 	}
