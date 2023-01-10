@@ -4,12 +4,15 @@ namespace BlazorApplication.Shared
 {
 	public partial class SuccessNotification
     {
-		private string _modalDisplay;
+        [Parameter]
+		public string _navUrl { get; set; }
+
+        private string _modalDisplay;
 		private string _modalClass;
 		private bool _showBackdrop;
 
-		[Inject]
-		public NavigationManager Navigation { get; set; }				
+        [Inject]
+		public NavigationManager Navigation { get; set; }
 
 		public void Show()
 		{
@@ -25,7 +28,7 @@ namespace BlazorApplication.Shared
 			_modalClass = "";
 			_showBackdrop = false;
 			StateHasChanged();
-			Navigation.NavigateTo("/tasks");
+			Navigation.NavigateTo(_navUrl);
 		}
 	}
 }

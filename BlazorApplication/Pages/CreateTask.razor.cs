@@ -12,7 +12,8 @@ namespace BlazorApplication.Pages
 		private Enums.TaskCategory _taskCategory = Enums.TaskCategory.Easy;
 		private SuccessNotification _notification;
 
-		[Inject]
+
+        [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
 
 		private async void Create()

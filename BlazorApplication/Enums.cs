@@ -17,5 +17,11 @@
 			Hard = 3,
 			Expert = 4
 		}
-	}
+
+        public enum Status
+        {
+            Active = 1,
+            NotActive = 2
+        }
+    }
 }

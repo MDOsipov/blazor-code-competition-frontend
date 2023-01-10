@@ -22,7 +22,7 @@ namespace BlazorApplication.HttpRepository
 			var content = JsonSerializer.Serialize(task);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var postResult = await _client.PostAsync("Task", bodyContent);
+			var postResult = await _client.PostAsync("https://localhost:7192/Task", bodyContent);
 			var postContent = await postResult.Content.ReadAsStringAsync();
 
 			if(!postResult.IsSuccessStatusCode)
@@ -38,7 +38,7 @@ namespace BlazorApplication.HttpRepository
 			if (taskParameters.PageNumber > 0)
 			{
 				queryStringParam.Add("pageNumber", taskParameters.PageNumber.ToString());
-			};
+			};			
 
 			if (taskParameters.SearchString != string.Empty)
 			{
@@ -49,9 +49,9 @@ namespace BlazorApplication.HttpRepository
 			{
 				queryStringParam.Add("orderby", taskParameters.OrderBy);
 			};
+      
+      var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Task/extended", queryStringParam));
 
-			
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString("Task/extended", queryStringParam));
 			var content = await response.Content.ReadAsStringAsync();
 			
 			if (!response.IsSuccessStatusCode) 

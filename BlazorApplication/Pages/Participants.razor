@@ -1,0 +1,20 @@
+﻿@page "/participants"
+@using BlazorApplication.Components.ParticipantTable
+@using BlazorApplication.Components
+
+<div class="row">
+    <div class="col-md-10">
+        @*Place for search and sort*@
+    </div>
+    <div class="col-md-2">
+        <a href="/createParticipant">Create Participant</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <ParticipantTable Participants="ParticipantsList" />
+    </div>
+</div>
+<div class="row">
+
+</div>

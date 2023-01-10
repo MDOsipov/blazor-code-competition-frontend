@@ -23,11 +23,14 @@ namespace BlazorApplication.Pages
 			_teamParameters.PageNumber = page;
 			await GetTeams();	
 		}
+
+		
 		protected async System.Threading.Tasks.Task GetTeams()
 		{
 			var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
 			TeamList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
 		}
+		
 	}
 }

@@ -1,0 +1,20 @@
+﻿@page "/competitions"
+@using BlazorApplication.Components.CompetitionTable
+@using BlazorApplication.Components
+
+<div class="row">
+    <div class="col-md-10">
+        @*Place for search and sort*@
+    </div>
+    <div class="col-md-2">
+        <a href="/createCompetition">Create Competition</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <CompetitionTable Competitions="CompetitionList" />
+    </div>
+</div>
+<div class="row">
+    
+</div>
