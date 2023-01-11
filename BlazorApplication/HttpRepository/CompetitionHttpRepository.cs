@@ -26,18 +26,7 @@ namespace BlazorApplication.HttpRepository
 
             var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/competition/extended", queryStringParam));
 
-            Console.WriteLine(2323232);
-
-            Console.WriteLine("Response " + JsonSerializer.Serialize(response));
-
-            Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
-
-
-
             var content = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine("Content " + content);
-
 
             if (!response.IsSuccessStatusCode)
             {

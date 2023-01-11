@@ -36,8 +36,15 @@ namespace BlazorApplication.Pages
 
             var competitionPagingResponse = await CompetitionRepo.GetCompetitions(competitionParameters);
             competitionList = competitionPagingResponse.Items;
-            participantList = (List<Participant>)await ParticipantRepo.GetParticipants();
-		}
+
+            ParticipantParameters participantParameters = new ParticipantParameters
+            {
+                switchOff = true
+            };
+
+            var participantPagingResponse = await ParticipantRepo.GetParticipants(participantParameters);
+            participantList = participantPagingResponse.Items;
+        }
 
 		private async void Create()
         {
