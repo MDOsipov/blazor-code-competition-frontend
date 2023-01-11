@@ -50,7 +50,7 @@ namespace BlazorApplication.HttpRepository
 				queryStringParam.Add("orderby", taskParameters.OrderBy);
 			};
       
-      var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Task/extended", queryStringParam));
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Task/extended", queryStringParam));
 
 			var content = await response.Content.ReadAsStringAsync();
 			

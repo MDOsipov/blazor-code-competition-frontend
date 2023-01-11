@@ -1,4 +1,5 @@
-﻿using BlazorApplication.HttpRepository;
+﻿using BlazorApplication.Features;
+using BlazorApplication.HttpRepository;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
@@ -28,9 +29,22 @@ namespace BlazorApplication.Pages
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
-            competitionList = (List<Competition>)await CompetitionRepo.GetCompetitions();
-			participantList = (List<Participant>)await ParticipantRepo.GetParticipants();
-		}
+            CompetitionParameters competitionParameters = new CompetitionParameters
+            {
+                switchOff = true
+            };
+
+            var competitionPagingResponse = await CompetitionRepo.GetCompetitions(competitionParameters);
+            competitionList = competitionPagingResponse.Items;
+
+            ParticipantParameters participantParameters = new ParticipantParameters
+            {
+                switchOff = true
+            };
+
+            var participantPagingResponse = await ParticipantRepo.GetParticipants(participantParameters);
+            participantList = participantPagingResponse.Items;
+        }
 
 		private async void Create()
         {
@@ -41,8 +55,6 @@ namespace BlazorApplication.Pages
             _team.StatusId = (int)Enums.Status.Active;
             _team.TeamLeaderId = leaderId;
             _team.CompetitionId = competitionId;
-
-
 
             await TeamRepo.CreateTeam(_team);
             _notification.Show();

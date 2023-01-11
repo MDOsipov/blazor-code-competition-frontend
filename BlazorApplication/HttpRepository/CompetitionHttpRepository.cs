@@ -1,4 +1,7 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Models;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
@@ -14,9 +17,15 @@ namespace BlazorApplication.HttpRepository
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        public async Task<ICollection<Competition>> GetCompetitions()
+        public async Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters)
         {
-            var response = await _client.GetAsync("http://localhost:6060/competition/extended");
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = competitionParameters.PageNumber.ToString()
+            };
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/competition/extended", queryStringParam));
+
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -24,7 +33,13 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(content);
             }
 
-            return JsonSerializer.Deserialize<List<Competition>>(content, _options);
+            var pagingResponse = new PagingResponse<Competition>
+            {
+                Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
+
+            return pagingResponse;
         }
     }
 }

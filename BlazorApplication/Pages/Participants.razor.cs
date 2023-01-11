@@ -1,4 +1,5 @@
-﻿using BlazorApplication.HttpRepository;
+﻿using BlazorApplication.Features;
+using BlazorApplication.HttpRepository;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -7,8 +8,8 @@ namespace BlazorApplication.Pages
 	public partial class Participants
 	{
 		public List<Participant> ParticipantsList { get; set; } = new List<Participant>();
-		// public MetaData MetaData { get; set; } = new MetaData();
-		// private TeamParameters _teamParameters = new TeamParameters();
+		public MetaData MetaData { get; set; } = new MetaData();
+		private ParticipantParameters _participantParameters = new ParticipantParameters();
 
 		[Inject]
 		public IParticipantHttpRepository ParticipantRepo { get; set; }
@@ -18,17 +19,19 @@ namespace BlazorApplication.Pages
 			await GetParticipants();
 		}
 
-		/*
+		
         private async System.Threading.Tasks.Task SelectedPage(int page)
         {
-            _teamParameters.PageNumber = page;
-            await GetTeams();
+            _participantParameters.PageNumber = page;
+            await GetParticipants();
         }
-        */
+        
 
 		protected async System.Threading.Tasks.Task GetParticipants()
 		{
-			ParticipantsList = (List<Participant>)await ParticipantRepo.GetParticipants();
+			var pagingResponse = await ParticipantRepo.GetParticipants(_participantParameters);
+			ParticipantsList = pagingResponse.Items;
+			MetaData = pagingResponse.MetaData;
 		}
 	}
 }
