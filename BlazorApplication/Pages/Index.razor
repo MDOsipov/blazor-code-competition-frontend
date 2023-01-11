@@ -10,18 +10,6 @@
 	any time you want.
 </Home>
 
-<AuthorizeView>
-	<Authorized>
-		@foreach (var claim in context.User.Claims)
-		{
-			<p>@claim.Type - @claim.Value</p>
-		}
-	</Authorized>
-	<NotAuthorized>
-		Please login!
-	</NotAuthorized>
-</AuthorizeView>
-
 @code {
 	public Dictionary<string, object> AdditionalAttributes { get; set; } = new Dictionary<string, object>
 	{
