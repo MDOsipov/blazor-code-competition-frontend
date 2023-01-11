@@ -7,34 +7,34 @@
     <SuccessNotification @ref="_notification" _navUrl="/tasks" />
 
     <div class="mb-3 row">
-        <label for="name" class="col-md-2 col-form-label">Task name:</label>
+        <label for="taskName" class="col-md-2 col-form-label">Task name:</label>
         <div class="col-md-10">
-            <InputText id="name" class="form-control" @bind-Value="_task.TaskName" />
+            <InputText id="taskName" class="form-control" @bind-Value="_task.TaskName" />
             <ValidationMessage For="@(() => _task.TaskName)"></ValidationMessage>
         </div>
     </div>
 
     <div class="mb-3 row">
-        <label for="supplier" class="col-md-2 col-form-label">Task description:</label>
+        <label for="taskDescription" class="col-md-2 col-form-label">Task description:</label>
         <div class="col-md-10">
-            <InputText id="supplier" class="form-control" @bind-Value="_task.TaskDescription" />
+            <InputText id="taskDescription" class="form-control" @bind-Value="_task.TaskDescription" />
             <ValidationMessage For="@(() => _task.TaskDescription)"></ValidationMessage>
         </div>
     </div>
 
     <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Task content:</label>
+        <label for="taskContent" class="col-md-2 col-form-label">Task content:</label>
         <div class="col-md-10">
-            <InputText id="price" class="form-control" @bind-Value="_task.TaskContent" />
+            <InputText id="taskContent" class="form-control" @bind-Value="_task.TaskContent" />
             <ValidationMessage For="@(() => _task.TaskContent)"></ValidationMessage>
         </div>
     </div>
 
 
     <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Points:</label>
+        <label for="points" class="col-md-2 col-form-label">Points:</label>
         <div class="col-md-10">
-            <InputNumber id="price" class="form-control" @bind-Value="_task.Points" />
+            <InputNumber id="points" class="form-control" @bind-Value="_task.Points" />
             <ValidationMessage For="@(() => _task.Points)"></ValidationMessage>
         </div>
     </div>
@@ -52,6 +52,13 @@
     </div>
 
     <div class="mb-3 row">
+        <label for="Timeframe" class="col-md-2 col-form-label">Timeframe(HH:MM:SS):</label>
+        <div class="col-md-10">
+            <InputText id="Timeframe" class="form-control" @bind-Value="_time" />
+        </div>
+    </div>
+
+@*    <div class="mb-3 row">
         <label for="price" class="col-md-2 col-form-label">Task timeframe:</label>
         <div class="col-md-10">
             <select class="form-select" aria-label="Choose timeframe" @bind="_timeFrameMode">
@@ -61,7 +68,7 @@
                 <option value="4">2:00</option>
             </select>
         </div>
-    </div>
+    </div>*@
 
     <div class="row">
         <div class="col-md-12 text-right">
