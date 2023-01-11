@@ -40,9 +40,12 @@ namespace BlazorApplication.HttpRepository
 
 			Console.WriteLine(_client.BaseAddress);
 			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Team/extended", queryStringParam));
-			var content = await response.Content.ReadAsStringAsync();	
+			var content = await response.Content.ReadAsStringAsync();
 
-			if(!response.IsSuccessStatusCode)
+            Console.WriteLine("Response " + JsonSerializer.Serialize(response));
+			Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
+
+            if (!response.IsSuccessStatusCode)
 			{
 				throw new ApplicationException(content);
 			}
