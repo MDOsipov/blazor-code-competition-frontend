@@ -1,18 +1,22 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.Models;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Json;
+using System.Net.Http.Headers;
 
 namespace BlazorApplication.HttpRepository
 {
 	public class TaskHttpRepository : ITaskHttpRepository
 	{
+		private readonly IAccessTokenProvider _tokenProvider;
 		private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
 
-		public TaskHttpRepository(HttpClient client)
+		public TaskHttpRepository(IAccessTokenProvider tokenProvider, HttpClient client)
 		{
+			_tokenProvider = tokenProvider;
 			_client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 		}
@@ -49,8 +53,10 @@ namespace BlazorApplication.HttpRepository
 			{
 				queryStringParam.Add("orderby", taskParameters.OrderBy);
 			};
-      
-      var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Task/extended", queryStringParam));
+
+			await RequestAuthToken();
+
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Task/extended", queryStringParam));
 
 			var content = await response.Content.ReadAsStringAsync();
 			
@@ -64,6 +70,13 @@ namespace BlazorApplication.HttpRepository
 				MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
 			return pagingResponse;
+		}
+
+		private async System.Threading.Tasks.Task RequestAuthToken()
+		{
+			var requestToken = await _tokenProvider.RequestAccessToken();
+			requestToken.TryGetToken(out var token);
+			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 		}
 	}
 }
