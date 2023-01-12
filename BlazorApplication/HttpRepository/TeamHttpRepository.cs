@@ -38,7 +38,6 @@ namespace BlazorApplication.HttpRepository
 				["pageNumber"] = teamParameters.PageNumber.ToString()
 			};
 
-			Console.WriteLine(_client.BaseAddress);
 			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Team/extended", queryStringParam));
 			var content = await response.Content.ReadAsStringAsync();	
 

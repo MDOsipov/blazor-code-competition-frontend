@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using static System.Net.WebRequestMethods;
 
 namespace BlazorApplication.HttpRepository
 {
@@ -76,8 +77,7 @@ namespace BlazorApplication.HttpRepository
 		{
 			var requestToken = await _tokenProvider.RequestAccessToken();
 			requestToken.TryGetToken(out var token);
-			Console.WriteLine(token.Value);
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-		}
+        }
 	}
 }

@@ -8,10 +8,9 @@ namespace BlazorApplication.Pages
 	public partial class CreateTask
 	{
 		private Models.Task _task = new Models.Task();
-		private string _timeFrameMode = "1";
 		private Enums.TaskCategory _taskCategory = Enums.TaskCategory.Easy;
-		private SuccessNotification _notification;
-		private string _time { get; set; }
+		private SuccessNotification? _notification;
+        private string _time { get; set; } = string.Empty;
 
 
         [Inject]
@@ -21,22 +20,6 @@ namespace BlazorApplication.Pages
 		{
 
 			_task.TaskCategoryId = (int)_taskCategory;
-
-            //switch (_timeFrameMode)
-            //{
-            //	case "1":
-            //		_task.Timeframe = new TimeSpan(0, 30, 0);
-            //		break;
-            //	case "2":
-            //		_task.Timeframe = new TimeSpan(1, 0, 0);
-            //		break;
-            //	case "3":
-            //		_task.Timeframe = new TimeSpan(1, 30, 0);
-            //		break;
-            //	case "4":
-            //		_task.Timeframe = new TimeSpan(2, 0, 0);
-            //		break;
-            //}
 
             if (_time.Contains('.'))
             {

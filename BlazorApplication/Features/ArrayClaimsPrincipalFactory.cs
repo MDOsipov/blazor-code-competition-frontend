@@ -17,7 +17,7 @@ namespace BlazorApplication.Features
 		{
 			var user = await base.CreateUserAsync(account, options);
 
-			var claimsIdentity = (ClaimsIdentity)user.Identity;
+			var claimsIdentity = (ClaimsIdentity?)user.Identity;
 
 			if (account != null)
 			{
