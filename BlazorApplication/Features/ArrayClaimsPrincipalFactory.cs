@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BlazorApplication.Features
 {
@@ -18,7 +19,7 @@ namespace BlazorApplication.Features
 
 			var claimsIdentity = (ClaimsIdentity)user.Identity;
 
-			if(account != null)
+			if (account != null)
 			{
 				foreach (var kvp in account.AdditionalProperties)
 				{

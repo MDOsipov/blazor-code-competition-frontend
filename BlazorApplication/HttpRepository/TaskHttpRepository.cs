@@ -76,6 +76,7 @@ namespace BlazorApplication.HttpRepository
 		{
 			var requestToken = await _tokenProvider.RequestAccessToken();
 			requestToken.TryGetToken(out var token);
+			Console.WriteLine(token.Value);
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 		}
 	}
