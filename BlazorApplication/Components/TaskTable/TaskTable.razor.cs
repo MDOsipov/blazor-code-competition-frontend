@@ -10,6 +10,7 @@ namespace BlazorApplication.Components.TaskTable
 
 		[Parameter]
 		public List<Models.Task> Tasks { get; set; }
+
 		[Parameter]
 		public EventCallback<int> OnDeleted { get; set; }
 
