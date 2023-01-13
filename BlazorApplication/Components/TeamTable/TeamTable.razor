@@ -24,10 +24,10 @@
 						@team.CompetitionName
 					</td>
 					<td class="align-middle">
-						<button type="button" class="btn btn-info">Update</button>
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(team.Id)">Update</button>
 					</td>
 					<td class="align-middle">
-						<button type="button" class="btn btn-danger">Delete</button>
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(team.Id)">Delete</button>
 					</td>
 				</tr>
 			}

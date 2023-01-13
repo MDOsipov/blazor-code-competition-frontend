@@ -20,7 +20,8 @@ namespace BlazorApplication.HttpRepository
 		{
             var queryStringParam = new Dictionary<string, string>
             {
-                ["pageNumber"] = participantParameters.PageNumber.ToString()
+                ["pageNumber"] = participantParameters.PageNumber.ToString(),
+                ["switchOff"] = participantParameters.switchOff ? "1" : "0"
             };
 
             var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/participant/extended", queryStringParam));

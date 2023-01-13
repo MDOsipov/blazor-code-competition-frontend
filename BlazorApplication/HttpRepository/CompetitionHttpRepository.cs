@@ -21,7 +21,8 @@ namespace BlazorApplication.HttpRepository
         {
             var queryStringParam = new Dictionary<string, string>
             {
-                ["pageNumber"] = competitionParameters.PageNumber.ToString()
+                ["pageNumber"] = competitionParameters.PageNumber.ToString(),
+                ["switchOff"] = competitionParameters.switchOff ? "1" : "0"
             };
 
             var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/competition/extended", queryStringParam));
