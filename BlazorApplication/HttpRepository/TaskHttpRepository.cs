@@ -31,7 +31,36 @@ namespace BlazorApplication.HttpRepository
 			}
 		}
 
-		public async Task<PagingResponse<Models.Task>> GetTasks(TaskParameters taskParameters)
+        public async System.Threading.Tasks.Task DeleteProduct(int id)
+        {
+            var url = Path.Combine("https://localhost:7192/Task", id.ToString());
+
+			var deleteResult = await _client.DeleteAsync(url);
+			var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+            if (!deleteResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(deleteContent);
+            }
+        }
+
+        public async Task<Models.Task> GetTaskById(string id)
+        {
+			var url = Path.Combine("https://localhost:7192/Task", id);
+
+			var response = await _client.GetAsync(url);
+			var content = await response.Content.ReadAsStringAsync();
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new ApplicationException(content);
+			}
+
+			var task = JsonSerializer.Deserialize<Models.Task>(content, _options);
+			return task;
+        }
+
+        public async Task<PagingResponse<Models.Task>> GetTasks(TaskParameters taskParameters)
 		{
 			var queryStringParam = new Dictionary<string, string> { };
 			
@@ -65,5 +94,20 @@ namespace BlazorApplication.HttpRepository
 			};
 			return pagingResponse;
 		}
-	}
+
+        public async System.Threading.Tasks.Task UpdateTask(Models.Task task)
+        {
+			var content = JsonSerializer.Serialize(task);
+			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+			var url = Path.Combine("https://localhost:7192/Task", task.Id.ToString());
+
+			var putResult = await _client.PutAsync(url, bodyContent);
+			var putContent = await putResult.Content.ReadAsStringAsync();
+
+			if(!putResult.IsSuccessStatusCode)
+			{
+				throw new ApplicationException(putContent);
+			}
+        }
+    }
 }
