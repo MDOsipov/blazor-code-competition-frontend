@@ -7,5 +7,14 @@ namespace BlazorApplication.Components.CompetitionTable
     {
         [Parameter]
         public List<Competition> Competitions { get; set; }
+
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+
+        private void RedirectToUpdate(int id)
+        {
+            var url = Path.Combine("/updateCompetition/", id.ToString());
+            NavigationManager.NavigateTo(url);
+        }
     }
 }

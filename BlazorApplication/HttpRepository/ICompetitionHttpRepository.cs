@@ -8,8 +8,10 @@ namespace BlazorApplication.HttpRepository
     {
         Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters);
 		Task<IEnumerable<CompetitionStatus>> GetAllCompetitionStatuses();
+		Task CreateCompetition(Competition competition);
 
-		Task CreateCompetition(Competition competition);    
+        Task<Competition> GetCompetitionById(string id);
+        Task UpdateCompetition(Competition competition);
 
 
     }

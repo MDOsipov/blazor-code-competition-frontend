@@ -8,6 +8,14 @@ using System.Threading.Tasks;
 
 namespace BlazorApplication.HttpRepository
 {
+    class LocalCompetition
+    {
+        public int id { get; set; } = 0;
+        public string competitionName { get; set; } = "";
+        public int maxTaskPerGroups { get; set; } = 0;
+        public int competitionStatus { get; set; } = 0;
+    }
+
     public class CompetitionHttpRepository : ICompetitionHttpRepository
     {
         private readonly HttpClient _client;
@@ -47,7 +55,31 @@ namespace BlazorApplication.HttpRepository
             return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
 		}
 
-		public async Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters)
+        public async Task<Competition> GetCompetitionById(string id)
+        {
+            var url = Path.Combine("http://localhost:6060/competition", id);
+
+            var response = await _client.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+
+            var localCompetition = JsonSerializer.Deserialize<LocalCompetition>(content, _options);
+            var competition = new Competition
+            {
+                id = localCompetition.id,
+                CompetitionName = localCompetition.competitionName,
+                maxTaskPerGroups = localCompetition.maxTaskPerGroups,
+                CompetitionStatusId = localCompetition.competitionStatus
+            };
+
+            return competition;
+        }
+
+        public async Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters)
         {
             var queryStringParam = new Dictionary<string, string>
             {
@@ -71,6 +103,21 @@ namespace BlazorApplication.HttpRepository
             };
 
             return pagingResponse;
+        }
+
+        public async System.Threading.Tasks.Task UpdateCompetition(Competition competition)
+        {
+            var content = JsonSerializer.Serialize(competition);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+            var url = Path.Combine("http://localhost:6060/competition", competition.id.ToString());
+
+            var putResult = await _client.PutAsync(url, bodyContent);
+            var putContent = await putResult.Content.ReadAsStringAsync();
+
+            if (!putResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(putContent);
+            }
         }
     }
 }
