@@ -8,5 +8,8 @@ namespace BlazorApplication.HttpRepository
 	{
 		Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters);
 		Task CreateParticipant(Participant participant);
-	}
+        Task<Participant> GetParticipantById(string id);
+        Task UpdateParticipant(Participant participant);
+        Task DeleteParticipant(int id);
+    }
 }
