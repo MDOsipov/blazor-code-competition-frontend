@@ -1,4 +1,5 @@
 ﻿using BlazorApplication.HttpRepository;
+using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
@@ -7,8 +8,9 @@ namespace BlazorApplication.Pages
 {
 	public partial class CreateTask
 	{
-		private Models.Task _task = new Models.Task();
-		private Enums.TaskCategory _taskCategory = Enums.TaskCategory.Easy;
+        public List<TaskCategory> TaskCategories { get; set; } = new List<TaskCategory>();
+        private Models.Task _task { get; set; } = new Models.Task();
+		private string _taskCategory { get; set;}
 		private SuccessNotification? _notification;
         private string _time { get; set; } = string.Empty;
 
@@ -16,10 +18,19 @@ namespace BlazorApplication.Pages
         [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
 
-		private async void Create()
+        [Inject]
+        public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
+
+        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        {
+            await GetTaskCategories();
+        }
+
+        private async void Create()
 		{
 
-			_task.TaskCategoryId = (int)_taskCategory;
+			_task.TaskCategoryId = TaskCategories.Where(tc => tc.CategoryName == _taskCategory).Select(tc => tc.Id).FirstOrDefault();
+            Console.WriteLine(_task.TaskCategoryId);
 
             if (_time.Contains('.'))
             {
@@ -83,5 +94,10 @@ namespace BlazorApplication.Pages
             await TaskRepo.CreateTask(_task);
 			_notification.Show();
 		}
+
+        protected async System.Threading.Tasks.Task GetTaskCategories()
+        {
+            TaskCategories = await TaskCategoryRepo.GetTaskCategory();
+        }
 	}
 }

@@ -43,10 +43,10 @@
         <label for="price" class="col-md-2 col-form-label">Task category:</label>
         <div class="col-md-10">
             <select class="form-select" aria-label="Choose category" @bind="_taskCategory">
-                <option value=@Enums.TaskCategory.Easy>Easy</option>
-                <option value=@Enums.TaskCategory.Normal>Normal</option>
-                <option value=@Enums.TaskCategory.Hard>Hard</option>
-                <option value=@Enums.TaskCategory.Expert>Expert</option>
+                @foreach (var taskCategory in TaskCategories)
+                {
+                    <option value=@taskCategory.CategoryName>@taskCategory.CategoryName</option>
+                }
             </select>
         </div>
     </div>

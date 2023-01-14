@@ -1,5 +1,4 @@
 ﻿@page "/tasks"
-@attribute [Authorize]
 
 @using BlazorApplication.Components.TaskTable
 @using BlazorApplication.Components
@@ -11,11 +10,9 @@
     <div class="col-md-5">
         <Sort OnSortChanged="SortChanged" />
     </div>
-    <AuthorizeView Roles="Administrator">
     <div class="col-md-2">
         <a href="/createTask">Create Task</a>
     </div>
-    </AuthorizeView>
 </div>
 <div class="row">
     <div class="col">
