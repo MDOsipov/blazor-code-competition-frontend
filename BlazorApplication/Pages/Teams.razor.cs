@@ -24,13 +24,19 @@ namespace BlazorApplication.Pages
 			await GetTeams();	
 		}
 
-		
 		protected async System.Threading.Tasks.Task GetTeams()
 		{
 			var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
 			TeamList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
 		}
-		
-	}
+
+        private async System.Threading.Tasks.Task DeleteTeam(int id)
+        {
+            await TeamRepo.DeleteTeam(id);
+            _teamParameters.PageNumber = 1;
+            await GetTeams();
+        }
+
+    }
 }

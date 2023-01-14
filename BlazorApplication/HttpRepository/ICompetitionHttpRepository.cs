@@ -1,9 +1,10 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Models;
 
 namespace BlazorApplication.HttpRepository
 {
     public interface ICompetitionHttpRepository
     {
-        Task<ICollection<Competition>> GetCompetitions();
+        Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters);
     }
 }

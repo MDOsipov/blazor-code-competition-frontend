@@ -1,4 +1,6 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Models;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
@@ -14,9 +16,15 @@ namespace BlazorApplication.HttpRepository
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 		}
 
-		public async Task<ICollection<Participant>> GetParticipants()
+		public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
 		{
-			var response = await _client.GetAsync("http://localhost:6060/participant/extended");
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = participantParameters.PageNumber.ToString(),
+                ["switchOff"] = participantParameters.switchOff ? "1" : "0"
+            };
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/participant/extended", queryStringParam));
 			var content = await response.Content.ReadAsStringAsync();
 
 			if (!response.IsSuccessStatusCode)
@@ -24,8 +32,14 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-			return JsonSerializer.Deserialize<List<Participant>>(content, _options);
+            var pagingResponse = new PagingResponse<Participant>
+            {
+                Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
 
-		}
+            return pagingResponse;
+
+        }
 	}
 }

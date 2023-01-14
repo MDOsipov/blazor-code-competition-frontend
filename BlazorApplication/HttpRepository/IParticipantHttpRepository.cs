@@ -1,9 +1,10 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Models;
 
 namespace BlazorApplication.HttpRepository
 {
 	public interface IParticipantHttpRepository
 	{
-		Task<ICollection<Participant>> GetParticipants();
+		Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters);
 	}
 }
