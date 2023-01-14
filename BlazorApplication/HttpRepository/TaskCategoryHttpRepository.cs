@@ -1,4 +1,5 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -19,7 +20,7 @@ namespace BlazorApplication.HttpRepository
         }
         public async Task<List<TaskCategory>> GetTaskCategory()
         {
-            await RequestAuthToken();
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
             var response = await _client.GetAsync("https://localhost:7192/TaskCategory");
 
@@ -31,13 +32,6 @@ namespace BlazorApplication.HttpRepository
             }
 
             return JsonSerializer.Deserialize<List<TaskCategory>>(content, _options);
-        }
-
-        private async System.Threading.Tasks.Task RequestAuthToken()
-        {
-            var requestToken = await _accessTokenProvider.RequestAccessToken();
-            requestToken.TryGetToken(out var token);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
         }
     }
 }

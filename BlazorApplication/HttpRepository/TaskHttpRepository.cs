@@ -27,7 +27,9 @@ namespace BlazorApplication.HttpRepository
 			var content = JsonSerializer.Serialize(task);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var postResult = await _client.PostAsync("https://localhost:7192/Task", bodyContent);
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var postResult = await _client.PostAsync("https://localhost:7192/Task", bodyContent);
 			var postContent = await postResult.Content.ReadAsStringAsync();
 
 			if(!postResult.IsSuccessStatusCode)
@@ -55,7 +57,7 @@ namespace BlazorApplication.HttpRepository
 				queryStringParam.Add("orderby", taskParameters.OrderBy);
 			};
 
-			await RequestAuthToken();
+			await AddToken.RequestAuthToken(_tokenProvider, _client);
 
 			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Task/extended", queryStringParam));
 
@@ -72,12 +74,5 @@ namespace BlazorApplication.HttpRepository
 			};
 			return pagingResponse;
 		}
-
-		private async System.Threading.Tasks.Task RequestAuthToken()
-		{
-			var requestToken = await _tokenProvider.RequestAccessToken();
-			requestToken.TryGetToken(out var token);
-			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-        }
 	}
 }

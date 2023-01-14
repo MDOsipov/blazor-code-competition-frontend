@@ -1,5 +1,6 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.Models;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Json;
@@ -8,12 +9,14 @@ namespace BlazorApplication.HttpRepository
 {
 	public class TeamHttpRepository : ITeamHttpRepository
 	{
-		private readonly HttpClient _client;
+        private readonly IAccessTokenProvider _tokenProvider;
+        private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
 
-		public TeamHttpRepository(HttpClient client)
+		public TeamHttpRepository(IAccessTokenProvider tokenProvider,HttpClient client)
 		{
-			_client = client;
+            _tokenProvider = tokenProvider;
+            _client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive= true };	
 		}
 
@@ -22,7 +25,9 @@ namespace BlazorApplication.HttpRepository
 			var content = JsonSerializer.Serialize(team);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var postResult = await _client.PostAsync("https://localhost:7192/Team", bodyContent);
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var postResult = await _client.PostAsync("https://localhost:7192/Team", bodyContent);
 			var postContent = await postResult.Content.ReadAsStringAsync();
 
             if (!postResult.IsSuccessStatusCode)
@@ -38,7 +43,9 @@ namespace BlazorApplication.HttpRepository
 				["pageNumber"] = teamParameters.PageNumber.ToString()
 			};
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Team/extended", queryStringParam));
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Team/extended", queryStringParam));
 			var content = await response.Content.ReadAsStringAsync();	
 
 			if(!response.IsSuccessStatusCode)

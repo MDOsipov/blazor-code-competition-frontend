@@ -1,22 +1,28 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Models;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
 {
 	public class ParticipantHttpRepository : IParticipantHttpRepository
 	{
-		private readonly HttpClient _client;
+        private readonly IAccessTokenProvider _accessTokenProvider;
+        private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
 
-		public ParticipantHttpRepository(HttpClient client)
+		public ParticipantHttpRepository(IAccessTokenProvider accessTokenProvider,HttpClient client)
 		{
-			_client = client;
+            _accessTokenProvider = accessTokenProvider;
+            _client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 		}
 
 		public async Task<ICollection<Participant>> GetParticipants()
 		{
-			var response = await _client.GetAsync("http://localhost:6060/participant/extended");
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var response = await _client.GetAsync("http://localhost:6061/participant/extended");
 			var content = await response.Content.ReadAsStringAsync();
 
 			if (!response.IsSuccessStatusCode)
@@ -25,7 +31,8 @@ namespace BlazorApplication.HttpRepository
 			}
 
 			return JsonSerializer.Deserialize<List<Participant>>(content, _options);
-
 		}
-	}
+
+        
+    }
 }

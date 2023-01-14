@@ -16,7 +16,7 @@ namespace BlazorApplication.HttpRepository
 
         public async Task<ICollection<Competition>> GetCompetitions()
         {
-            var response = await _client.GetAsync("http://localhost:6060/competition/extended");
+            var response = await _client.GetAsync("http://localhost:6061/competition/extended");
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
