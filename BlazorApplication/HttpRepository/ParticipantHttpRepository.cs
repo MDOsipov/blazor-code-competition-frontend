@@ -1,6 +1,8 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.Models;
+using BlazorApplication.Pages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
@@ -16,7 +18,21 @@ namespace BlazorApplication.HttpRepository
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 		}
 
-		public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
+        public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
+        {
+            var content = JsonSerializer.Serialize(participant);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+
+            var postResult = await _client.PostAsync("http://localhost:6060/participant", bodyContent);
+            var postContent = await postResult.Content.ReadAsStringAsync();
+
+            if (!postResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(postContent);
+            }
+        }
+
+        public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
 		{
             var queryStringParam = new Dictionary<string, string>
             {
