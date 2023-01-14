@@ -3,32 +3,37 @@ using BlazorApplication.HttpRepository;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
-    public partial class CreateTeam
-    {
-        private Team _team = new Team();
-
+	public partial class UpdateTeam : ComponentBase
+	{
+		private Team _team = new Team();
         public List<Competition> competitionList { get; set; } = new List<Competition>();
-		public List<Participant> participantList { get; set; } = new List<Participant>();
-
+        public List<Participant> participantList { get; set; } = new List<Participant>();
         public int leaderId { get; set; } = 0;
         public int competitionId { get; set; } = 0;
 
-
         private SuccessNotification _notification;
 
+		[Inject]
+		public ITeamHttpRepository TeamRepo { get; set; }
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
-		[Inject]
-		public IParticipantHttpRepository ParticipantRepo { get; set; }
+        [Inject]
+        public IParticipantHttpRepository ParticipantRepo { get; set; }
 
-		[Inject]
-        public ITeamHttpRepository TeamRepo { get; set; }
+        [Parameter]
+		public string Id { get; set; } = "";
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		protected async override Task OnInitializedAsync()
 		{
+			_team = await TeamRepo.GetTeamById(Id);
+
+            leaderId = _team.TeamLeaderId;
+            competitionId = _team.CompetitionId;
+
             CompetitionParameters competitionParameters = new CompetitionParameters
             {
                 switchOff = true
@@ -46,18 +51,15 @@ namespace BlazorApplication.Pages
             participantList = participantPagingResponse.Items;
         }
 
-		private async void Create()
-        {
-            //_team.CreateDate = DateTime.Now;
-            //_team.UpdateDate = DateTime.Now;
-            //_team.CreateUserId = 1;
-            //_team.UpdateUserId = 1;
-            //_team.StatusId = (int)Enums.Status.Active;
+		private async Task Update()
+		{
             _team.TeamLeaderId = leaderId;
             _team.CompetitionId = competitionId;
+            _team.StatusId = 1;
 
-            await TeamRepo.CreateTeam(_team);
-            _notification.Show();
-        }
-    }
+			await TeamRepo.UpdateTeam(_team);
+			_notification.Show();
+		}
+
+	}
 }

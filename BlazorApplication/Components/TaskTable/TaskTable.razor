@@ -2,6 +2,7 @@
 {
 	<table class="table">
 		<thead>
+			<th scope="col">Task id</th>
 			<th scope="col">Task name</th>
 			<th scope="col">Task description</th>
 			<th scope="col">Task content</th>
@@ -13,6 +14,9 @@
 			@foreach (var task in Tasks)
 			{
 				<tr>
+					<td class="align-middle">
+						@task.Id
+					</td>
 					<td class="align-middle">
 						@task.TaskName
 					</td>
@@ -32,10 +36,10 @@
 						@task.TaskCategoryName
 					</td>
 					<td class="align-middle">
-						<button type="button" class="btn btn-info">Update</button>
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(task.Id)">Update</button>
 					</td>
 					<td class="align-middle">
-						<button type="button" class="btn btn-danger">Delete</button>
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(task.Id)">Delete</button>
 					</td>
 				</tr>
 			}
@@ -45,6 +49,6 @@
 else
 {
 	<span>
-		Loading products...
+		Loading tasks...
 	</span>
 }

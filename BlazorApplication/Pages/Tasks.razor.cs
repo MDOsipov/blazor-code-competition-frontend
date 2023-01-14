@@ -32,6 +32,13 @@ namespace BlazorApplication.Pages
 			MetaData = pagingResponse.MetaData;
 		}
 
+		private async System.Threading.Tasks.Task DeleteTask(int id)
+		{
+			await TaskRepo.DeleteProduct(id);
+			_taskParameters.PageNumber = 1;
+			await GetTasks();
+		}
+
 		private async System.Threading.Tasks.Task SearchChanged(string searchString)
 		{
 			_taskParameters.PageNumber = 1;
