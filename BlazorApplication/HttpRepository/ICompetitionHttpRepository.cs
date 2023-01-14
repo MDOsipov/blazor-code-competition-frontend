@@ -12,7 +12,7 @@ namespace BlazorApplication.HttpRepository
 
         Task<Competition> GetCompetitionById(string id);
         Task UpdateCompetition(Competition competition);
-
+        Task DeleteCompetition(int id);
 
     }
 }

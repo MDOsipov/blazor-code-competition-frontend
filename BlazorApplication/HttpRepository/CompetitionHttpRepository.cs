@@ -119,5 +119,18 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(putContent);
             }
         }
+
+        public async System.Threading.Tasks.Task DeleteCompetition(int id)
+        {
+            var url = Path.Combine("http://localhost:6060/competition", id.ToString());
+
+            var deleteResult = await _client.DeleteAsync(url);
+            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+            if (!deleteResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(deleteContent);
+            }
+        }
     }
 }
