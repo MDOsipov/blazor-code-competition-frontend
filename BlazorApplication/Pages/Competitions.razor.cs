@@ -33,5 +33,12 @@ namespace BlazorApplication.Pages
             CompetitionList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
         }
+
+        private async System.Threading.Tasks.Task DeleteCompetition(int id)
+        {
+            await CompetitionRepo.DeleteCompetition(id);
+            _competitionParameters.PageNumber = 1;
+            await GetCompetitions();
+        }
     }
 }

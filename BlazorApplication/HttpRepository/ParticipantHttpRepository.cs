@@ -1,13 +1,27 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.Models;
+using BlazorApplication.Pages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
 {
-	public class ParticipantHttpRepository : IParticipantHttpRepository
+    class LocalParticipant
+    {
+        public int id { get; set; } = 0;
+        public string firstName { get; set; } = "";
+        public string lastName { get; set; } = "";
+        public string email { get; set; }
+
+        public int userId { get; set; } = 0;
+        public int teamId { get; set; } = 0;
+    }
+
+
+    public class ParticipantHttpRepository : IParticipantHttpRepository
 	{
         private readonly IAccessTokenProvider _accessTokenProvider;
         private readonly HttpClient _client;
@@ -20,7 +34,61 @@ namespace BlazorApplication.HttpRepository
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 		}
 
-		public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
+        public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
+        {
+            var content = JsonSerializer.Serialize(participant);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+
+            var postResult = await _client.PostAsync("http://localhost:6060/participant", bodyContent);
+            var postContent = await postResult.Content.ReadAsStringAsync();
+
+            if (!postResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(postContent);
+            }
+        }
+
+        public async System.Threading.Tasks.Task DeleteParticipant(int id)
+        {
+            var url = Path.Combine("http://localhost:6060/participant", id.ToString());
+
+            var deleteResult = await _client.DeleteAsync(url);
+            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+            if (!deleteResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(deleteContent);
+            }
+        }
+
+        public async Task<Participant> GetParticipantById(string id)
+        {
+            var url = Path.Combine("http://localhost:6060/participant", id);
+
+            var response = await _client.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+
+            var localParticipant = JsonSerializer.Deserialize<LocalParticipant>(content, _options);
+           
+            var participant = new Participant
+            {
+                id = localParticipant.id,
+                firstName = localParticipant.firstName,
+                lastName = localParticipant.lastName,
+                email = localParticipant.email,
+                userId = localParticipant.userId,
+                teamId = localParticipant.teamId
+            };
+
+            return participant;
+        }
+
+        public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
 		{
             var queryStringParam = new Dictionary<string, string>
             {
@@ -47,5 +115,20 @@ namespace BlazorApplication.HttpRepository
             return pagingResponse;
 
         }
-	}
+
+        public async System.Threading.Tasks.Task UpdateParticipant(Participant participant)
+        {
+            var content = JsonSerializer.Serialize(participant);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+            var url = Path.Combine("http://localhost:6060/participant", participant.id.ToString());
+
+            var putResult = await _client.PutAsync(url, bodyContent);
+            var putContent = await putResult.Content.ReadAsStringAsync();
+
+            if (!putResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(putContent);
+            }
+        }
+    }
 }

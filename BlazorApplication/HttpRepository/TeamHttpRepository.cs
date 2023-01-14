@@ -68,9 +68,13 @@ namespace BlazorApplication.HttpRepository
 
 		public async Task<PagingResponse<Team>> GetTeams(TeamParameters teamParameters)
 		{
-			var queryStringParam = new Dictionary<string, string>
+			Console.WriteLine(JsonSerializer.Serialize(teamParameters));
+            Console.WriteLine("Switch off: " + (teamParameters.switchOff ? "1" : "0"));
+
+            var queryStringParam = new Dictionary<string, string>
 			{
-				["pageNumber"] = teamParameters.PageNumber.ToString()
+				["pageNumber"] = teamParameters.PageNumber.ToString(),
+				["switchOffString"] = teamParameters.switchOff ? "1" : "0"
 			};
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);

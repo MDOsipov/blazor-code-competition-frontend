@@ -1,10 +1,17 @@
-﻿namespace BlazorApplication.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BlazorApplication.Models
 {
     public class Competition
     {
         public int id { get; set; }
-        public string CompetitionName { get; set; } = null!;
+
+		[Required(ErrorMessage = "Competition name is required field")]
+		public string CompetitionName { get; set; } = null!;
+        public int CompetitionStatusId { get; set; }
         public int CompetitionAdministratorId { get; set; }
+
+        [Range(1, double.MaxValue, ErrorMessage = "Value for the max tasks per group can't be lower than 1")]
         public int maxTaskPerGroups { get; set; }
         public int competitionStatus { get; set; }
         public string competitionStatusName { get; set; }
