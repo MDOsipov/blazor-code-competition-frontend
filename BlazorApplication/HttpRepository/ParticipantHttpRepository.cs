@@ -44,9 +44,17 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-        public System.Threading.Tasks.Task DeleteParticipant(int id)
+        public async System.Threading.Tasks.Task DeleteParticipant(int id)
         {
-            throw new NotImplementedException();
+            var url = Path.Combine("http://localhost:6060/participant", id.ToString());
+
+            var deleteResult = await _client.DeleteAsync(url);
+            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+            if (!deleteResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(deleteContent);
+            }
         }
 
         public async Task<Participant> GetParticipantById(string id)
