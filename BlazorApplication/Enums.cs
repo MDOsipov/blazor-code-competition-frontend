@@ -9,5 +9,6 @@
 			Fail = 3,
 			PartialSuccess = 4
 		}
+
     }
 }

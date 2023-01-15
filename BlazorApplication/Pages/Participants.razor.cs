@@ -1,11 +1,11 @@
 ﻿using BlazorApplication.Features;
-using BlazorApplication.HttpRepository;
+using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorApplication.Pages
 {
-	public partial class Participants
+    public partial class Participants
 	{
 		public List<Participant> ParticipantsList { get; set; } = new List<Participant>();
 		public MetaData MetaData { get; set; } = new MetaData();

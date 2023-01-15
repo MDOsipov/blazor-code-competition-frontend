@@ -30,7 +30,6 @@
         </div>
     </div>
 
-
     <div class="mb-3 row">
         <label for="points" class="col-md-2 col-form-label">Points:</label>
         <div class="col-md-10">
@@ -42,12 +41,14 @@
     <div class="mb-3 row">
         <label for="price" class="col-md-2 col-form-label">Task category:</label>
         <div class="col-md-10">
-            <select class="form-select" aria-label="Choose category" @bind="_taskCategory">
-                @foreach (var taskCategory in TaskCategories)
+            <select class="form-select" aria-label="Choose a category" @bind="_task.TaskCategoryId">
+                <option value="-1">- Please choose a category -</option>
+                @foreach (var category in TaskCategories)
                 {
-                    <option value=@taskCategory.CategoryName>@taskCategory.CategoryName</option>
+                    <option value=@category.Id>@category.CategoryName</option>
                 }
             </select>
+            <ValidationMessage For="@(() => _task.TaskCategoryId)"></ValidationMessage>
         </div>
     </div>
 
@@ -57,18 +58,6 @@
             <InputText id="Timeframe" class="form-control" @bind-Value="_time" />
         </div>
     </div>
-
-@*    <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Task timeframe:</label>
-        <div class="col-md-10">
-            <select class="form-select" aria-label="Choose timeframe" @bind="_timeFrameMode">
-                <option value="1">0:30</option>
-                <option value="2">1:00</option>
-                <option value="3">1:30</option>
-                <option value="4">2:00</option>
-            </select>
-        </div>
-    </div>*@
 
     <div class="row">
         <div class="col-md-12 text-right">

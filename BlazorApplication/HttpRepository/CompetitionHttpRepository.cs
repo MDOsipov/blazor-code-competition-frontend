@@ -1,7 +1,6 @@
 ﻿using BlazorApplication.Features;
-using BlazorApplication.Models;
+using BlazorApplication.Interfaces;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
@@ -10,14 +9,18 @@ namespace BlazorApplication.HttpRepository
     {
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _options;
+        private readonly IConfiguration _configuration;
+        private readonly Models.BackEndConnections _backEndConnections;
 
-        public CompetitionHttpRepository(HttpClient client)
+        public CompetitionHttpRepository(HttpClient client, IConfiguration configuration)
         {
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            _configuration = configuration;
+            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
         }
 
-        public async Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters)
+        public async Task<PagingResponse<Models.Competition>> GetCompetitions(CompetitionParameters competitionParameters)
         {
             var queryStringParam = new Dictionary<string, string>
             {
@@ -25,7 +28,7 @@ namespace BlazorApplication.HttpRepository
                 ["switchOff"] = competitionParameters.switchOff ? "1" : "0"
             };
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/competition/extended", queryStringParam));
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
 
             var content = await response.Content.ReadAsStringAsync();
 
@@ -34,10 +37,10 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(content);
             }
 
-            var pagingResponse = new PagingResponse<Competition>
+            var pagingResponse = new PagingResponse<Models.Competition>
             {
-                Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
 
             return pagingResponse;

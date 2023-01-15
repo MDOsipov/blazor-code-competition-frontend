@@ -16,14 +16,14 @@ namespace BlazorApplication.Models
 		[Required(ErrorMessage = "Task content is required field")]
 		public string TaskContent { get; set; }
 
-		public int TaskCategoryId { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a category")]
+        public int TaskCategoryId { get; set; }
 
 		public TimeSpan Timeframe { get; set; }
 
 		[Range(1, double.MaxValue, ErrorMessage = "Value for the point can't be lower than 1")]
 		public int Points { get; set; }
-
-		public string TaskCategoryName { get; set; }
+        public string TaskCategoryName { get; set; }
 
 		//public DateTime CreateDate { get; set; }
 		//public DateTime UpdateDate { get; set; }

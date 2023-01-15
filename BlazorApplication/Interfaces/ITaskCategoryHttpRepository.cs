@@ -1,6 +1,6 @@
 ﻿using BlazorApplication.Models;
 
-namespace BlazorApplication.HttpRepository
+namespace BlazorApplication.Interfaces
 {
     public interface ITaskCategoryHttpRepository
     {
