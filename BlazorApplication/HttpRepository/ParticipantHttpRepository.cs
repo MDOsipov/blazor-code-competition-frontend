@@ -35,6 +35,8 @@ namespace BlazorApplication.HttpRepository
             _accessTokenProvider = accessTokenProvider;
             _client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            _configuration = configuration;
+			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
 		}
 
         public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
@@ -42,7 +44,8 @@ namespace BlazorApplication.HttpRepository
             var content = JsonSerializer.Serialize(participant);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            var postResult = await _client.PostAsync("http://localhost:6060/participant", bodyContent);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "participant", bodyContent);
             var postContent = await postResult.Content.ReadAsStringAsync();
 
             if (!postResult.IsSuccessStatusCode)
@@ -53,9 +56,10 @@ namespace BlazorApplication.HttpRepository
 
         public async System.Threading.Tasks.Task DeleteParticipant(int id)
         {
-            var url = Path.Combine("http://localhost:6060/participant", id.ToString());
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id.ToString());
 
-            var deleteResult = await _client.DeleteAsync(url);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var deleteResult = await _client.DeleteAsync(url);
             var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
             if (!deleteResult.IsSuccessStatusCode)
@@ -66,9 +70,10 @@ namespace BlazorApplication.HttpRepository
 
         public async Task<Participant> GetParticipantById(string id)
         {
-            var url = Path.Combine("http://localhost:6060/participant", id);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id);
 
-            var response = await _client.GetAsync(url);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var response = await _client.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -123,9 +128,10 @@ namespace BlazorApplication.HttpRepository
         {
             var content = JsonSerializer.Serialize(participant);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var url = Path.Combine("http://localhost:6060/participant", participant.id.ToString());
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", participant.id.ToString());
 
-            var putResult = await _client.PutAsync(url, bodyContent);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var putResult = await _client.PutAsync(url, bodyContent);
             var putContent = await putResult.Content.ReadAsStringAsync();
 
             if (!putResult.IsSuccessStatusCode)

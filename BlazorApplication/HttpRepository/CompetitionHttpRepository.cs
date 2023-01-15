@@ -1,5 +1,7 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.Interfaces;
+using BlazorApplication.Models;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -22,21 +24,24 @@ namespace BlazorApplication.HttpRepository
         private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
         private readonly Models.BackEndConnections _backEndConnections;
+        private readonly IAccessTokenProvider _accessTokenProvider;
 
-        public CompetitionHttpRepository(HttpClient client, IConfiguration configuration)
+        public CompetitionHttpRepository(HttpClient client, IConfiguration configuration, IAccessTokenProvider accessTokenProvider)
         {
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
             _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
-        }
+			_accessTokenProvider = accessTokenProvider; 
+		}
 
 		public async System.Threading.Tasks.Task CreateCompetition(Competition competition)
         {
 			var content = JsonSerializer.Serialize(competition);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var postResult = await _client.PostAsync("http://localhost:6060/competition", bodyContent);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "competition", bodyContent);
 			var postContent = await postResult.Content.ReadAsStringAsync();
 
 			if (!postResult.IsSuccessStatusCode)
@@ -47,7 +52,9 @@ namespace BlazorApplication.HttpRepository
 
 		public async Task<IEnumerable<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
-			var response = await _client.GetAsync("http://localhost:6060/competition/status/all");
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+			var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
 
 			var content = await response.Content.ReadAsStringAsync();
 
@@ -61,9 +68,10 @@ namespace BlazorApplication.HttpRepository
 
         public async Task<Competition> GetCompetitionById(string id)
         {
-            var url = Path.Combine("http://localhost:6060/competition", id);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id);
 
-            var response = await _client.GetAsync(url);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var response = await _client.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -91,7 +99,8 @@ namespace BlazorApplication.HttpRepository
                 ["switchOff"] = competitionParameters.switchOff ? "1" : "0"
             };
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
 
             var content = await response.Content.ReadAsStringAsync();
 
@@ -113,9 +122,10 @@ namespace BlazorApplication.HttpRepository
         {
             var content = JsonSerializer.Serialize(competition);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var url = Path.Combine("http://localhost:6060/competition", competition.id.ToString());
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", competition.id.ToString());
 
-            var putResult = await _client.PutAsync(url, bodyContent);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var putResult = await _client.PutAsync(url, bodyContent);
             var putContent = await putResult.Content.ReadAsStringAsync();
 
             if (!putResult.IsSuccessStatusCode)
@@ -126,9 +136,10 @@ namespace BlazorApplication.HttpRepository
 
         public async System.Threading.Tasks.Task DeleteCompetition(int id)
         {
-            var url = Path.Combine("http://localhost:6060/competition", id.ToString());
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id.ToString());
 
-            var deleteResult = await _client.DeleteAsync(url);
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var deleteResult = await _client.DeleteAsync(url);
             var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
             if (!deleteResult.IsSuccessStatusCode)
