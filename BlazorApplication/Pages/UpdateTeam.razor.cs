@@ -1,5 +1,5 @@
 ﻿using BlazorApplication.Features;
-using BlazorApplication.HttpRepository;
+using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
@@ -7,7 +7,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
-	public partial class UpdateTeam : ComponentBase
+    public partial class UpdateTeam : ComponentBase
 	{
 		private Team _team = new Team();
         public List<Competition> competitionList { get; set; } = new List<Competition>();

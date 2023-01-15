@@ -2,7 +2,7 @@
 using BlazorApplication.Models;
 using Task = System.Threading.Tasks.Task;
 
-namespace BlazorApplication.HttpRepository
+namespace BlazorApplication.Interfaces
 {
     public interface ICompetitionHttpRepository
     {

@@ -1,5 +1,5 @@
 ﻿using BlazorApplication.Features;
-using BlazorApplication.HttpRepository;
+using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
@@ -48,11 +48,11 @@ namespace BlazorApplication.Pages
 
 		private async void Create()
         {
-            _team.CreateDate = DateTime.Now;
-            _team.UpdateDate = DateTime.Now;
-            _team.CreateUserId = 1;
-            _team.UpdateUserId = 1;
-            _team.StatusId = (int)Enums.Status.Active;
+            //_team.CreateDate = DateTime.Now;
+            //_team.UpdateDate = DateTime.Now;
+            //_team.CreateUserId = 1;
+            //_team.UpdateUserId = 1;
+            //_team.StatusId = (int)Enums.Status.Active;
             _team.TeamLeaderId = leaderId;
             _team.CompetitionId = competitionId;
 

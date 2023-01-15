@@ -1,29 +1,39 @@
 ﻿using BlazorApplication.Features;
-using BlazorApplication.Models;
+using BlazorApplication.Interfaces;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
+
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+
 
 namespace BlazorApplication.HttpRepository
 {
-	public class TeamHttpRepository : ITeamHttpRepository
+    public class TeamHttpRepository : ITeamHttpRepository
 	{
-		private readonly HttpClient _client;
+        private readonly IAccessTokenProvider _tokenProvider;
+        private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
+		private readonly IConfiguration _configuration;
+		private readonly Models.BackEndConnections _backEndConnections;
 
-		public TeamHttpRepository(HttpClient client)
+		public TeamHttpRepository(IAccessTokenProvider tokenProvider,HttpClient client, IConfiguration configuration)
 		{
-			_client = client;
-			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive= true };	
+            _tokenProvider = tokenProvider;
+            _client = client;
+			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive= true };
+			_configuration = configuration;
+			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
 		}
 
-        public async System.Threading.Tasks.Task CreateTeam(Team team)
+        public async Task CreateTeam(Models.Team team)
         {
 			var content = JsonSerializer.Serialize(team);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var postResult = await _client.PostAsync("https://localhost:7192/Team", bodyContent);
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Team", bodyContent);
 			var postContent = await postResult.Content.ReadAsStringAsync();
 
             if (!postResult.IsSuccessStatusCode)
@@ -32,9 +42,11 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-        public async System.Threading.Tasks.Task DeleteTeam(int id)
+        public async Task DeleteTeam(int id)
         {
-            var url = Path.Combine("https://localhost:7192/Team", id.ToString());
+            var url = Path.Combine(_backEndConnections.CSharpUri + "Team", id.ToString());
+
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
 
             var deleteResult = await _client.DeleteAsync(url);
             var deleteContent = await deleteResult.Content.ReadAsStringAsync();
@@ -45,11 +57,13 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-        public async Task<Team> GetTeamById(string id)
+        public async Task<Models.Team> GetTeamById(string id)
 		{
-			var url = Path.Combine("https://localhost:7192/Team", id);
+			var url = Path.Combine(_backEndConnections.CSharpUri + "Team", id);
 
-			var response = await _client.GetAsync(url);
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var response = await _client.GetAsync(url);
 			var content = await response.Content.ReadAsStringAsync();
 
 			if (!response.IsSuccessStatusCode)
@@ -57,11 +71,11 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-			var team = JsonSerializer.Deserialize<Team>(content, _options);
+			var team = JsonSerializer.Deserialize<Models.Team>(content, _options);
 			return team;
 		}
 
-		public async Task<PagingResponse<Team>> GetTeams(TeamParameters teamParameters)
+		public async Task<PagingResponse<Models.Team>> GetTeams(TeamParameters teamParameters)
 		{
 			Console.WriteLine(JsonSerializer.Serialize(teamParameters));
             Console.WriteLine("Switch off: " + (teamParameters.switchOff ? "1" : "0"));
@@ -72,9 +86,10 @@ namespace BlazorApplication.HttpRepository
 				["switchOffString"] = teamParameters.switchOff ? "1" : "0"
 			};
 
-			Console.WriteLine(_client.BaseAddress);
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString("https://localhost:7192/Team/extended", queryStringParam));
-			var content = await response.Content.ReadAsStringAsync();
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team/extended", queryStringParam));
+			var content = await response.Content.ReadAsStringAsync();	
 
             Console.WriteLine("Response " + JsonSerializer.Serialize(response));
 			Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
@@ -84,22 +99,24 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-			var pagingResponse = new PagingResponse<Team>
+			var pagingResponse = new PagingResponse<Models.Team>
 			{
-				Items = JsonSerializer.Deserialize<List<Team>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+				Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
+				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
 
 			return pagingResponse;
 		}
 
-		public async System.Threading.Tasks.Task UpdateTeam(Team team)
+		public async Task UpdateTeam(Models.Team team)
 		{
 			var content = JsonSerializer.Serialize(team);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-			var url = Path.Combine("https://localhost:7192/Team", team.Id.ToString());
+			var url = Path.Combine(_backEndConnections.CSharpUri + "Team", team.Id.ToString());
 
-			var putResult = await _client.PutAsync(url, bodyContent);
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var putResult = await _client.PutAsync(url, bodyContent);
 			var putContent = await putResult.Content.ReadAsStringAsync();
 
 			if (!putResult.IsSuccessStatusCode)

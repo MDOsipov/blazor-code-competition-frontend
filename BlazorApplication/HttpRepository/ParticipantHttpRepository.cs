@@ -3,7 +3,10 @@ using BlazorApplication.Models;
 using BlazorApplication.Pages;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using System.Text.Json;
+using BlazorApplication.Interfaces;
+
 
 namespace BlazorApplication.HttpRepository
 {
@@ -21,12 +24,16 @@ namespace BlazorApplication.HttpRepository
 
     public class ParticipantHttpRepository : IParticipantHttpRepository
 	{
-		private readonly HttpClient _client;
+        private readonly IAccessTokenProvider _accessTokenProvider;
+        private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
+        private readonly IConfiguration _configuration;
+        private readonly Models.BackEndConnections _backEndConnections;
 
-		public ParticipantHttpRepository(HttpClient client)
+		public ParticipantHttpRepository(IAccessTokenProvider accessTokenProvider,HttpClient client, IConfiguration configuration)
 		{
-			_client = client;
+            _accessTokenProvider = accessTokenProvider;
+            _client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 		}
 
@@ -92,7 +99,9 @@ namespace BlazorApplication.HttpRepository
                 ["switchOff"] = participantParameters.switchOff ? "1" : "0"
             };
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString("http://localhost:6060/participant/extended", queryStringParam));
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/extended", queryStringParam));			
 			var content = await response.Content.ReadAsStringAsync();
 
 			if (!response.IsSuccessStatusCode)
@@ -100,10 +109,10 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-            var pagingResponse = new PagingResponse<Participant>
+            var pagingResponse = new PagingResponse<Models.Participant>
             {
-                Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
 
             return pagingResponse;

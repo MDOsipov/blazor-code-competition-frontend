@@ -1,11 +1,11 @@
 ﻿using BlazorApplication.Features;
-using BlazorApplication.HttpRepository;
+using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorApplication.Pages
 {
-	public partial class Tasks
+    public partial class Tasks
 	{
 		public List<Models.Task> TaskList { get; set; } = new List<Models.Task>();
 		public MetaData MetaData { get; set; } = new MetaData();
