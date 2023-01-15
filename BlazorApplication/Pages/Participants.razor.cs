@@ -33,5 +33,12 @@ namespace BlazorApplication.Pages
 			ParticipantsList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
 		}
+
+		private async System.Threading.Tasks.Task DeleteParticipant(int id)
+		{
+			await ParticipantRepo.DeleteParticipant(id);
+			_participantParameters.PageNumber = 1;
+			await GetParticipants();
+		}
 	}
 }
