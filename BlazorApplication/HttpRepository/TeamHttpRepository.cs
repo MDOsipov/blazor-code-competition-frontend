@@ -33,6 +33,10 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
+			Console.WriteLine("Team send: ");
+            Console.WriteLine(JsonSerializer.Serialize(team));
+
+
             var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Team", bodyContent);
 			var postContent = await postResult.Content.ReadAsStringAsync();
 
@@ -99,11 +103,15 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
+
 			var pagingResponse = new PagingResponse<Models.Team>
 			{
 				Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
 				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
+
+			Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
+
 
 			return pagingResponse;
 		}

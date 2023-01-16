@@ -12,8 +12,8 @@ namespace BlazorApplication.Pages
 		private Team _team = new Team();
         public List<Competition> competitionList { get; set; } = new List<Competition>();
         public List<Participant> participantList { get; set; } = new List<Participant>();
-        public int leaderId { get; set; } = 0;
-        public int competitionId { get; set; } = 0;
+        public int leaderId { get; set; } = 1;
+        public int competitionId { get; set; } = 1;
 
         private SuccessNotification _notification;
 
