@@ -8,6 +8,13 @@
         <div class="mb-3 row">
             <label for="name" class="col-md-2 col-form-label">Team icon:</label>
             <div class="col-md-10">
+                <ImageUpload OnChange="AssignImageUrl" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label for="name" class="col-md-2 col-form-label">Team icon:</label>
+            <div class="col-md-10">
                 <InputText id="name" class="form-control" @bind-Value="_team.IconImage" />
                 <ValidationMessage For="@(() => _team.IconImage)"></ValidationMessage>
             </div>

@@ -26,8 +26,8 @@ namespace BlazorApplication.Pages
 
         [Parameter]
 		public string Id { get; set; } = "";
-
-		protected async override Task OnInitializedAsync()
+        private void AssignImageUrl(string imgUrl) => _team.IconImage = imgUrl;
+        protected async override Task OnInitializedAsync()
 		{
 			_team = await TeamRepo.GetTeamById(Id);
 

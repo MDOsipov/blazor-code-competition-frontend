@@ -46,6 +46,8 @@ namespace BlazorApplication.Pages
             participantList = participantPagingResponse.Items;
         }
 
+        private void AssignImageUrl(string imgUrl) => _team.IconImage = imgUrl; 
+
 		private async void Create()
         {
             //_team.CreateDate = DateTime.Now;

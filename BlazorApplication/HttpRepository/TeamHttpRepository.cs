@@ -132,5 +132,22 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(putContent);
 			}
 		}
-	}
+
+        public async Task<string> UploadTeamImage(MultipartFormDataContent content)
+        {
+            var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "api/upload", content);
+            var postContent = await postResult.Content.ReadAsStringAsync();
+
+
+            if (!postResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(postContent);
+            }
+            else
+            {
+                var imgUrl = Path.Combine(_backEndConnections.CSharpUri, postContent);
+                return imgUrl;
+            }
+        }
+    }
 }
