@@ -2,6 +2,7 @@
 {
 	<table class="table">
 		<thead>
+			<th scope="col">Team icon</th>
 			<th scope="col">Name</th>
 			<th scope="col">Total points</th>
 			<th scope="col">Leader email</th>
@@ -11,6 +12,9 @@
 			@foreach (var team in Teams)
 			{
 				<tr>
+					<td>
+						<img src="@team.IconImage" alt="product image" style="width:100px;" />
+                    </td>
 					<td class="align-middle">
 						@team.TeamName
 					</td>

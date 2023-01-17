@@ -17,7 +17,7 @@ namespace BlazorApplication.Models
         public int CompetitionId { get; set; }
 
 
-        public byte[]? IconImage { get; set; }
+        public string IconImage { get; set; }
 		public DateTime CreateDate { get; set; }
 		public DateTime UpdateDate { get; set; }
 		public int CreateUserId { get; set; }

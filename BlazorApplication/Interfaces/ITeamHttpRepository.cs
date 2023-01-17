@@ -9,5 +9,6 @@ namespace BlazorApplication.Interfaces
         Task<Models.Team> GetTeamById(string id);
         Task UpdateTeam(Models.Team team);
         Task DeleteTeam(int id);
+        Task<string> UploadTeamImage(MultipartFormDataContent content);
     }
 }

@@ -35,12 +35,19 @@
 					<td class="align-middle">
 						@task.TaskCategoryName
 					</td>
-					<td class="align-middle">
-						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(task.Id)">Update</button>
-					</td>
-					<td class="align-middle">
-						<button type="button" class="btn btn-danger" @onclick="()=>Delete(task.Id)">Delete</button>
-					</td>
+
+					<AuthorizeView Roles="system administrator">
+						<td class="align-middle">
+							<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(task.Id)">Update</button>
+						</td>
+					</AuthorizeView>
+
+					<AuthorizeView Roles="system administrator">
+						<td class="align-middle">
+							<button type="button" class="btn btn-danger" @onclick="()=>Delete(task.Id)">Delete</button>
+						</td>
+					</AuthorizeView>
+
 				</tr>
 			}
 		</tbody>

@@ -13,8 +13,8 @@ namespace BlazorApplication.Pages
         public List<Competition> competitionList { get; set; } = new List<Competition>();
 		public List<Participant> participantList { get; set; } = new List<Participant>();
 
-        public int leaderId { get; set; } = 0;
-        public int competitionId { get; set; } = 0;
+        public int leaderId { get; set; } = 1;
+        public int competitionId { get; set; } = 1;
 
 
         private SuccessNotification _notification;
@@ -46,6 +46,8 @@ namespace BlazorApplication.Pages
             participantList = participantPagingResponse.Items;
         }
 
+        private void AssignImageUrl(string imgUrl) => _team.IconImage = imgUrl; 
+
 		private async void Create()
         {
             //_team.CreateDate = DateTime.Now;
@@ -53,11 +55,16 @@ namespace BlazorApplication.Pages
             //_team.CreateUserId = 1;
             //_team.UpdateUserId = 1;
             //_team.StatusId = (int)Enums.Status.Active;
-            _team.TeamLeaderId = leaderId;
-            _team.CompetitionId = competitionId;
 
-            await TeamRepo.CreateTeam(_team);
-            _notification.Show();
+            _team.CompetitionId = competitionId;
+            _team.TeamLeaderId = leaderId;
+
+            if (competitionId > 0 && leaderId > 0)
+            {
+                await TeamRepo.CreateTeam(_team);
+                _notification.Show();
+            }
+
         }
     }
 }
