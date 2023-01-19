@@ -1,6 +1,9 @@
 ﻿@page "/users"
+@using BlazorApplication.Components
 @using BlazorApplication.Models
 @using BlazorApplication.Features
+@using BlazorApplication.Interfaces
+
 @using Microsoft.Extensions.Configuration
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
@@ -8,6 +11,7 @@
 @inject HttpClient Http
 @inject IAccessTokenProvider accessTokenProvider
 @inject IConfiguration configuration
+@inject IUserHttpRepository UserRepo
 
 @if (userList is null)
 {
@@ -56,11 +60,15 @@ else
                             <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Change role</button>
                         </td>
                     }
-                   
                 </tr>
             }
         </tbody>
     </table>
+    <div class="row">
+        <div class="col align-self-center">
+            <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+        </div>
+    </div>
 }
 
 @code {
@@ -70,6 +78,9 @@ else
     public bool ChangeMode { get; set; } = false;
     public string CurrentUserIdToChange { get; set; } = "-";
     public string NewRoleId { get; set; } = "";
+    private UserParameters userParameters = new UserParameters();
+    public MetaData MetaData { get; set; } = new MetaData();
+
 
 
     private Models.BackEndConnections _backEndConnections;
@@ -77,8 +88,21 @@ else
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         _backEndConnections = configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
-        userList = await Http.GetFromJsonAsync<UserDto[]>(_backEndConnections.CSharpUri + "user/withRoles");
+        await GetUsers();
         roleList = await Http.GetFromJsonAsync<RoleDto[]>(_backEndConnections.CSharpUri + "user/allRoles");
+    }
+
+    private async System.Threading.Tasks.Task SelectedPage(int page)
+    {
+        userParameters.PageNumber = page;
+        await GetUsers();
+    }
+
+    protected async System.Threading.Tasks.Task GetUsers()
+    {
+        var userPagingResponse = await UserRepo.GetUsersExtended(userParameters);
+        userList = userPagingResponse.Items;
+        MetaData = userPagingResponse.MetaData;
     }
 
     public async void ChangeModeFun(string userIdToChange)

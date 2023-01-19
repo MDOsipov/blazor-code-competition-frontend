@@ -1,12 +1,16 @@
-﻿using BlazorApplication.Models;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Interfaces;
+using BlazorApplication.Models;
 using BlazorApplication.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.Text.Json;
 
 namespace BlazorApplication.Components.CompetitionTable
 {
     public partial class CompetitionTable
     {
+        private IEnumerable<UserDto> _users = new List<UserDto>();    
         [Inject]
         public IJSRuntime Js { get; set; }
      
@@ -19,7 +23,31 @@ namespace BlazorApplication.Components.CompetitionTable
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
-        private void RedirectToUpdate(int id)
+		[Inject]
+		public IUserHttpRepository UserRepo { get; set; }
+
+		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        {
+            var userParameters = new UserParameters()
+            {
+                switchOff = true
+            };
+            var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
+            _users = pagingResponse.Items;
+
+            Console.WriteLine("Users: " + JsonSerializer.Serialize(_users));
+
+            if (Competitions.Count > 0)
+            {
+                Console.WriteLine("I am here!");
+                foreach(var competition in Competitions)
+                {
+                    competition.CompetitionAdministratorEmail = _users.Where(u => u.Id == competition.CompetitionAdministratorId).Select(u => u.Email).FirstOrDefault();
+                }
+            }
+		}
+
+		private void RedirectToUpdate(int id)
         {
             var url = Path.Combine("/updateCompetition/", id.ToString());
             NavigationManager.NavigateTo(url);

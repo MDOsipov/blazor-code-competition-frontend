@@ -1,31 +1,72 @@
 ﻿<h3>Welcome, dear system administrator!</h3>
 
-<a href="/competitions">Manage competitions</a>
-@if (CompetitionList.Count > 0)
-{
-	<table class="table">
-		<thead>
-			<th scope="col">Competition name</th>
-			<th scope="col">Status</th>
-		</thead>
-		<tbody>
-			@foreach (var competition in CompetitionList)
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			@if (CompetitionList.Count > 0)
 			{
-				<tr>
-					<td class="align-middle">
-						@competition.CompetitionName
-					</td>
-					<td class="align-middle">
-						@competition.competitionStatusName
-					</td>
-				</tr>
+				<a href="/competitions">Manage competitions</a>
+				<table class="table table-striped">
+					<thead>
+					<th scope="col">Competition name</th>
+					<th scope="col">Status</th>
+					</thead>
+					<tbody>
+						@foreach (var competition in CompetitionList)
+						{
+							<tr>
+								<td class="align-middle">
+									@competition.CompetitionName
+								</td>
+								<td class="align-middle">
+									@competition.competitionStatusName
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
 			}
-		</tbody>
-	</table>
-}
-else
-{
-	<span>
-		Loading competitions...
-	</span>
-}
+			else
+			{
+				<span>
+					Loading competitions...
+				</span>
+			}
+		</div>
+		<div class="col">
+			@if (UserList.ToList().Count > 0)
+			{
+				<a href="/users">Manage users</a>
+				<table class="table table-striped">
+					<thead>
+					<th scope="col">Email</th>
+					<th scope="col">Role</th>
+					</thead>
+					<tbody>
+						@foreach (var user in UserList)
+						{
+							<tr>
+								<td class="align-middle">
+									@user.Email
+								</td>
+								<td class="align-middle">
+									@user.RoleName
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+			else
+			{
+				<span>
+					Loading users...
+				</span>
+			}
+		</div>
+	</div>
+</div>
+
+
+

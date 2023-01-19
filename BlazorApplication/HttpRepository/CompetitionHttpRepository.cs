@@ -16,6 +16,7 @@ namespace BlazorApplication.HttpRepository
         public string competitionName { get; set; } = "";
         public int maxTaskPerGroups { get; set; } = 0;
         public int competitionStatus { get; set; } = 0;
+        public string competitionAdministratorId { get; set; } = "";
     }
 
     public class CompetitionHttpRepository : ICompetitionHttpRepository
@@ -85,7 +86,8 @@ namespace BlazorApplication.HttpRepository
                 id = localCompetition.id,
                 CompetitionName = localCompetition.competitionName,
                 maxTaskPerGroups = localCompetition.maxTaskPerGroups,
-                CompetitionStatusId = localCompetition.competitionStatus
+                CompetitionStatusId = localCompetition.competitionStatus,
+                CompetitionAdministratorId = localCompetition.competitionAdministratorId
             };
 
             return competition;
