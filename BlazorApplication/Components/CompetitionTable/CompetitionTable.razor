@@ -6,6 +6,7 @@
 			<th scope="col">Competition name</th>
 			<th scope="col">Max tasks per group</th>
 			<th scope="col">Status</th>
+			<th scope="col">Administrator</th>
 		</thead>
 		<tbody>
 			@foreach (var competition in Competitions)
@@ -22,6 +23,9 @@
 					</td>
 					<td class="align-middle">
 						@competition.competitionStatusName
+					</td>
+					<td class="align-middle">
+						@competition.CompetitionAdministratorEmail
 					</td>
 					<td class="align-middle">
 						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(competition.id)">Update</button>
