@@ -22,6 +22,14 @@
         </div>
     </div>
 
+    <div class="mb-3 row">
+        <label for="name" class="col-md-2 col-form-label">Hash:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
+            <ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
+        </div>
+    </div>
+
    <div class="mb-3 row">
         <label for="price" class="col-md-2 col-form-label">Status:</label>
         <div class="col-md-10">

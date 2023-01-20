@@ -16,7 +16,9 @@ namespace BlazorApplication.Models
         public int maxTaskPerGroups { get; set; }
         public int competitionStatus { get; set; }
         public string competitionStatusName { get; set; }
-		public string? HashCode { get; set; }
+
+        [Required(ErrorMessage = "Hash code is required field")]
+        public string? HashCode { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public int CreateUserId { get; set; }

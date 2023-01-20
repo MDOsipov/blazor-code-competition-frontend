@@ -1,4 +1,6 @@
 ﻿@page "/users"
+@attribute [Authorize(Roles = "system administrator")]
+
 @using BlazorApplication.Components
 @using BlazorApplication.Models
 @using BlazorApplication.Features

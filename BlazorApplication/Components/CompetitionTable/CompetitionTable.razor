@@ -5,6 +5,7 @@
 			<th scope="col">Id</th>
 			<th scope="col">Competition name</th>
 			<th scope="col">Max tasks per group</th>
+			<th scope="col">Hash</th>
 			<th scope="col">Status</th>
 			<th scope="col">Administrator</th>
 		</thead>
@@ -20,6 +21,9 @@
 					</td>
 					<td class="align-middle">
 						@competition.maxTaskPerGroups
+					</td>
+					<td class="align-middle">
+						@competition.HashCode
 					</td>
 					<td class="align-middle">
 						@competition.competitionStatusName
