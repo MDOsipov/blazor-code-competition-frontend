@@ -5,6 +5,7 @@ using BlazorApplication.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Text.Json;
+using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Components.CompetitionTable
 {
@@ -28,6 +29,12 @@ namespace BlazorApplication.Components.CompetitionTable
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
+            await GetUsers();
+            GetAdministratorsEmails();
+        }
+
+        private async Task GetUsers()
+        {
             var userParameters = new UserParameters()
             {
                 switchOff = true
@@ -36,16 +43,19 @@ namespace BlazorApplication.Components.CompetitionTable
             _users = pagingResponse.Items;
 
             Console.WriteLine("Users: " + JsonSerializer.Serialize(_users));
+        }
 
+        private void GetAdministratorsEmails()
+        {
             if (Competitions.Count > 0)
             {
                 Console.WriteLine("I am here!");
-                foreach(var competition in Competitions)
+                foreach (var competition in Competitions)
                 {
                     competition.CompetitionAdministratorEmail = _users.Where(u => u.Id == competition.CompetitionAdministratorId).Select(u => u.Email).FirstOrDefault();
                 }
             }
-		}
+        }
 
 		private void RedirectToUpdate(int id)
         {
@@ -62,6 +72,9 @@ namespace BlazorApplication.Components.CompetitionTable
             {
                 await OnDeleted.InvokeAsync(id);
             }
+
+            await GetUsers();
+            GetAdministratorsEmails();
         }
     }
 }
