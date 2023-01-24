@@ -2,6 +2,7 @@
 using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
+using System.Text.Json;
 
 namespace BlazorApplication.Pages
 {
@@ -29,6 +30,7 @@ namespace BlazorApplication.Pages
 			var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
 			TeamList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
+			Console.WriteLine("Team list:" + JsonSerializer.Serialize(TeamList));
 		}
 
         private async System.Threading.Tasks.Task DeleteTeam(int id)

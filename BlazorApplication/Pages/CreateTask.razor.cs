@@ -1,4 +1,5 @@
-﻿using BlazorApplication.Interfaces;
+﻿using BlazorApplication.Features;
+using BlazorApplication.Interfaces;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
@@ -95,7 +96,13 @@ namespace BlazorApplication.Pages
 
         protected async Task GetTaskCategories()
         {
-            TaskCategories = await TaskCategoryRepo.GetTaskCategory();
+            TaskCategoryParameters taskCategoryParameters = new TaskCategoryParameters()
+            {
+                switchOff = true
+            };
+
+            var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
+            TaskCategories = pagingResponse.Items;
         }
 	}
 }

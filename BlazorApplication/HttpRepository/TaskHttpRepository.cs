@@ -9,7 +9,7 @@ namespace BlazorApplication.HttpRepository
 {
     public class TaskHttpRepository : ITaskHttpRepository
 	{
-		private readonly IAccessTokenProvider _tokenProvider;
+        private readonly IAccessTokenProvider _tokenProvider;
 		private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
 		private readonly IConfiguration _configuration;
@@ -87,7 +87,9 @@ namespace BlazorApplication.HttpRepository
 				queryStringParam.Add("searchString", taskParameters.SearchString);
 			};
 
-			if (taskParameters.OrderBy != string.Empty)
+            queryStringParam.Add("switchOffString", taskParameters.switchOff ? "1" : "0");
+
+            if (taskParameters.OrderBy != string.Empty)
 			{
 				queryStringParam.Add("orderby", taskParameters.OrderBy);
 			};
@@ -110,6 +112,35 @@ namespace BlazorApplication.HttpRepository
 			return pagingResponse;
 		}
 
+		public async Task<PagingResponse<Models.Task>> GetTasksByCompetitionId(TaskParameters taskParameters, string id)
+		{
+			Console.WriteLine(JsonSerializer.Serialize(taskParameters));
+			Console.WriteLine("Switch off: " + (taskParameters.switchOff ? "1" : "0"));
+
+			var queryStringParam = new Dictionary<string, string>
+			{
+				["pageNumber"] = taskParameters.PageNumber.ToString(),
+				["switchOffString"] = taskParameters.switchOff ? "1" : "0"
+			};
+
+			await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byCompetitionId/" + id, queryStringParam));
+
+			var content = await response.Content.ReadAsStringAsync();
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new ApplicationException(content);
+			}
+			var pagingResponse = new PagingResponse<Models.Task>
+			{
+				Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
+				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+			};
+			return pagingResponse;
+		}
+	
 		public async Task UpdateTask(Models.Task task)
 		{
 			var content = JsonSerializer.Serialize(task);

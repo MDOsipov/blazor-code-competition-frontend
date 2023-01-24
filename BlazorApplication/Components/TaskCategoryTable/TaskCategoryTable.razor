@@ -1,0 +1,38 @@
+﻿@if (TaskCategories.Count > 0)
+{
+	<table class="table">
+		<thead>
+			<th scope="col">Id</th>
+			<th scope="col">Category</th>
+			<th scope="col">Description</th>
+		</thead>
+		<tbody>
+			@foreach (var taskCategory in TaskCategories)
+			{
+				<tr>
+					<td class="align-middle">
+						@taskCategory.Id
+					</td>
+					<td class="align-middle">
+						@taskCategory.CategoryName
+					</td>
+					<td class="align-middle">
+						@taskCategory.CategoryDescription
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(taskCategory.Id)">Update</button>
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(taskCategory.Id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<span>
+		Loading task categories...
+	</span>
+}

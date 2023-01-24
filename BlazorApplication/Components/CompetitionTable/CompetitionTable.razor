@@ -1,4 +1,4 @@
-﻿@if (Competitions.Count > 0)
+﻿@if (Competitions.Count > 0 && !IsCompetitionAdmin)
 {
 	<table class="table">
 		<thead>
@@ -36,6 +36,46 @@
 					</td>
 					<td class="align-middle">
 						<button type="button" class="btn btn-danger" @onclick="()=>Delete(competition.id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else if (Competitions.Count > 0 && IsCompetitionAdmin)
+{
+	<table class="table">
+		<thead>
+		<th scope="col">Id</th>
+		<th scope="col">Competition name</th>
+		<th scope="col">Max tasks per group</th>
+		<th scope="col">Hash</th>
+		<th scope="col">Status</th>
+		</thead>
+		<tbody>
+			@foreach (var competition in Competitions)
+			{
+				<tr>
+					<td class="align-middle">
+						@competition.id
+					</td>
+					<td class="align-middle">
+						@competition.CompetitionName
+					</td>
+					<td class="align-middle">
+						@competition.maxTaskPerGroups
+					</td>
+					<td class="align-middle">
+						@competition.HashCode
+					</td>
+					<td class="align-middle">
+						@competition.competitionStatusName
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(competition.id)">Update</button>
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToManagePage(competition.id)">Manage competition</button>
 					</td>
 				</tr>
 			}

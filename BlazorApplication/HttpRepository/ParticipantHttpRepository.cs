@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using System.Text.Json;
 using BlazorApplication.Interfaces;
 
-
 namespace BlazorApplication.HttpRepository
 {
     class LocalParticipant
@@ -39,7 +38,27 @@ namespace BlazorApplication.HttpRepository
 			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
 		}
 
-        public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
+		public async System.Threading.Tasks.Task AddTeamToParticipant(string teamId, string participantId)
+		{
+			var queryStringParam = new Dictionary<string, string>
+			{
+				["teamId"] = teamId,
+				["participantId"] = participantId
+			};
+
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+			var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
+			var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant", queryStringParam), bodyContent);
+			var putContent = await putResult.Content.ReadAsStringAsync();
+
+			if (!putResult.IsSuccessStatusCode)
+			{
+				throw new ApplicationException(putContent);
+			}
+		}
+
+		public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
         {
             var content = JsonSerializer.Serialize(participant);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
@@ -122,6 +141,96 @@ namespace BlazorApplication.HttpRepository
 
             return pagingResponse;
 
+        }
+
+        public async Task<PagingResponse<Participant>> GetParticipantsByEmail(ParticipantParameters participantParameters, string email)
+        {
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = participantParameters.PageNumber.ToString(),
+                ["switchOff"] = participantParameters.switchOff ? "1" : "0"
+            };
+
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byEmail/"+email, queryStringParam));
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+
+            var pagingResponse = new PagingResponse<Models.Participant>
+            {
+                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
+
+            return pagingResponse;
+        }
+
+        public async Task<PagingResponse<Participant>> GetParticipantsByTeamId(ParticipantParameters participantParameters, string teamId)
+        {
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = participantParameters.PageNumber.ToString(),
+                ["switchOff"] = participantParameters.switchOff ? "1" : "0"
+            };
+
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byTeamId/" + teamId, queryStringParam));
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+
+            var pagingResponse = new PagingResponse<Models.Participant>
+            {
+                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
+
+            return pagingResponse;
+        }
+
+        public async Task<IEnumerable<Participant>> GetParticipantsLimited()
+        {
+           
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+            var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "participant");
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+
+            var toReturn = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options);
+            return toReturn;
+        }
+
+        public async System.Threading.Tasks.Task RemoveTeamFromParticipant(string participantId)
+        {
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["participantId"] = participantId
+            };
+
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+            var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
+            var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/remove/teamFromParticipant", queryStringParam), bodyContent);
+            var putContent = await putResult.Content.ReadAsStringAsync();
+
+            if (!putResult.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(putContent);
+            }
         }
 
         public async System.Threading.Tasks.Task UpdateParticipant(Participant participant)

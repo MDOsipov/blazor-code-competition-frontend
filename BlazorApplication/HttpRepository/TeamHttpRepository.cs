@@ -116,6 +116,43 @@ namespace BlazorApplication.HttpRepository
 			return pagingResponse;
 		}
 
+		public async Task<PagingResponse<Models.Team>> GetTeamsLimited(TeamParameters teamParameters)
+		{
+			Console.WriteLine(JsonSerializer.Serialize(teamParameters));
+			Console.WriteLine("Switch off: " + (teamParameters.switchOff ? "1" : "0"));
+
+			var queryStringParam = new Dictionary<string, string>
+			{
+				["pageNumber"] = teamParameters.PageNumber.ToString(),
+				["switchOffString"] = teamParameters.switchOff ? "1" : "0"
+			};
+
+			await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team", queryStringParam));
+			var content = await response.Content.ReadAsStringAsync();
+
+			Console.WriteLine("Response " + JsonSerializer.Serialize(response));
+			Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new ApplicationException(content);
+			}
+
+
+			var pagingResponse = new PagingResponse<Models.Team>
+			{
+				Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
+				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+			};
+
+			Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
+
+
+			return pagingResponse;
+		}
+
 		public async Task UpdateTeam(Models.Team team)
 		{
 			var content = JsonSerializer.Serialize(team);

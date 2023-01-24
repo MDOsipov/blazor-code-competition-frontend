@@ -21,6 +21,9 @@ namespace BlazorApplication.Components.CompetitionTable
         [Parameter]
         public List<Competition> Competitions { get; set; }
 
+        [Parameter]
+        public bool IsCompetitionAdmin { get; set; } = false;
+
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
@@ -59,11 +62,18 @@ namespace BlazorApplication.Components.CompetitionTable
 
 		private void RedirectToUpdate(int id)
         {
+            string boolString = IsCompetitionAdmin ? "1" : "0";
             var url = Path.Combine("/updateCompetition/", id.ToString());
-            NavigationManager.NavigateTo(url);
+            NavigationManager.NavigateTo(url + "/" + boolString);
         }
 
-        private async System.Threading.Tasks.Task Delete(int id)
+		private void RedirectToManagePage(int id)
+		{
+			var url = Path.Combine("/competitionManagement/", id.ToString());
+			NavigationManager.NavigateTo(url);
+		}
+
+		private async System.Threading.Tasks.Task Delete(int id)
         {
             var competition = Competitions.FirstOrDefault(p => p.id.Equals(id));
             var confirmed = await Js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {competition.CompetitionName} competition?");

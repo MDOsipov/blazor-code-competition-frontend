@@ -152,5 +152,32 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(deleteContent);
             }
         }
-    }
+
+		public async Task<PagingResponse<Competition>> GetCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters)
+		{
+			var queryStringParam = new Dictionary<string, string>
+			{
+				["pageNumber"] = competitionParameters.PageNumber.ToString(),
+				["switchOff"] = competitionParameters.switchOff ? "1" : "0"
+			};
+
+			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/byAdmin/" + adminId, queryStringParam));
+
+			var content = await response.Content.ReadAsStringAsync();
+
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new ApplicationException(content);
+			}
+
+			var pagingResponse = new PagingResponse<Models.Competition>
+			{
+				Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
+				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+			};
+
+			return pagingResponse;
+		}
+	}
 }

@@ -12,6 +12,9 @@ namespace BlazorApplication.Components.ParticipantTable
         [Parameter]
 		public List<Participant> Participants { get; set; }
 
+        [Parameter]
+        public bool isParticipantToTeamFlag { get; set; } = false;
+
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 

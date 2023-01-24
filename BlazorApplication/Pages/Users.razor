@@ -84,6 +84,8 @@ else
     public MetaData MetaData { get; set; } = new MetaData();
 
 
+    [Inject]
+    public IParticipantHttpRepository participantRepo { get; set; }
 
     private Models.BackEndConnections _backEndConnections;
 
@@ -111,7 +113,7 @@ else
     {
         ChangeMode = !ChangeMode;
         CurrentUserIdToChange = userIdToChange;
-       
+
 
         if (ChangeMode)
         {
@@ -121,9 +123,10 @@ else
         {
             var content = JsonSerializer.Serialize(new string[] { NewRoleId } );
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+            var newRole = roleList.Where(r => r.Id == NewRoleId).FirstOrDefault();
 
-            userList.Where(u => u.Id == userIdToChange).FirstOrDefault().RoleName = roleList.Where(r => r.Id == NewRoleId).FirstOrDefault().Name;
-            userList.Where(u => u.Id == userIdToChange).FirstOrDefault().RoleId = roleList.Where(r => r.Id == NewRoleId).FirstOrDefault().Id;
+            userList.Where(u => u.Id == userIdToChange).FirstOrDefault().RoleName = newRole.Name;
+            userList.Where(u => u.Id == userIdToChange).FirstOrDefault().RoleId = newRole.Id;
 
             var putResult = await Http.PutAsync(_backEndConnections.CSharpUri + "user/assignRoles/" + userIdToChange, bodyContent);
 
@@ -133,7 +136,50 @@ else
             {
                 throw new ApplicationException(putContent);
             }
-            
+
+            if (roleList.Where(r => r.Id == NewRoleId).FirstOrDefault().Name == "participant")
+            {
+                var newUser = userList.Where(u => u.Id == userIdToChange).FirstOrDefault();
+
+                ParticipantParameters participantParameters = new ParticipantParameters
+                {
+                    switchOff = true
+                };
+                var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
+                var currentUsers = pagingResponse.Items;
+
+                if (currentUsers.Count == 0)
+                {
+                    var newParticipant = new Participant()
+                    {
+                        id = 0,
+                        firstName = newUser.FirstName is not null ? newRole.Name : "unknown",
+                        lastName = newUser.LastName is not null ? newRole.Name : "unknown",
+                        email = newUser.Email,
+                        userId = 1,
+                        teamId = 0
+                    };
+
+                    await participantRepo.CreateParticipant(newParticipant);
+                }
+            }
+            else
+            {
+                var newUser = userList.Where(u => u.Id == userIdToChange).FirstOrDefault();
+
+                ParticipantParameters participantParameters = new ParticipantParameters
+                {
+                    switchOff = true
+                };
+                var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
+                var currentUsers = pagingResponse.Items;
+
+                if (currentUsers.Count > 0)
+                {
+                    var toDeleteId = currentUsers.FirstOrDefault().id;
+                    await participantRepo.DeleteParticipant(toDeleteId);
+                }
+            }
 
             StateHasChanged();
         }

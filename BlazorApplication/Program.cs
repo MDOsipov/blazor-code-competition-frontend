@@ -19,7 +19,9 @@ builder.Services.AddScoped<ITeamHttpRepository, TeamHttpRepository>();
 builder.Services.AddScoped<ICompetitionHttpRepository, CompetitionHttpRepository>();
 builder.Services.AddScoped<IParticipantHttpRepository, ParticipantHttpRepository>();
 builder.Services.AddScoped<ITaskCategoryHttpRepository, TaskCategoryHttpRepository>();
+builder.Services.AddScoped<ITaskToCompetitionRepository, TaskToCompetitionRepository>();
 builder.Services.AddScoped<IUserHttpRepository, UserHttpRepository>();
+builder.Services.AddScoped<AuthTest>();
 
 
 builder.Services.AddOidcAuthentication(options =>

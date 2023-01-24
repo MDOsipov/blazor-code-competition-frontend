@@ -1,4 +1,4 @@
-﻿@if (Tasks.Count > 0)
+﻿@if (Tasks.Count > 0 && !isTaskToCompetitionFlag)
 {
 	<table class="table">
 		<thead>
@@ -35,19 +35,57 @@
 					<td class="align-middle">
 						@task.TaskCategoryName
 					</td>
-
-					<AuthorizeView Roles="system administrator">
-						<td class="align-middle">
-							<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(task.Id)">Update</button>
-						</td>
-					</AuthorizeView>
-
-					<AuthorizeView Roles="system administrator">
-						<td class="align-middle">
-							<button type="button" class="btn btn-danger" @onclick="()=>Delete(task.Id)">Delete</button>
-						</td>
-					</AuthorizeView>
-
+					<td class="align-middle">
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(task.Id)">Update</button>
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(task.Id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else if (Tasks.Count > 0 && isTaskToCompetitionFlag)
+{
+	<table class="table">
+		<thead>
+		<th scope="col">Task id</th>
+		<th scope="col">Task name</th>
+		<th scope="col">Task description</th>
+		<th scope="col">Task content</th>
+		<th scope="col">Time to complete (hours)</th>
+		<th scope="col">Point</th>
+		<th scope="col">Category</th>
+		</thead>
+		<tbody>
+			@foreach (var task in Tasks)
+			{
+				<tr>
+					<td class="align-middle">
+						@task.Id
+					</td>
+					<td class="align-middle">
+						@task.TaskName
+					</td>
+					<td class="align-middle">
+						@task.TaskDescription
+					</td>
+					<td class="align-middle">
+						@task.TaskContent
+					</td>
+					<td class="align-middle">
+						@task.Timeframe
+					</td>
+					<td class="align-middle">
+						@task.Points
+					</td>
+					<td class="align-middle">
+						@task.TaskCategoryName
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(task.Id)">Delete</button>
+					</td>
 				</tr>
 			}
 		</tbody>

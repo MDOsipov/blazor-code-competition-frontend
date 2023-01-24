@@ -1,0 +1,21 @@
+﻿@page "/myCompetitions"
+@attribute [Authorize(Roles = "competition administrator")]
+
+@using BlazorApplication.Components.CompetitionTable
+@using BlazorApplication.Components
+
+<div class="row">
+    <div class="col-md-10">
+        @*Place for search and sort*@
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <CompetitionTable Competitions="CompetitionList" IsCompetitionAdmin=true OnDeleted="DeleteCompetition" />
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+    </div>
+</div>
