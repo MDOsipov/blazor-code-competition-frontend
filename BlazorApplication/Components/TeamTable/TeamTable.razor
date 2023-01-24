@@ -1,4 +1,4 @@
-﻿@if (Teams.Count > 0)
+﻿@if (Teams.Count > 0 && !isTeamToCompetitionFlag && !IsCompetitionAdmin)
 {
 	<table class="table">
 		<thead>
@@ -32,6 +32,86 @@
 					</td>
 					<td class="align-middle">
 						<button type="button" class="btn btn-danger" @onclick="()=>Delete(team.Id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else if (Teams.Count > 0 && isTeamToCompetitionFlag && !IsCompetitionAdmin)
+{
+	<table class="table">
+		<thead>
+		<th scope="col">Team icon</th>
+		<th scope="col">Name</th>
+		<th scope="col">Total points</th>
+		<th scope="col">Leader email</th>
+		<th scope="col">Competition name</th>
+		</thead>
+		<tbody>
+			@foreach (var team in Teams)
+			{
+				<tr>
+					<td>
+						<img src="@team.IconImage" alt="product image" style="width:100px;" />
+					</td>
+					<td class="align-middle">
+						@team.TeamName
+					</td>
+					<td class="align-middle">
+						@team.TotalPoints
+					</td>
+					<td class="align-middle">
+						@team.TeamLeaderEmail
+					</td>
+					<td class="align-middle">
+						@team.CompetitionName
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(team.Id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else if (Teams.Count > 0 && !isTeamToCompetitionFlag && IsCompetitionAdmin)
+{
+	<table class="table">
+		<thead>
+		<th scope="col">Team icon</th>
+		<th scope="col">Name</th>
+		<th scope="col">Total points</th>
+		<th scope="col">Leader email</th>
+		<th scope="col">Competition name</th>
+		</thead>
+		<tbody>
+			@foreach (var team in Teams)
+			{
+				<tr>
+					<td>
+						<img src="@team.IconImage" alt="product image" style="width:100px;" />
+					</td>
+					<td class="align-middle">
+						@team.TeamName
+					</td>
+					<td class="align-middle">
+						@team.TotalPoints
+					</td>
+					<td class="align-middle">
+						@team.TeamLeaderEmail
+					</td>
+					<td class="align-middle">
+						@team.CompetitionName
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(team.Id)">Update</button>
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(team.Id)">Delete</button>
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-secondary" @onclick="()=>RedirectToManagePage(team.Id)">Manage team</button>
 					</td>
 				</tr>
 			}

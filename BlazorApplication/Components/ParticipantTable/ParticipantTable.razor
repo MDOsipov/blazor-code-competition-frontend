@@ -1,4 +1,4 @@
-﻿@if (Participants.Count > 0)
+﻿@if (Participants.Count > 0 && !isParticipantToTeamFlag)
 {
 	<table class="table">
 		<thead>
@@ -29,6 +29,43 @@
 					</td>
 					<td class="align-middle">
 						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(participant.id)">Update</button>
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-danger" @onclick="()=>Delete(participant.id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else if (Participants.Count > 0 && isParticipantToTeamFlag)
+{
+	<table class="table">
+		<thead>
+		<th scope="col">Id</th>
+		<th scope="col">First name</th>
+		<th scope="col">Last name</th>
+		<th scope="col">Email</th>
+		<th scope="col">Team name</th>
+		</thead>
+		<tbody>
+			@foreach (var participant in Participants)
+			{
+				<tr>
+					<td class="align-middle">
+						@participant.id
+					</td>
+					<td class="align-middle">
+						@participant.firstName
+					</td>
+					<td class="align-middle">
+						@participant.lastName
+					</td>
+					<td class="align-middle">
+						@participant.email
+					</td>
+					<td class="align-middle">
+						@participant.teamName
 					</td>
 					<td class="align-middle">
 						<button type="button" class="btn btn-danger" @onclick="()=>Delete(participant.id)">Delete</button>

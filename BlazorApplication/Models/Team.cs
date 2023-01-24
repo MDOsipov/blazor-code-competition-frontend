@@ -14,7 +14,7 @@ namespace BlazorApplication.Models
 		[Required(ErrorMessage = "Total points is required field")]
 		public int TotalPoints { get; set; }
 		public string CompetitionName { get; set; } = null!;
-        public int CompetitionId { get; set; }
+        public int? CompetitionId { get; set; }
 
 
         public string IconImage { get; set; }

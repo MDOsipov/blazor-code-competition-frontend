@@ -12,11 +12,16 @@ namespace BlazorApplication.Components.TeamTable
         public IJSRuntime Js { get; set; }
 
         [Parameter]
+        public bool IsCompetitionAdmin { get; set; } = false;
+
+		[Parameter]
 		public List<Team> Teams { get; set; }
 
         [Parameter]
         public EventCallback<int> OnDeleted { get; set; }
 
+        [Parameter]
+        public bool isTeamToCompetitionFlag { get; set; } = false;
 
         [Inject]
         public NavigationManager NavigationManager { get; set; }
@@ -28,7 +33,13 @@ namespace BlazorApplication.Components.TeamTable
             NavigationManager.NavigateTo(url);
         }
 
-        private async Task Delete(int id)
+		private void RedirectToManagePage(int id)
+		{
+			var url = Path.Combine("/teamManagement/", id.ToString());
+			NavigationManager.NavigateTo(url);
+		}
+
+		private async Task Delete(int id)
         {
             var team = Teams.FirstOrDefault(p => p.Id.Equals(id));
             var confirmed = await Js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {team.TeamName} team?");

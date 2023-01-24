@@ -15,7 +15,7 @@ namespace BlazorApplication.Models
 		public string email { get; set; }
 		public int userId { get; set; }
 		public string teamName { get; set; }
-		public int teamId { get; set; }
+		public int? teamId { get; set; }
 
 	}
 }

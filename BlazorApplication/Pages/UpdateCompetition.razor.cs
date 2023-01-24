@@ -24,6 +24,9 @@ namespace BlazorApplication.Pages
         [Parameter]
         public string Id { get; set; } = "";
 
+        [Parameter]
+        public string boolString { get; set; } = "0";
+
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
             await GetCompetition();

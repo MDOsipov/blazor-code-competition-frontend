@@ -13,7 +13,6 @@ namespace BlazorApplication.Shared
         private async Task BeginSignOut(MouseEventArgs args)
         {
             await SignOutManager.SetSignOutState();
-            Navigation.NavigateTo("authentication/logout");
         }
     }
 }

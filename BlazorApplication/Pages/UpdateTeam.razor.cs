@@ -32,7 +32,7 @@ namespace BlazorApplication.Pages
 			_team = await TeamRepo.GetTeamById(Id);
 
             leaderId = _team.TeamLeaderId;
-            competitionId = _team.CompetitionId;
+            competitionId = (int)_team.CompetitionId;
 
             CompetitionParameters competitionParameters = new CompetitionParameters
             {
