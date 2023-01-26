@@ -1,0 +1,30 @@
+﻿@page "/submitTask/{taskIdStr}/{teamIdStr}"
+@attribute [Authorize(Roles = "participant")]
+
+<EditForm Model="_submitData" OnValidSubmit="Submit" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <SuccessfulSubmit @ref="_notification" _navUrl="/myTasks" />
+
+    <div class="mb-3 row">
+        <label for="name" class="col-md-2 col-form-label">Github url:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="_submitData.GithubUrl" />
+            <ValidationMessage For="@(() => _submitData.GithubUrl)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="name" class="col-md-2 col-form-label">Your comment:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="_submitData.SubmitterComment" />
+            <ValidationMessage For="@(() => _submitData.SubmitterComment)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Create</button>
+        </div>
+    </div>
+
+</EditForm>

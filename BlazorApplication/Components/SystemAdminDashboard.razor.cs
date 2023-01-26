@@ -6,16 +6,17 @@ using System.Net.NetworkInformation;
 using static System.Net.WebRequestMethods;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
-
-
+using BlazorApplication.HttpRepository;
+using Task = System.Threading.Tasks.Task;
+using System.Text.Json;
 
 namespace BlazorApplication.Components
 {
     public partial class SystemAdminDashboard
     {
 		private Models.BackEndConnections _backEndConnections;
-
-        public List<Competition> CompetitionList { get; set; } = new List<Competition>();
+		
+		public List<Competition> CompetitionList { get; set; } = new List<Competition>();
 		public IEnumerable<UserDto> UserList { get; set; } = new List<UserDto>();
 		private UserParameters userParameters = new UserParameters();
 
@@ -54,5 +55,6 @@ namespace BlazorApplication.Components
             var PagingResponse = await UserRepo.GetUsersExtended(userParameters);
             UserList = PagingResponse.Items;
         }
-    }
+
+	}
 }

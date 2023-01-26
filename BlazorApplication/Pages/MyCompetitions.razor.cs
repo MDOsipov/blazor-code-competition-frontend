@@ -29,6 +29,7 @@ namespace BlazorApplication.Pages
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
+			await LogUsername();
 			await GetUserId();
 			await GetCompetitions();
 		}
@@ -54,7 +55,8 @@ namespace BlazorApplication.Pages
 		private async Task LogUsername()
 		{
 			var identity = await authTest.GetIdentity();
-			Console.WriteLine(identity.Name);
+			//Console.WriteLine(identity.Name);
+			Console.WriteLine("Identity: ");
 			Console.WriteLine(JsonSerializer.Serialize(identity));
 		}
 
