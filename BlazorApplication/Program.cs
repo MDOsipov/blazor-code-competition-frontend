@@ -21,6 +21,8 @@ builder.Services.AddScoped<IParticipantHttpRepository, ParticipantHttpRepository
 builder.Services.AddScoped<ITaskCategoryHttpRepository, TaskCategoryHttpRepository>();
 builder.Services.AddScoped<ITaskToCompetitionRepository, TaskToCompetitionRepository>();
 builder.Services.AddScoped<IUserHttpRepository, UserHttpRepository>();
+builder.Services.AddScoped<ITaskToTeamHttpRepository, TaskToTeamHttpRepository>();
+
 builder.Services.AddScoped<AuthTest>();
 
 

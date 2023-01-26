@@ -1,0 +1,35 @@
+﻿@page "/myTasks"
+@attribute [Authorize(Roles = "participant")]
+
+@using BlazorApplication.Components.TaskTable
+@using BlazorApplication.Components
+
+<h3>My team's tasks in progress:</h3>
+<div class="row">
+    <div class="col-md-4">
+       
+    </div>
+    <div class="col-md-4">
+        
+    </div>
+    <div class="col-md-4">
+        @if(TaskList.Count >= maxNumTasks)
+        {
+            <span>You can't take more tasks now</span>
+        }
+        else
+        {
+            <a href="/addTaskToTeam/@UserTeamId.ToString()/@ParticipantId.ToString()">Add task</a>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+       <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+    </div>
+</div>

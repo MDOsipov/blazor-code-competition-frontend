@@ -55,7 +55,36 @@ namespace BlazorApplication.HttpRepository
 			}
 		}
 
-		public async Task<Models.Task> GetTaskById(string id)
+        public async Task<PagingResponse<Models.TaskWithTimesDto>> GetSubmittedTasksByTeamId(TaskParameters taskParameters, string teamId)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(taskParameters));
+            Console.WriteLine("Switch off: " + (taskParameters.switchOff ? "1" : "0"));
+
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = taskParameters.PageNumber.ToString(),
+                ["switchOffString"] = taskParameters.switchOff ? "1" : "0"
+            };
+
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/submitted/byTeamId/" + teamId, queryStringParam));
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+            var pagingResponse = new PagingResponse<Models.TaskWithTimesDto>
+            {
+                Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
+            return pagingResponse;
+        }
+
+        public async Task<Models.Task> GetTaskById(string id)
 		{
 			var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);
 
@@ -140,8 +169,37 @@ namespace BlazorApplication.HttpRepository
 			};
 			return pagingResponse;
 		}
-	
-		public async Task UpdateTask(Models.Task task)
+
+        public async Task<PagingResponse<Models.TaskWithTimesDto>> GetTasksByTeamId(TaskParameters taskParameters, string teamId)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(taskParameters));
+            Console.WriteLine("Switch off: " + (taskParameters.switchOff ? "1" : "0"));
+
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = taskParameters.PageNumber.ToString(),
+                ["switchOffString"] = taskParameters.switchOff ? "1" : "0"
+            };
+
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byTeamId/" + teamId, queryStringParam));
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+            var pagingResponse = new PagingResponse<Models.TaskWithTimesDto>
+            {
+                Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
+            return pagingResponse;
+        }
+
+        public async Task UpdateTask(Models.Task task)
 		{
 			var content = JsonSerializer.Serialize(task);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
