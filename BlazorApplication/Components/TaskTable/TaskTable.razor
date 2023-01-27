@@ -2,13 +2,17 @@
 {
 	<table class="table">
 		<thead>
-			<th scope="col">Task id</th>
-			<th scope="col">Task name</th>
-			<th scope="col">Task description</th>
-			<th scope="col">Task content</th>
-			<th scope="col">Time to complete (hours)</th>
-			<th scope="col">Point</th>
-			<th scope="col">Category</th>
+			<tr>
+				<th scope="col">Task id</th>
+				<th scope="col">Task name</th>
+				<th scope="col">Task description</th>
+				<th scope="col">Task content</th>
+				<th scope="col">Time to complete (hours)</th>
+				<th scope="col">Point</th>
+				<th scope="col">Category</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>			
 		</thead>
 		<tbody>
 			@foreach (var task in Tasks)
@@ -50,13 +54,17 @@ else if (Tasks.Count > 0 && isTaskToCompetitionFlag)
 {
 	<table class="table">
 		<thead>
-		<th scope="col">Task id</th>
-		<th scope="col">Task name</th>
-		<th scope="col">Task description</th>
-		<th scope="col">Task content</th>
-		<th scope="col">Time to complete (hours)</th>
-		<th scope="col">Point</th>
-		<th scope="col">Category</th>
+			<tr>
+				<th scope="col">Task id</th>
+				<th scope="col">Task name</th>
+				<th scope="col">Task description</th>
+				<th scope="col">Task content</th>
+				<th scope="col">Time to complete (hours)</th>
+				<th scope="col">Point</th>
+				<th scope="col">Category</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
 		</thead>
 		<tbody>
 			@foreach (var task in Tasks)
@@ -94,6 +102,9 @@ else if (Tasks.Count > 0 && isTaskToCompetitionFlag)
 else
 {
 	<span>
-		Loading tasks...
+		<button class="btn btn-primary" type="button" disabled>
+			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			Loading tasks...
+		</button>
 	</span>
 }

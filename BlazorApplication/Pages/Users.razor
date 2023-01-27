@@ -17,7 +17,12 @@
 
 @if (userList is null)
 {
-    <p>Loading...</p>
+    <span>
+        <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading users...
+        </button>
+    </span>
 }
 else
 {
@@ -28,7 +33,8 @@ else
                 <th scope="col">First name</th>
                 <th scope="col">Last name</th>
                 <th scope="col">Role</th>
-
+                <th scope="col"></th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>

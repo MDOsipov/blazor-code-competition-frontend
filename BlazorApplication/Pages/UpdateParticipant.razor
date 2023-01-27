@@ -1,5 +1,7 @@
 ﻿@page "/updateParticipant/{id}"
 
+<a href="participants">Go Back</a>
+
 @if (@_participant != null)
 {
     <EditForm Model="@_participant" OnValidSubmit="Update" class="card card-body bg-light mt-5">

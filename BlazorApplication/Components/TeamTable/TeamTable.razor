@@ -2,11 +2,15 @@
 {
 	<table class="table">
 		<thead>
-			<th scope="col">Team icon</th>
-			<th scope="col">Name</th>
-			<th scope="col">Total points</th>
-			<th scope="col">Leader email</th>
-			<th scope="col">Competition name</th>
+			<tr>
+				<th scope="col">Team icon</th>
+				<th scope="col">Name</th>
+				<th scope="col">Total points</th>
+				<th scope="col">Leader email</th>
+				<th scope="col">Competition name</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
 		</thead>
 		<tbody>
 			@foreach (var team in Teams)
@@ -42,11 +46,15 @@ else if (Teams.Count > 0 && isTeamToCompetitionFlag && !IsCompetitionAdmin)
 {
 	<table class="table">
 		<thead>
-		<th scope="col">Team icon</th>
-		<th scope="col">Name</th>
-		<th scope="col">Total points</th>
-		<th scope="col">Leader email</th>
-		<th scope="col">Competition name</th>
+			<tr>
+				<th scope="col">Team icon</th>
+				<th scope="col">Name</th>
+				<th scope="col">Total points</th>
+				<th scope="col">Leader email</th>
+				<th scope="col">Competition name</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
 		</thead>
 		<tbody>
 			@foreach (var team in Teams)
@@ -79,11 +87,15 @@ else if (Teams.Count > 0 && !isTeamToCompetitionFlag && IsCompetitionAdmin)
 {
 	<table class="table">
 		<thead>
-		<th scope="col">Team icon</th>
-		<th scope="col">Name</th>
-		<th scope="col">Total points</th>
-		<th scope="col">Leader email</th>
-		<th scope="col">Competition name</th>
+			<tr>			
+				<th scope="col">Team icon</th>
+				<th scope="col">Name</th>
+				<th scope="col">Total points</th>
+				<th scope="col">Leader email</th>
+				<th scope="col">Competition name</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
 		</thead>
 		<tbody>
 			@foreach (var team in Teams)
@@ -121,6 +133,9 @@ else if (Teams.Count > 0 && !isTeamToCompetitionFlag && IsCompetitionAdmin)
 else
 {
 	<span>
-		Loading teams...
+		<button class="btn btn-primary" type="button" disabled>
+			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			Loading teams...
+		</button>
 	</span>
 }

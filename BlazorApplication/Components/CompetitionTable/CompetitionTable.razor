@@ -2,12 +2,16 @@
 {
 	<table class="table">
 		<thead>
-			<th scope="col">Id</th>
-			<th scope="col">Competition name</th>
-			<th scope="col">Max tasks per group</th>
-			<th scope="col">Hash</th>
-			<th scope="col">Status</th>
-			<th scope="col">Administrator</th>
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Competition name</th>
+				<th scope="col">Max tasks per group</th>
+				<th scope="col">Hash</th>
+				<th scope="col">Status</th>
+				<th scope="col">Administrator</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
 		</thead>
 		<tbody>
 			@foreach (var competition in Competitions)
@@ -29,7 +33,17 @@
 						@competition.competitionStatusName
 					</td>
 					<td class="align-middle">
-						@competition.CompetitionAdministratorEmail
+						@if (competition.CompetitionAdministratorEmail == null)
+						{
+							<p class="placeholder-glow">
+								<span class="placeholder col-5"></span>
+							</p>
+
+						}
+						else
+						{
+							@competition.CompetitionAdministratorEmail
+						}						
 					</td>
 					<td class="align-middle">
 						<button type="button" class="btn btn-info" @onclick="()=>RedirectToUpdate(competition.id)">Update</button>
@@ -46,11 +60,15 @@ else if (Competitions.Count > 0 && IsCompetitionAdmin)
 {
 	<table class="table">
 		<thead>
-		<th scope="col">Id</th>
-		<th scope="col">Competition name</th>
-		<th scope="col">Max tasks per group</th>
-		<th scope="col">Hash</th>
-		<th scope="col">Status</th>
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Competition name</th>
+				<th scope="col">Max tasks per group</th>
+				<th scope="col">Hash</th>
+				<th scope="col">Status</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>		
 		</thead>
 		<tbody>
 			@foreach (var competition in Competitions)
@@ -85,6 +103,11 @@ else if (Competitions.Count > 0 && IsCompetitionAdmin)
 else
 {
 	<span>
-		Loading competitions...
+		<span>
+			<button class="btn btn-primary" type="button" disabled>
+				<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+				Loading competitions...
+			</button>
+		</span>
 	</span>
 }
