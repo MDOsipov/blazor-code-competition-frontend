@@ -1,6 +1,9 @@
 ﻿@page "/createCompetition"
+@attribute [Authorize]
 
-<h2>Create Task Form</h2>
+@using BlazorApplication.Components
+
+<h2>Create Competition</h2>
 
 <a href="competitions">Go Back</a>
 
@@ -10,41 +13,7 @@
 
     @if (competitionStatusesList.Count < 1 && _users.Count() < 1)
     {
-        <div class="mb-3 row">
-            <p class="placeholder-glow">
-                <span class="placeholder col-10"></span>
-            </p>
-        </div>
-
-        <div class="mb-3 row">
-            <p class="placeholder-glow">
-                <span class="placeholder col-10"></span>
-            </p>
-        </div>
-
-        <div class="mb-3 row">
-            <p class="placeholder-glow">
-                <span class="placeholder col-6"></span>
-            </p>
-        </div>
-
-        <div class="mb-3 row">
-            <p class="placeholder-glow">
-                <span class="placeholder col-6"></span>
-            </p>
-        </div>
-
-        <div class="mb-3 row">
-            <p class="placeholder-glow">
-                <span class="placeholder col-10"></span>
-            </p>
-        </div>
-
-        <div class="row m-lg-2">
-            <div class="spinner-border text-success" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
+        <Loading Placeholders="5" />
     }
     else
     {

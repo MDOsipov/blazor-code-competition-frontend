@@ -1,6 +1,9 @@
 ﻿@page "/submitTask/{taskIdStr}/{teamIdStr}"
 @attribute [Authorize(Roles = "participant")]
 
+<h2>Submitting Task</h2>
+<a href="/myTasks">Go Back</a>
+
 <EditForm Model="_submitData" OnValidSubmit="Submit" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
     <SuccessfulSubmit @ref="_notification" _navUrl="/myTasks" />

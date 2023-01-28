@@ -1,68 +1,77 @@
 ﻿@page "/createTask"
+@attribute [Authorize]
 
 <h2>Create Task Form</h2>
+
+<a href="/tasks">Go Back</a>
 
 <EditForm Model="_task" OnValidSubmit="Create" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
     <SuccessNotification @ref="_notification" _navUrl="/tasks" />
 
-    <div class="mb-3 row">
-        <label for="taskName" class="col-md-2 col-form-label">Task name:</label>
-        <div class="col-md-10">
-            <InputText id="taskName" class="form-control" @bind-Value="_task.TaskName" />
-            <ValidationMessage For="@(() => _task.TaskName)"></ValidationMessage>
+    @if (TaskCategories == null)
+    {
+        <Loading Placeholders="6" />
+    }
+    else
+    {
+        <div class="mb-3 row">
+            <label for="taskName" class="col-md-2 col-form-label">Task name:</label>
+            <div class="col-md-10">
+                <InputText id="taskName" class="form-control" @bind-Value="_task.TaskName" />
+                <ValidationMessage For="@(() => _task.TaskName)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="taskDescription" class="col-md-2 col-form-label">Task description:</label>
-        <div class="col-md-10">
-            <InputText id="taskDescription" class="form-control" @bind-Value="_task.TaskDescription" />
-            <ValidationMessage For="@(() => _task.TaskDescription)"></ValidationMessage>
+        <div class="mb-3 row">
+            <label for="taskDescription" class="col-md-2 col-form-label">Task description:</label>
+            <div class="col-md-10">
+                <InputText id="taskDescription" class="form-control" @bind-Value="_task.TaskDescription" />
+                <ValidationMessage For="@(() => _task.TaskDescription)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="taskContent" class="col-md-2 col-form-label">Task content:</label>
-        <div class="col-md-10">
-            <InputText id="taskContent" class="form-control" @bind-Value="_task.TaskContent" />
-            <ValidationMessage For="@(() => _task.TaskContent)"></ValidationMessage>
+        <div class="mb-3 row">
+            <label for="taskContent" class="col-md-2 col-form-label">Task content:</label>
+            <div class="col-md-10">
+                <InputText id="taskContent" class="form-control" @bind-Value="_task.TaskContent" />
+                <ValidationMessage For="@(() => _task.TaskContent)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="points" class="col-md-2 col-form-label">Points:</label>
-        <div class="col-md-10">
-            <InputNumber id="points" class="form-control" @bind-Value="_task.Points" />
-            <ValidationMessage For="@(() => _task.Points)"></ValidationMessage>
+        <div class="mb-3 row">
+            <label for="points" class="col-md-2 col-form-label">Points:</label>
+            <div class="col-md-10">
+                <InputNumber id="points" class="form-control" @bind-Value="_task.Points" />
+                <ValidationMessage For="@(() => _task.Points)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Task category:</label>
-        <div class="col-md-10">
-            <select class="form-select" aria-label="Choose a category" @bind="_task.TaskCategoryId">
-                <option value="-1">- Please choose a category -</option>
-                @foreach (var category in TaskCategories)
-                {
-                    <option value=@category.Id>@category.CategoryName</option>
-                }
-            </select>
-            <ValidationMessage For="@(() => _task.TaskCategoryId)"></ValidationMessage>
+        <div class="mb-3 row">
+            <label for="price" class="col-md-2 col-form-label">Task category:</label>
+            <div class="col-md-10">
+                <select class="form-select" aria-label="Choose a category" @bind="_task.TaskCategoryId">
+                    <option value="-1">- Please choose a category -</option>
+                    @foreach (var category in TaskCategories)
+                    {
+                        <option value=@category.Id>@category.CategoryName</option>
+                    }
+                </select>
+                <ValidationMessage For="@(() => _task.TaskCategoryId)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="Timeframe" class="col-md-2 col-form-label">Timeframe(HH:MM:SS):</label>
-        <div class="col-md-10">
-            <InputText id="Timeframe" class="form-control" @bind-Value="_time" />
+        <div class="mb-3 row">
+            <label for="Timeframe" class="col-md-2 col-form-label">Timeframe(HH:MM:SS):</label>
+            <div class="col-md-10">
+                <InputText id="Timeframe" class="form-control" @bind-Value="_time" />
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Create</button>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-success">Create</button>
+            </div>
         </div>
-    </div>
-
+    }
 </EditForm>

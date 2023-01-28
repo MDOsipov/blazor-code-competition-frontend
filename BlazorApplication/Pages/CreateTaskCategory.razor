@@ -1,6 +1,8 @@
 ﻿@page "/createTaskCategory"
+@attribute [Authorize]
 
 <h2>Create Task Category Form</h2>
+<a href="/taskCategories">Go Back</a>
 
 <EditForm Model="_taskCategory" OnValidSubmit="Create" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />

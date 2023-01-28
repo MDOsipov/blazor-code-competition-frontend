@@ -40,7 +40,7 @@ namespace BlazorApplication.Pages
 			var pagingResponse = await participantRepo.GetParticipantsByTeamId(_participantParameters, id);
 			ParticipantList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
-			Console.WriteLine("Participant list: " + JsonSerializer.Serialize(ParticipantList));
+			//Console.WriteLine("Participant list: " + JsonSerializer.Serialize(ParticipantList));
 		}
 
 		private async System.Threading.Tasks.Task DeleteTask(int participantId)

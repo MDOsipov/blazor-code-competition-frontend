@@ -1,32 +1,51 @@
 ﻿@page "/updateTaskCategory/{id}"
+@attribute [Authorize]
+
+<h2>Update Task Category @_taskCategory.CategoryName</h2>
+<a href="/taskCategories">Go Back</a>
 
 @if (@_taskCategory != null)
 {
     <EditForm Model="@_taskCategory" OnValidSubmit="Update" class="card card-body bg-light mt-5">
         <DataAnnotationsValidator />
 
-        <div class="mb-3 row">
-            <label for="taskName" class="col-md-2 col-form-label">Category:</label>
-            <div class="col-md-10">
-                <InputText id="taskName" class="form-control" @bind-Value="_taskCategory.CategoryName" />
-                <ValidationMessage For="@(() => _taskCategory.CategoryName)"></ValidationMessage>
+        @if (_taskCategory.CategoryName == null)
+        {
+            <Loading Placeholders="2" />
+        }
+        else
+        {
+            <div class="mb-3 row">
+                <label for="taskName" class="col-md-2 col-form-label">Category:</label>
+                <div class="col-md-10">
+                    <InputText id="taskName" class="form-control" @bind-Value="_taskCategory.CategoryName" />
+                    <ValidationMessage For="@(() => _taskCategory.CategoryName)"></ValidationMessage>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3 row">
-            <label for="taskDescription" class="col-md-2 col-form-label">Description:</label>
-            <div class="col-md-10">
-                <InputText id="taskDescription" class="form-control" @bind-Value="_taskCategory.CategoryDescription" />
-                <ValidationMessage For="@(() => _taskCategory.CategoryDescription)"></ValidationMessage>
+            <div class="mb-3 row">
+                <label for="taskDescription" class="col-md-2 col-form-label">Description:</label>
+                <div class="col-md-10">
+                    <InputText id="taskDescription" class="form-control" @bind-Value="_taskCategory.CategoryDescription" />
+                    <ValidationMessage For="@(() => _taskCategory.CategoryDescription)"></ValidationMessage>
+                </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">Update</button>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
             </div>
-        </div>
-
+        }
     </EditForm>
     <SuccessNotification @ref="_notification" _navUrl="/taskCategories" />
+}
+else
+{
+    <span>
+        <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading tasks...
+        </button>
+    </span>
 }

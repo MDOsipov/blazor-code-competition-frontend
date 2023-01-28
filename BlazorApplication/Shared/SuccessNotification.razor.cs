@@ -3,15 +3,15 @@
 namespace BlazorApplication.Shared
 {
 	public partial class SuccessNotification
-    {
-        [Parameter]
-		public string _navUrl { get; set; }
+	{
+		[Parameter]
+		public string _navUrl { get; set; } = string.Empty;
 
-        private string _modalDisplay;
-		private string _modalClass;
+		private string _modalDisplay = string.Empty;
+		private string _modalClass = string.Empty;
 		private bool _showBackdrop;
 
-        [Inject]
+		[Inject]
 		public NavigationManager Navigation { get; set; }
 
 		public void Show()

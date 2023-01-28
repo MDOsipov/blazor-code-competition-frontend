@@ -1,62 +1,70 @@
 ﻿@page "/createTeam"
+@attribute [Authorize]
 
 <h2>Create Team Form</h2>
+<a href="/teams">Go Back</a>
 
 <EditForm Model="_team" OnValidSubmit="Create" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
     <SuccessNotification @ref="_notification" _navUrl="/teams"/>
 
-    <div class="mb-3 row">
-        <label for="name" class="col-md-2 col-form-label">Team icon:</label>
-        <div class="col-md-10">
-            <ImageUpload OnChange="AssignImageUrl" />
+    @if (participantList.Count == 0 || competitionList.Count == 0)
+    {
+        <Loading Placeholders="5" />
+    }
+    else
+    {
+        <div class="mb-3 row">
+            <label for="name" class="col-md-2 col-form-label">Team icon:</label>
+            <div class="col-md-10">
+                <ImageUpload OnChange="AssignImageUrl" />
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="name" class="col-md-2 col-form-label">Team name:</label>
-        <div class="col-md-10">
-            <InputText id="name" class="form-control" @bind-Value="_team.TeamName" />
-            <ValidationMessage For="@(() => _team.TeamName)"></ValidationMessage>
+        <div class="mb-3 row">
+            <label for="name" class="col-md-2 col-form-label">Team name:</label>
+            <div class="col-md-10">
+                <InputText id="name" class="form-control" @bind-Value="_team.TeamName" />
+                <ValidationMessage For="@(() => _team.TeamName)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="supplier" class="col-md-2 col-form-label">Total points:</label>
-        <div class="col-md-10">
-            <InputNumber id="supplier" class="form-control" @bind-Value="_team.TotalPoints" />
-            <ValidationMessage For="@(() => _team.TotalPoints)"></ValidationMessage>
+        <div class="mb-3 row">
+            <label for="supplier" class="col-md-2 col-form-label">Total points:</label>
+            <div class="col-md-10">
+                <InputNumber id="supplier" class="form-control" @bind-Value="_team.TotalPoints" />
+                <ValidationMessage For="@(() => _team.TotalPoints)"></ValidationMessage>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Team leader:</label>
-        <div class="col-md-10">
-            <select class="form-select" aria-label="Choose team leader" @bind="leaderId">
-                @foreach (var participant in participantList)
-                {
-                    <option value=@participant.id>@participant.email</option>
-                }
-            </select>
+        <div class="mb-3 row">
+            <label for="price" class="col-md-2 col-form-label">Team leader:</label>
+            <div class="col-md-10">
+                <select class="form-select" aria-label="Choose team leader" @bind="leaderId">
+                    @foreach (var participant in participantList)
+                    {
+                        <option value=@participant.id>@participant.email</option>
+                    }
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Competition:</label>
-        <div class="col-md-10">
-            <select class="form-select" aria-label="Choose competition" @bind="competitionId">
-                @foreach (var competition in competitionList)
-                {
-                    <option value=@competition.id>@competition.CompetitionName</option>
-                }
-            </select>
+        <div class="mb-3 row">
+            <label for="price" class="col-md-2 col-form-label">Competition:</label>
+            <div class="col-md-10">
+                <select class="form-select" aria-label="Choose competition" @bind="competitionId">
+                    @foreach (var competition in competitionList)
+                    {
+                        <option value=@competition.id>@competition.CompetitionName</option>
+                    }
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Create</button>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-success">Create</button>
+            </div>
         </div>
-    </div>
-
+    }
 </EditForm>

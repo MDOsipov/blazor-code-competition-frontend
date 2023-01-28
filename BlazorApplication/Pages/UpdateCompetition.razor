@@ -1,182 +1,123 @@
 ﻿@page "/updateCompetition/{id}/{boolString}"
+@attribute [Authorize]
+
+<h2>Update Competition @_competition.CompetitionName</h2>
 
 <a href="competitions">Go Back</a>
 
 @if (@_competition != null && boolString == "0")
 {
-    <EditForm Model="@_competition" OnValidSubmit="Update" class="card card-body bg-light mt-5">
-        <DataAnnotationsValidator />
+	<EditForm Model="@_competition" OnValidSubmit="Update" class="card card-body bg-light mt-5">
+		<DataAnnotationsValidator />
 
-        <div class="mb-3 row">            
-            @if (_competition.CompetitionName == null)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-10"></span>
-                </p>
-            }
-            else
-            {
-                <label for="name" class="col-md-2 col-form-label">Competition name:</label>
-                <div class="col-md-10">
-                    <InputText id="task name" class="form-control" @bind-Value="_competition.CompetitionName" />
-                    <ValidationMessage For="@(() => _competition.CompetitionName)" />
-                </div>
-            }
-            
-        </div>
-
-        <div class="mb-3 row">
-            @if (_competition.maxTaskPerGroups == 0)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-10"></span>
-                </p>
-            }
-            else
-            {
-                <label for="name" class="col-md-2 col-form-label">Max tasks per group:</label>
-                <div class="col-md-10">
-                    <InputNumber id="name" class="form-control" @bind-Value="_competition.maxTaskPerGroups" />
-                    <ValidationMessage For="@(() => _competition.maxTaskPerGroups)"></ValidationMessage>
-                </div>
-            }            
-        </div>
-
-        <div class="mb-3 row">
-            @if (_competition.HashCode == null)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-6"></span>
-                </p>
-            }
-            else
-            {
-                <label for="name" class="col-md-2 col-form-label">Hash:</label>
-                <div class="col-md-10">
-                    <InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
-                    <ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
-                </div>
-            }
-            
-        </div>
-
-        <div class="mb-3 row">
-            @if (_competition.CompetitionStatusId == 0)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-6"></span>
-                </p>
-            }
-            else
-            {
-                <label for="price" class="col-md-2 col-form-label">Status:</label>
-                <div class="col-md-10">
-                    <select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionStatusId">
-                        @foreach (var competitionStatus in competitionStatusesList)
-                        {
-                            <option value=@competitionStatus.Id>@competitionStatus.StatusName</option>
-                        }
-                    </select>
-                </div>
-            }
-            
-        </div>
-
-        <div class="mb-3 row">
-            @if (_competition.CompetitionAdministratorId == null)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-10"></span>
-                </p>
-            }
-            else
-            {
-                <label for="price" class="col-md-2 col-form-label">Administrator:</label>
-                <div class="col-md-10">
-                    <select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionAdministratorId">
-                        @foreach (var user in _users)
-                        {
-                            <option value=@user.Id>@user.Email</option>
-                        }
-                    </select>
-                </div>
-            }
-            
-        </div>
-
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">Update</button>
-            </div>
-        </div>
-
-    </EditForm>
-    <SuccessNotification @ref="_notification" _navUrl="/competitions" />
+		@if (_competition.CompetitionName == null || _competition.maxTaskPerGroups == 0 || _competition.HashCode == null || _competition.CompetitionStatusId == 0 || _competition.CompetitionAdministratorId == null)
+		{
+			<Loading Placeholders="5" />
+		}
+		else
+		{
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Competition name:</label>
+				<div class="col-md-10">
+					<InputText id="task name" class="form-control" @bind-Value="_competition.CompetitionName" />
+					<ValidationMessage For="@(() => _competition.CompetitionName)" />
+				</div>
+			</div>
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Max tasks per group:</label>
+				<div class="col-md-10">
+					<InputNumber id="name" class="form-control" @bind-Value="_competition.maxTaskPerGroups" />
+					<ValidationMessage For="@(() => _competition.maxTaskPerGroups)"></ValidationMessage>
+				</div>
+			</div>
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Hash:</label>
+				<div class="col-md-10">
+					<InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
+					<ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
+				</div>
+			</div>
+			<div class="mb-3 row">
+				<label for="price" class="col-md-2 col-form-label">Status:</label>
+				<div class="col-md-10">
+					<select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionStatusId">
+						@foreach (var competitionStatus in competitionStatusesList)
+						{
+							<option value=@competitionStatus.Id>@competitionStatus.StatusName</option>
+						}
+					</select>
+				</div>
+			</div>
+			<div class="mb-3 row">
+				<label for="price" class="col-md-2 col-form-label">Administrator:</label>
+				<div class="col-md-10">
+					<select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionAdministratorId">
+						@foreach (var user in _users)
+						{
+							<option value=@user.Id>@user.Email</option>
+						}
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="submit" class="btn btn-success">Update</button>
+				</div>
+			</div>
+		}
+	</EditForm>
+	<SuccessNotification @ref="_notification" _navUrl="/competitions" />
 }
 else if (@_competition != null && boolString == "1")
 {
-    <EditForm Model="@_competition" OnValidSubmit="Update" class="card card-body bg-light mt-5">
-        <DataAnnotationsValidator />
+	<EditForm Model="@_competition" OnValidSubmit="Update" class="card card-body bg-light mt-5">
+		<DataAnnotationsValidator />
 
-        <div class="mb-3 row">
-            @if (_competition.CompetitionName == null)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-10"></span>
-                </p>
-            }
-            else
-            {
-                <label for="name" class="col-md-2 col-form-label">Competition name:</label>
-                <div class="col-md-10">
-                    <InputText id="task name" class="form-control" @bind-Value="_competition.CompetitionName" />
-                    <ValidationMessage For="@(() => _competition.CompetitionName)" />
-                </div>
-            }
-            
-        </div>
+		@if (_competition.CompetitionName == null || _competition.maxTaskPerGroups == 0 || _competition.HashCode == null)
+		{
+			<Loading Placeholders="3" />
+		}
+		else
+		{
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Competition name:</label>
+				<div class="col-md-10">
+					<InputText id="task name" class="form-control" @bind-Value="_competition.CompetitionName" />
+					<ValidationMessage For="@(() => _competition.CompetitionName)" />
+				</div>
+			</div>
 
-        <div class="mb-3 row">
-            @if (_competition.maxTaskPerGroups == 0)
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-10"></span>
-                </p>
-            }
-            else
-            {
-                <label for="name" class="col-md-2 col-form-label">Max tasks per group:</label>
-                <div class="col-md-10">
-                    <InputNumber id="name" class="form-control" @bind-Value="_competition.maxTaskPerGroups" />
-                    <ValidationMessage For="@(() => _competition.maxTaskPerGroups)"></ValidationMessage>
-                </div>
-            }
-            
-        </div>
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Max tasks per group:</label>
+				<div class="col-md-10">
+					<InputNumber id="name" class="form-control" @bind-Value="_competition.maxTaskPerGroups" />
+					<ValidationMessage For="@(() => _competition.maxTaskPerGroups)"></ValidationMessage>
+				</div>
+			</div>
 
-        <div class="mb-3 row">
-            @if (_competition.HashCode == null) 
-            {
-                <p class="placeholder-glow">
-                    <span class="placeholder col-10"></span>
-                </p>
-            } 
-            else
-            {
-                <label for="name" class="col-md-2 col-form-label">Hash:</label>
-                <div class="col-md-10">
-                    <InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
-                    <ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
-                </div>
-            }            
-        </div>
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Hash:</label>
+				<div class="col-md-10">
+					<InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
+					<ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
+				</div>
+			</div>
 
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">Update</button>
-            </div>
-        </div>
-
-    </EditForm>
-    <SuccessNotification @ref="_notification" _navUrl="/myCompetitions" />
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="submit" class="btn btn-success">Update</button>
+				</div>
+			</div>
+		}
+	</EditForm>
+	<SuccessNotification @ref="_notification" _navUrl="/myCompetitions" />
+}
+else
+{
+	<span>
+		<button class="btn btn-primary" type="button" disabled>
+			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			Loading tasks...
+		</button>
+	</span>
 }

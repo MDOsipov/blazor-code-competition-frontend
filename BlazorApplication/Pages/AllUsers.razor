@@ -1,0 +1,71 @@
+﻿@page "/users"
+@attribute [Authorize(Roles = "system administrator")]
+
+@if (userList is null)
+{
+    <span>
+        <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading users...
+        </button>
+    </span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">First name</th>
+                <th scope="col">Last name</th>
+                <th scope="col">Role</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in userList)
+            {
+                <tr>
+                    <td scope="row">@user.Email</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+
+                    @if (ChangeMode && user.Id == CurrentUserIdToChange)
+                    {
+                        <div class="mb-3 row">
+                            <div class="col-md-10">
+                                <select class="form-select" aria-label="Choose team leader" @bind="NewRoleId">
+                                    @foreach (var role in roleList)
+                                    {
+                                        <option value=@role.Id>@role.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <td class="align-middle">
+                            <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Save role</button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@user.RoleName</td>
+                        <td class="align-middle">
+                            <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Change role</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col align-self-center">
+            <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+        </div>
+    </div>
+}
+
+@code {
+
+    
+}
