@@ -15,16 +15,14 @@ namespace BlazorApplication.HttpRepository
 	{
 		private readonly HttpClient _client;
 		private readonly IConfiguration _configuration;
-		private readonly Models.BackEndConnections _backEndConnections;
-		private readonly JsonSerializerOptions _options;
-
-	
+		private readonly BackEndConnections _backEndConnections;
+		private readonly JsonSerializerOptions _options;	
 
 		public UserHttpRepository(HttpClient client, IConfiguration configuration)
 		{
 			_client = client;
 			_configuration = configuration;
-			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive= true };
 
 		}
@@ -48,8 +46,10 @@ namespace BlazorApplication.HttpRepository
 			var pagingResponse = new PagingResponse<UserDto>
 			{
 				Items = JsonSerializer.Deserialize<List<UserDto>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+				MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
+
+			pagingResponse.SuccessRequest = true;
 
 			return pagingResponse;
 		}

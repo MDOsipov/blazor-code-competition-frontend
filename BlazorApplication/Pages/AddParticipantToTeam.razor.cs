@@ -15,8 +15,9 @@ namespace BlazorApplication.Pages
 		public int teamId { get; set; } = 0;
 		private SuccessNotification? _notification;
 		public int newParticipantId { get; set; } = 0;
+        public List<Participant> ParticipantList { get; set; } = new List<Participant>();
 
-		[Inject]
+        [Inject]
 		public IParticipantHttpRepository ParticipantRepo { get; set; }
 
 
@@ -24,7 +25,7 @@ namespace BlazorApplication.Pages
 		{
 			switchOff = true
 		};
-		public List<Participant> ParticipantList { get; set; } = new List<Participant>();
+		
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -43,9 +44,9 @@ namespace BlazorApplication.Pages
 			ParticipantList = pagingResponse.Items;
 			newParticipantId = ParticipantList.FirstOrDefault().id; */
 
-            ParticipantList = (List<Participant>)await ParticipantRepo.GetParticipantsLimited();
-			newParticipantId = ParticipantList.FirstOrDefault().id;
-
+            var responseWithSuccess = await ParticipantRepo.GetParticipantsLimited();
+			ParticipantList = responseWithSuccess.Items;
+            newParticipantId = ParticipantList.FirstOrDefault().id;
         }
 
 		private async void Create()

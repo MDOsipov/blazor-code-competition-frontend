@@ -27,16 +27,13 @@ namespace BlazorApplication.Pages
 
         protected async override Task OnInitializedAsync()
         {
-            Console.WriteLine("Update task created with id = " + Id);
-
+            //Console.WriteLine("Update task created with id = " + Id);
+            
             _task = await TaskRepo.GetTaskById(Id);
-
-            _timeFrameMode = _task.Timeframe.ToString();
-
-            await GetTaskCategories();
-
+            Console.WriteLine(JsonSerializer.Serialize(_task));
+            _timeFrameMode = _task.Timeframe.ToString();            
+            await GetTaskCategories();            
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
-
         }
 
 		private async Task Update()
@@ -112,8 +109,9 @@ namespace BlazorApplication.Pages
             {
                 switchOff = true
             };
+
             var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
-            TaskCategories = pagingResponse.Items;
+            TaskCategories = pagingResponse.Items;            
         }
 
     }

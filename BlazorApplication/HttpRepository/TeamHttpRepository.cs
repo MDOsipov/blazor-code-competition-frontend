@@ -76,6 +76,9 @@ namespace BlazorApplication.HttpRepository
 			}
 
 			var team = JsonSerializer.Deserialize<Models.Team>(content, _options);
+
+			team.SuccessRequest = true;
+
 			return team;
 		}
 
@@ -110,8 +113,9 @@ namespace BlazorApplication.HttpRepository
 				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
 
-			Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
+			//Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
 
+			pagingResponse.SuccessRequest = true;
 
 			return pagingResponse;
 		}
@@ -147,8 +151,9 @@ namespace BlazorApplication.HttpRepository
 				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
 
-			Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
+			//Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
 
+			pagingResponse.SuccessRequest = true;
 
 			return pagingResponse;
 		}

@@ -19,6 +19,8 @@ namespace BlazorApplication.Pages
         private UserParameters userParameters = new UserParameters();
         public MetaData MetaData { get; set; } = new MetaData();
 
+        [Parameter]
+        public bool successResponce { get; set; }
 
         [Inject]
         public IParticipantHttpRepository participantRepo { get; set; }
@@ -55,6 +57,7 @@ namespace BlazorApplication.Pages
             var userPagingResponse = await UserRepo.GetUsersExtended(userParameters);
             userList = userPagingResponse.Items;
             MetaData = userPagingResponse.MetaData;
+            successResponce = userPagingResponse.SuccessRequest;
         }
 
         public async void ChangeModeFun(string userIdToChange)

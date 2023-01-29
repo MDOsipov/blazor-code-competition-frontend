@@ -109,7 +109,8 @@ namespace BlazorApplication.HttpRepository
                 lastName = localParticipant.lastName,
                 email = localParticipant.email,
                 userId = localParticipant.userId,
-                teamId = localParticipant.teamId
+                teamId = localParticipant.teamId,
+                SuccessRequest = true,
             };
 
             return participant;
@@ -133,11 +134,13 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-            var pagingResponse = new PagingResponse<Models.Participant>
+            var pagingResponse = new PagingResponse<Participant>
             {
-                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
+
+            pagingResponse.SuccessRequest = true;
 
             return pagingResponse;
 
@@ -161,11 +164,13 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(content);
             }
 
-            var pagingResponse = new PagingResponse<Models.Participant>
+            var pagingResponse = new PagingResponse<Participant>
             {
-                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
+
+            pagingResponse.SuccessRequest = true;
 
             return pagingResponse;
         }
@@ -188,16 +193,18 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(content);
             }
 
-            var pagingResponse = new PagingResponse<Models.Participant>
+            var pagingResponse = new PagingResponse<Participant>
             {
-                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
+
+            pagingResponse.SuccessRequest = true;
 
             return pagingResponse;
         }
 
-        public async Task<IEnumerable<Participant>> GetParticipantsLimited()
+        public async Task<ResponseWithSuccess<Participant>> GetParticipantsLimited()
         {
            
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -210,8 +217,13 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(content);
             }
 
-            var toReturn = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options);
-            return toReturn;
+            var responseWithStatues = new ResponseWithSuccess<Participant>
+            {
+                Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                SuccessRequest = true,
+            };
+
+            return responseWithStatues;
         }
 
         public async System.Threading.Tasks.Task RemoveTeamFromParticipant(string participantId)

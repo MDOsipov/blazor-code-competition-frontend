@@ -20,7 +20,6 @@ namespace BlazorApplication.Pages
 		
 		private SuccessNotification _notification;
 
-
 		[Inject]
 		public ICompetitionHttpRepository CompetitionRepo { get; set; }
 
@@ -35,7 +34,8 @@ namespace BlazorApplication.Pages
 
         private async Task GetStatuses()
 		{
-            competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+            var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
+            competitionStatusesList = responseWithStatues.Items;
         }
 
         private async Task GetUsers()

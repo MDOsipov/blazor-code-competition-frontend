@@ -27,7 +27,7 @@ namespace BlazorApplication.Pages
         [Parameter]
         public string boolString { get; set; } = "0";
 
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             await GetCompetition();
             await GetStatuses();
@@ -46,7 +46,8 @@ namespace BlazorApplication.Pages
 
         private async Task GetStatuses()
         {
-            competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+            var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
+            competitionStatusesList = responseWithStatues.Items;
         }
 
         private async Task GetCompetition()

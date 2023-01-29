@@ -3,6 +3,8 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BlazorApplication.Pages
 {
@@ -10,7 +12,10 @@ namespace BlazorApplication.Pages
     {
 		
 		[Parameter]
-        public string id { get; set; } = "";
+        public string id { get; set; } = string.Empty;
+
+		[Parameter]
+		public bool successResponse { get; set; }
 
 		[Inject]
 		public ITaskToCompetitionRepository taskToCompetitionRepo { get; set; }
@@ -38,6 +43,7 @@ namespace BlazorApplication.Pages
 			var pagingResponse = await TaskRepo.GetTasksByCompetitionId(_taskParameters, id);
 			TaskList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
+			successResponse = pagingResponse.SuccessRequest;
 		}
 
 		private async System.Threading.Tasks.Task DeleteTask(int taskId)

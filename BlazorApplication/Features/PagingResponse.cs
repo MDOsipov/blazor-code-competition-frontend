@@ -7,5 +7,6 @@ namespace BlazorApplication.Features
 	{
 		public List<T> Items { get; set; }
 		public MetaData MetaData { get; set; }
-	}
+        public bool SuccessRequest { get; set; } = false;
+    }
 }

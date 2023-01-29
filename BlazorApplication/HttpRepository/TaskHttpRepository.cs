@@ -81,6 +81,9 @@ namespace BlazorApplication.HttpRepository
                 Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
                 MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
+
+			pagingResponse.SuccessRequest = true;
+
             return pagingResponse;
         }
 
@@ -89,7 +92,7 @@ namespace BlazorApplication.HttpRepository
 			var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
-			Console.WriteLine(url);
+			//Console.WriteLine(url);
 			var response = await _client.GetAsync(url);
 			var content = await response.Content.ReadAsStringAsync();
 
@@ -99,6 +102,9 @@ namespace BlazorApplication.HttpRepository
 			}
 
 			var task = JsonSerializer.Deserialize<Models.Task>(content, _options);
+
+			task.SuccessRequest = true;
+
 			return task;
 		}
 
@@ -138,6 +144,9 @@ namespace BlazorApplication.HttpRepository
 				Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
 				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
+
+			pagingResponse.SuccessRequest = true;
+
 			return pagingResponse;
 		}
 
@@ -167,13 +176,16 @@ namespace BlazorApplication.HttpRepository
 				Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
 				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
+
+			pagingResponse.SuccessRequest = true;
+			
 			return pagingResponse;
 		}
 
         public async Task<PagingResponse<Models.TaskWithTimesDto>> GetTasksByTeamId(TaskParameters taskParameters, string teamId)
         {
-            Console.WriteLine(JsonSerializer.Serialize(taskParameters));
-            Console.WriteLine("Switch off: " + (taskParameters.switchOff ? "1" : "0"));
+            //Console.WriteLine(JsonSerializer.Serialize(taskParameters));
+            //Console.WriteLine("Switch off: " + (taskParameters.switchOff ? "1" : "0"));
 
             var queryStringParam = new Dictionary<string, string>
             {
@@ -196,6 +208,9 @@ namespace BlazorApplication.HttpRepository
                 Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
                 MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
+
+			pagingResponse.SuccessRequest = true;
+
             return pagingResponse;
         }
 

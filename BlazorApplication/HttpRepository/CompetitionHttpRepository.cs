@@ -26,7 +26,7 @@ namespace BlazorApplication.HttpRepository
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
-        private readonly Models.BackEndConnections _backEndConnections;
+        private readonly BackEndConnections _backEndConnections;
         private readonly IAccessTokenProvider _accessTokenProvider;
 
         public CompetitionHttpRepository(HttpClient client, IConfiguration configuration, IAccessTokenProvider accessTokenProvider)
@@ -34,7 +34,7 @@ namespace BlazorApplication.HttpRepository
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
-            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
 			_accessTokenProvider = accessTokenProvider; 
 		}
 
@@ -53,7 +53,7 @@ namespace BlazorApplication.HttpRepository
 			}
 		}
 
-		public async Task<IEnumerable<CompetitionStatus>> GetAllCompetitionStatuses()
+		public async Task<ResponseWithSuccess<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
@@ -66,7 +66,13 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-            return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
+            var responseWithStatues = new ResponseWithSuccess<CompetitionStatus>
+            {
+                Items = JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options),
+                SuccessRequest = true
+            };
+
+            return responseWithStatues;
 		}
 
         public async Task<Competition> GetCompetitionById(string id)
@@ -90,7 +96,8 @@ namespace BlazorApplication.HttpRepository
                 maxTaskPerGroups = localCompetition.maxTaskPerGroups,
                 CompetitionStatusId = localCompetition.competitionStatus,
                 CompetitionAdministratorId = localCompetition.competitionAdministratorId,
-                HashCode = localCompetition.hashCode
+                HashCode = localCompetition.hashCode,
+                SuccessRequest = true,                
             };
 
             return competition;
@@ -114,11 +121,13 @@ namespace BlazorApplication.HttpRepository
                 throw new ApplicationException(content);
             }
 
-            var pagingResponse = new PagingResponse<Models.Competition>
+            var pagingResponse = new PagingResponse<Competition>
             {
-                Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
+
+            pagingResponse.SuccessRequest = true;
 
             return pagingResponse;
         }
@@ -171,11 +180,13 @@ namespace BlazorApplication.HttpRepository
 				throw new ApplicationException(content);
 			}
 
-			var pagingResponse = new PagingResponse<Models.Competition>
+			var pagingResponse = new PagingResponse<Competition>
 			{
-				Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+				Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+				MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
 			};
+
+            pagingResponse.SuccessRequest = true;
 
 			return pagingResponse;
 		}
