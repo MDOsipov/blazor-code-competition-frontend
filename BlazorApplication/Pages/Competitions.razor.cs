@@ -11,6 +11,10 @@ namespace BlazorApplication.Pages
         public MetaData MetaData { get; set; } = new MetaData();
         private CompetitionParameters _competitionParameters = new CompetitionParameters();
 
+        [Parameter]
+
+        public bool successResponse { get; set; }
+
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
 
@@ -32,6 +36,7 @@ namespace BlazorApplication.Pages
             var pagingResponse = await CompetitionRepo.GetCompetitions(_competitionParameters);
             CompetitionList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
+            successResponse = pagingResponse.SuccessRequest;
         }
 
         private async System.Threading.Tasks.Task DeleteCompetition(int id)

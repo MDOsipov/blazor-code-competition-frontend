@@ -1,15 +1,16 @@
 ﻿@page "/updateTask/{id}"
 @attribute [Authorize]
 
-<h2>Update Task @_task.TaskName</h2>
-<a href="/tasks">Go Back</a>
-
 @if (@_task != null)
 {
+    <h2>Update Task @_task.TaskName</h2>
+    <a href="/tasks">Go Back</a>
+
     <EditForm Model="@_task" OnValidSubmit="Update" class="card card-body bg-light mt-5">
         <DataAnnotationsValidator />
 
-        @if (TaskCategories.Count == 0)
+        @if (!successResponse || TaskCategories == null)
+
         {
             <Loading Placeholders="6" />
         }
