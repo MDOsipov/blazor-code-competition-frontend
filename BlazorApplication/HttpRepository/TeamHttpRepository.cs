@@ -32,17 +32,20 @@ namespace BlazorApplication.HttpRepository
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
+			
+			try
+			{
+                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Team", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
 
-			Console.WriteLine("Team send: ");
-            Console.WriteLine(JsonSerializer.Serialize(team));
-
-
-            var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Team", bodyContent);
-			var postContent = await postResult.Content.ReadAsStringAsync();
-
-            if (!postResult.IsSuccessStatusCode)
-            {
-                throw new ApplicationException(postContent);
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+			catch (Exception ex) 
+			{
+                throw new System.Exception("Oops! Something went wrong while creating a new team!", ex);
             }
         }
 
@@ -52,12 +55,19 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var deleteResult = await _client.DeleteAsync(url);
-            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+			try
+			{
+                var deleteResult = await _client.DeleteAsync(url);
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
-            if (!deleteResult.IsSuccessStatusCode)
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
+            }
+            catch (Exception ex)
             {
-                throw new ApplicationException(deleteContent);
+                throw new System.Exception("Oops! Something went wrong while deleting the team!", ex);
             }
         }
 
@@ -67,17 +77,24 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var response = await _client.GetAsync(url);
-			var content = await response.Content.ReadAsStringAsync();
-
-			if (!response.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(content);
-			}
+                var response = await _client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
 
-			var team = JsonSerializer.Deserialize<Models.Team>(content, _options);
-			return team;
-		}
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var team = JsonSerializer.Deserialize<Models.Team>(content, _options);
+                return team;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a team by id!", ex);
+            }
+        }
 
 		public async Task<PagingResponse<Models.Team>> GetTeams(TeamParameters teamParameters)
 		{
@@ -92,29 +109,32 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team/extended", queryStringParam));
-			var content = await response.Content.ReadAsStringAsync();	
-
-            Console.WriteLine("Response " + JsonSerializer.Serialize(response));
-			Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
-
-            if (!response.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(content);
-			}
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team/extended", queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Response " + JsonSerializer.Serialize(response));
+                Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
 
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
 
-			var pagingResponse = new PagingResponse<Models.Team>
-			{
-				Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-			};
+                var pagingResponse = new PagingResponse<Models.Team>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
 
-			Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
-
-
-			return pagingResponse;
-		}
+                Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+            }
+        }
 
 		public async Task<PagingResponse<Models.Team>> GetTeamsLimited(TeamParameters teamParameters)
 		{
@@ -129,29 +149,32 @@ namespace BlazorApplication.HttpRepository
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team", queryStringParam));
-			var content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team", queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Response " + JsonSerializer.Serialize(response));
+                Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
 
-			Console.WriteLine("Response " + JsonSerializer.Serialize(response));
-			Console.WriteLine("X-pagination: " + response.Headers.GetValues("X-Pagination").First());
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
 
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(content);
-			}
+                var pagingResponse = new PagingResponse<Models.Team>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+                Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
 
-
-			var pagingResponse = new PagingResponse<Models.Team>
-			{
-				Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-			};
-
-			Console.WriteLine("Content:\n " + JsonSerializer.Serialize(pagingResponse.Items));
-
-
-			return pagingResponse;
-		}
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of teams (with limited info)!", ex);
+            }
+        }
 
 		public async Task UpdateTeam(Models.Team team)
 		{
@@ -161,29 +184,45 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var putResult = await _client.PutAsync(url, bodyContent);
-			var putContent = await putResult.Content.ReadAsStringAsync();
+            try 
+            {
+                var putResult = await _client.PutAsync(url, bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
 
-			if (!putResult.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(putContent);
-			}
-		}
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while updating the team!", ex);
+            }
+        }
 
         public async Task<string> UploadTeamImage(MultipartFormDataContent content)
         {
-            var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "api/upload", content);
-            var postContent = await postResult.Content.ReadAsStringAsync();
+            await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-
-            if (!postResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(postContent);
+                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "api/upload", content);
+                var postContent = await postResult.Content.ReadAsStringAsync();
+
+
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+                else
+                {
+                    var imgUrl = Path.Combine(_backEndConnections.CSharpUri, postContent);
+                    return imgUrl;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var imgUrl = Path.Combine(_backEndConnections.CSharpUri, postContent);
-                return imgUrl;
+                throw new System.Exception("Oops! Something went wrong while uploading an image to the team!", ex);
             }
         }
     }

@@ -2,30 +2,38 @@
 @using BlazorApplication.Components.TeamTable
 @using BlazorApplication.Components
 
-<div class="row">
-    <div class="col-md-10">
-        @*Place for search and sort*@
-    </div>
-    <div class="col-md-2">
-        <a href="/createTeam">Create Team</a>
-    </div>
-</div>
-<AuthorizeView Roles="system administrator">
-    <div class="row">
-        <div class="col">
-            <TeamTable Teams="TeamList" OnDeleted="DeleteTeam"/>
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        <div class="row">
+            <div class="col-md-10">
+                @*Place for search and sort*@
+            </div>
+            <div class="col-md-2">
+                <a href="/createTeam">Create Team</a>
+            </div>
         </div>
-    </div>
-</AuthorizeView>
-<AuthorizeView Roles="competition administrator">
-    <div class="row">
-        <div class="col">
-            <TeamTable Teams="TeamList" OnDeleted="DeleteTeam" IsCompetitionAdmin=true/>
+        <AuthorizeView Roles="system administrator">
+            <div class="row">
+                <div class="col">
+                    <TeamTable Teams="TeamList" OnDeleted="DeleteTeam"/>
+                </div>
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="competition administrator">
+            <div class="row">
+                <div class="col">
+                    <TeamTable Teams="TeamList" OnDeleted="DeleteTeam" IsCompetitionAdmin=true/>
+                </div>
+            </div>
+        </AuthorizeView>
+        <div class="row">
+            <div class="col">
+                <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+            </div>
         </div>
-    </div>
-</AuthorizeView>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering teams page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

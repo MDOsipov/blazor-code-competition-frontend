@@ -2,12 +2,14 @@
 using BlazorApplication.HttpRepository;
 using BlazorApplication.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.Text.Json;
 
 namespace BlazorApplication.Components
 {
     public partial class ParticipantDashboard
     {
+       
         [Inject]
         public AuthTest? AuthTest { get; set; }
 
@@ -24,7 +26,6 @@ namespace BlazorApplication.Components
         private string LogedUserEmail = "";
         private int UserTeamId = 0;
         private string UserTeamName = "";
-
 
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {

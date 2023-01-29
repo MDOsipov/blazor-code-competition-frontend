@@ -31,29 +31,43 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Task", bodyContent);
-			var postContent = await postResult.Content.ReadAsStringAsync();
-
-			if (!postResult.IsSuccessStatusCode)
+			try 
 			{
-				throw new ApplicationException(postContent);
-			}
-		}
+                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Task", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
 
-		public async Task DeleteProduct(int id)
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+			catch(Exception ex) 
+			{
+                throw new System.Exception("Oops! Something went wrong while creating a task!", ex);
+            }
+        }
+
+		public async Task DeleteTask(int id)
 		{
 			var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id.ToString());
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var deleteResult = await _client.DeleteAsync(url);
-			var deleteContent = await deleteResult.Content.ReadAsStringAsync();
-
-			if (!deleteResult.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(deleteContent);
-			}
-		}
+                var deleteResult = await _client.DeleteAsync(url);
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting the task!", ex);
+            }
+        }
 
         public async Task<PagingResponse<Models.TaskWithTimesDto>> GetSubmittedTasksByTeamId(TaskParameters taskParameters, string teamId)
         {
@@ -68,20 +82,27 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/submitted/byTeamId/" + teamId, queryStringParam));
+			try
+			{
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/submitted/byTeamId/" + teamId, queryStringParam));
 
-            var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ApplicationException(content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+                var pagingResponse = new PagingResponse<Models.TaskWithTimesDto>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+                return pagingResponse;
             }
-            var pagingResponse = new PagingResponse<Models.TaskWithTimesDto>
+            catch (Exception ex)
             {
-                Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
-            return pagingResponse;
+                throw new System.Exception("Oops! Something went wrong while getting a list of submitted tasks by team id!", ex);
+            }
         }
 
         public async Task<Models.Task> GetTaskById(string id)
@@ -89,18 +110,26 @@ namespace BlazorApplication.HttpRepository
 			var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
-			Console.WriteLine(url);
-			var response = await _client.GetAsync(url);
-			var content = await response.Content.ReadAsStringAsync();
 
-			if (!response.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(content);
-			}
+                Console.WriteLine(url);
+                var response = await _client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
 
-			var task = JsonSerializer.Deserialize<Models.Task>(content, _options);
-			return task;
-		}
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var task = JsonSerializer.Deserialize<Models.Task>(content, _options);
+                return task;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a task by id!", ex);
+            }
+        }
 
 		public async Task<PagingResponse<Models.Task>> GetTasks(TaskParameters taskParameters)
 		{
@@ -125,21 +154,28 @@ namespace BlazorApplication.HttpRepository
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/extended", queryStringParam));
+            try
+            {
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/extended", queryStringParam));
 
-			var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync();
 
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(content);
-			}
-			var pagingResponse = new PagingResponse<Models.Task>
-			{
-				Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-			};
-			return pagingResponse;
-		}
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+                var pagingResponse = new PagingResponse<Models.Task>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+            }
+        }
 
 		public async Task<PagingResponse<Models.Task>> GetTasksByCompetitionId(TaskParameters taskParameters, string id)
 		{
@@ -154,21 +190,28 @@ namespace BlazorApplication.HttpRepository
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byCompetitionId/" + id, queryStringParam));
+            try
+            {
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byCompetitionId/" + id, queryStringParam));
 
-			var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync();
 
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(content);
-			}
-			var pagingResponse = new PagingResponse<Models.Task>
-			{
-				Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-			};
-			return pagingResponse;
-		}
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+                var pagingResponse = new PagingResponse<Models.Task>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks by competition id!", ex);
+            }
+        }
 
         public async Task<PagingResponse<Models.TaskWithTimesDto>> GetTasksByTeamId(TaskParameters taskParameters, string teamId)
         {
@@ -183,20 +226,27 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byTeamId/" + teamId, queryStringParam));
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byTeamId/" + teamId, queryStringParam));
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+                var pagingResponse = new PagingResponse<Models.TaskWithTimesDto>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+                return pagingResponse;
             }
-            var pagingResponse = new PagingResponse<Models.TaskWithTimesDto>
+            catch (Exception ex)
             {
-                Items = JsonSerializer.Deserialize<List<Models.TaskWithTimesDto>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
-            return pagingResponse;
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks by team id!", ex);
+            }
         }
 
         public async Task UpdateTask(Models.Task task)
@@ -208,14 +258,20 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var putResult = await _client.PutAsync(url, bodyContent);
-			var putContent = await putResult.Content.ReadAsStringAsync();
+            try
+            {
+                var putResult = await _client.PutAsync(url, bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
 
-			if (!putResult.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(putContent);
-			}
-		}
-
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while updating the task!", ex);
+            }
+        }
 	}
 }

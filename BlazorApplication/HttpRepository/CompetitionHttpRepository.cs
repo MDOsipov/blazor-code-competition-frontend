@@ -44,56 +44,79 @@ namespace BlazorApplication.HttpRepository
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "competition", bodyContent);
-			var postContent = await postResult.Content.ReadAsStringAsync();
 
-			if (!postResult.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(postContent);
-			}
-		}
+            try 
+            {
+                var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "competition", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
+
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new competition!", ex);
+            }
+        }
 
 		public async Task<IEnumerable<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-			var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
+            try
+            {
+                var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
 
-			var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync();
 
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(content);
-			}
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
 
-            return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
-		}
+                return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
+            }
+        }
 
         public async Task<Competition> GetCompetitionById(string id)
         {
             var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id);
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var response = await _client.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var localCompetition = JsonSerializer.Deserialize<LocalCompetition>(content, _options);
+                var competition = new Competition
+                {
+                    id = localCompetition.id,
+                    CompetitionName = localCompetition.competitionName,
+                    maxTaskPerGroups = localCompetition.maxTaskPerGroups,
+                    CompetitionStatusId = localCompetition.competitionStatus,
+                    CompetitionAdministratorId = localCompetition.competitionAdministratorId,
+                    HashCode = localCompetition.hashCode
+                };
+
+                return competition;
             }
-
-            var localCompetition = JsonSerializer.Deserialize<LocalCompetition>(content, _options);
-            var competition = new Competition
+            catch (Exception ex)
             {
-                id = localCompetition.id,
-                CompetitionName = localCompetition.competitionName,
-                maxTaskPerGroups = localCompetition.maxTaskPerGroups,
-                CompetitionStatusId = localCompetition.competitionStatus,
-                CompetitionAdministratorId = localCompetition.competitionAdministratorId,
-                HashCode = localCompetition.hashCode
-            };
-
-            return competition;
+                throw new System.Exception("Oops! Something went wrong while getting a list of competitions by id!", ex);
+            }
         }
 
         public async Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters)
@@ -105,22 +128,30 @@ namespace BlazorApplication.HttpRepository
             };
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
 
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var pagingResponse = new PagingResponse<Models.Competition>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
             }
-
-            var pagingResponse = new PagingResponse<Models.Competition>
+            catch (Exception ex)
             {
-                Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
-
-            return pagingResponse;
+                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+            }
         }
 
         public async System.Threading.Tasks.Task UpdateCompetition(Competition competition)
@@ -130,12 +161,20 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", competition.id.ToString());
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var putResult = await _client.PutAsync(url, bodyContent);
-            var putContent = await putResult.Content.ReadAsStringAsync();
 
-            if (!putResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(putContent);
+                var putResult = await _client.PutAsync(url, bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while updating the competition!", ex);
             }
         }
 
@@ -144,13 +183,22 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id.ToString());
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var deleteResult = await _client.DeleteAsync(url);
-            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
-            if (!deleteResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(deleteContent);
+                var deleteResult = await _client.DeleteAsync(url);
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
             }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting the competition!", ex);
+            }
+
         }
 
 		public async Task<PagingResponse<Competition>> GetCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters)
@@ -162,22 +210,30 @@ namespace BlazorApplication.HttpRepository
 			};
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/byAdmin/" + adminId, queryStringParam));
 
-			var content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/byAdmin/" + adminId, queryStringParam));
 
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(content);
-			}
+                var content = await response.Content.ReadAsStringAsync();
 
-			var pagingResponse = new PagingResponse<Models.Competition>
-			{
-				Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-			};
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
 
-			return pagingResponse;
-		}
+                var pagingResponse = new PagingResponse<Models.Competition>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
+            }
+        }
 	}
 }

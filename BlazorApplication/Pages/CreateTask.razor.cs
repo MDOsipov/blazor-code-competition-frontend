@@ -2,6 +2,7 @@
 using BlazorApplication.Interfaces;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
@@ -14,7 +15,7 @@ namespace BlazorApplication.Pages
 
 		private SuccessNotification? _notification;
         private string _time { get; set; } = string.Empty;
-
+        private ErrorBoundary? errorBoundary;
 
         [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
@@ -90,9 +91,17 @@ namespace BlazorApplication.Pages
                 }
             }
 
-            await TaskRepo.CreateTask(_task);
-			_notification.Show();
-		}
+            try
+            {
+                await TaskRepo.CreateTask(_task);
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new task!", ex);
+            }
+
+        }
 
         protected async Task GetTaskCategories()
         {
@@ -101,8 +110,24 @@ namespace BlazorApplication.Pages
                 switchOff = true
             };
 
-            var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
-            TaskCategories = pagingResponse.Items;
+            try
+            {
+                var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
+                TaskCategories = pagingResponse.Items;
+            }
+            catch(Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of task categories!", ex);
+            }
+
         }
-	}
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
+    }
 }

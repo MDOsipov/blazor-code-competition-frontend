@@ -15,63 +15,71 @@
 @inject IConfiguration configuration
 @inject IUserHttpRepository UserRepo
 
-@if (userList is null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Email</th>
-                <th scope="col">First name</th>
-                <th scope="col">Last name</th>
-                <th scope="col">Role</th>
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        @if (userList is null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Email</th>
+                        <th scope="col">First name</th>
+                        <th scope="col">Last name</th>
+                        <th scope="col">Role</th>
 
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in userList)
-            {
-                <tr>
-                    <td scope="row">@user.Email</td>
-                    <td>@user.FirstName</td>
-                    <td>@user.LastName</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in userList)
+                    {
+                        <tr>
+                            <td scope="row">@user.Email</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
 
-                    @if (ChangeMode && user.Id == CurrentUserIdToChange)
-                    {
-                        <div class="mb-3 row">
-                            <div class="col-md-10">
-                                <select class="form-select" aria-label="Choose team leader" @bind="NewRoleId">
-                                    @foreach (var role in roleList)
-                                    {
-                                        <option value=@role.Id>@role.Name</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <td class="align-middle">
-                            <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Save role</button>
-                        </td>
+                            @if (ChangeMode && user.Id == CurrentUserIdToChange)
+                            {
+                                <div class="mb-3 row">
+                                    <div class="col-md-10">
+                                        <select class="form-select" aria-label="Choose team leader" @bind="NewRoleId">
+                                            @foreach (var role in roleList)
+                                            {
+                                                <option value=@role.Id>@role.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <td class="align-middle">
+                                    <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Save role</button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>@user.RoleName</td>
+                                <td class="align-middle">
+                                    <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Change role</button>
+                                </td>
+                            }
+                        </tr>
                     }
-                    else
-                    {
-                        <td>@user.RoleName</td>
-                        <td class="align-middle">
-                            <button type="button" class="btn btn-info" @onclick="()=>ChangeModeFun(user.Id)">Change role</button>
-                        </td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="row">
-        <div class="col align-self-center">
-            <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-        </div>
-    </div>
-}
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col align-self-center">
+                    <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+                </div>
+            </div>
+        }
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering user page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>
 
 @code {
 
@@ -82,7 +90,7 @@ else
     public string NewRoleId { get; set; } = "";
     private UserParameters userParameters = new UserParameters();
     public MetaData MetaData { get; set; } = new MetaData();
-
+    private ErrorBoundary? errorBoundary;
 
     [Inject]
     public IParticipantHttpRepository participantRepo { get; set; }
@@ -93,7 +101,7 @@ else
     {
         _backEndConnections = configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
         await GetUsers();
-        roleList = await Http.GetFromJsonAsync<RoleDto[]>(_backEndConnections.CSharpUri + "user/allRoles");
+        await GetRoles();
     }
 
     private async System.Threading.Tasks.Task SelectedPage(int page)
@@ -104,16 +112,35 @@ else
 
     protected async System.Threading.Tasks.Task GetUsers()
     {
-        var userPagingResponse = await UserRepo.GetUsersExtended(userParameters);
-        userList = userPagingResponse.Items;
-        MetaData = userPagingResponse.MetaData;
+        try
+        {
+            var userPagingResponse = await UserRepo.GetUsersExtended(userParameters);
+            userList = userPagingResponse.Items;
+            MetaData = userPagingResponse.MetaData;
+        }
+        catch(Exception ex)
+        {
+            throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
+        }
     }
+
+    protected async System.Threading.Tasks.Task GetRoles()
+    {
+        try
+        {
+            roleList = await Http.GetFromJsonAsync<RoleDto[]>(_backEndConnections.CSharpUri + "user/allRoles");
+        }
+        catch (Exception ex)
+        {
+            throw new System.Exception("Oops! Something went wrong while getting a list of roles!", ex);
+        }
+    }
+
 
     public async void ChangeModeFun(string userIdToChange)
     {
         ChangeMode = !ChangeMode;
         CurrentUserIdToChange = userIdToChange;
-
 
         if (ChangeMode)
         {
@@ -128,14 +155,22 @@ else
             userList.Where(u => u.Id == userIdToChange).FirstOrDefault().RoleName = newRole.Name;
             userList.Where(u => u.Id == userIdToChange).FirstOrDefault().RoleId = newRole.Id;
 
-            var putResult = await Http.PutAsync(_backEndConnections.CSharpUri + "user/assignRoles/" + userIdToChange, bodyContent);
-
-            var putContent = await putResult.Content.ReadAsStringAsync();
-
-            if (!putResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(putContent);
+                var putResult = await Http.PutAsync(_backEndConnections.CSharpUri + "user/assignRoles/" + userIdToChange, bodyContent);
+
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
             }
+            catch(Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while assigning a new role to the user!", ex);
+            }
+
 
             if (roleList.Where(r => r.Id == NewRoleId).FirstOrDefault().Name == "participant")
             {
@@ -145,8 +180,18 @@ else
                 {
                     switchOff = true
                 };
-                var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
-                var currentUsers = pagingResponse.Items;
+
+                List<Participant> currentUsers;
+                try
+                {
+                    var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
+                    currentUsers = pagingResponse.Items;
+                }
+                catch (Exception ex)
+                {
+                    throw new System.Exception("Oops! Something went wrong while getting a corresponding participants!", ex);
+                }
+
 
                 if (currentUsers.Count == 0)
                 {
@@ -160,7 +205,14 @@ else
                         teamId = 0
                     };
 
-                    await participantRepo.CreateParticipant(newParticipant);
+                    try
+                    {
+                        await participantRepo.CreateParticipant(newParticipant);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
+                    }
                 }
             }
             else
@@ -171,19 +223,43 @@ else
                 {
                     switchOff = true
                 };
-                var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
-                var currentUsers = pagingResponse.Items;
+
+                List<Participant> currentUsers;
+                try
+                {
+                    var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
+                    currentUsers = pagingResponse.Items;
+                }
+                catch (Exception ex)
+                {
+                    throw new System.Exception("Oops! Something went wrong while getting corresponding participants!", ex);
+                }
 
                 if (currentUsers.Count > 0)
                 {
                     var toDeleteId = currentUsers.FirstOrDefault().id;
-                    await participantRepo.DeleteParticipant(toDeleteId);
+
+                    try
+                    {
+                        await participantRepo.DeleteParticipant(toDeleteId);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new System.Exception("Oops! Something went wrong while deleting a user from the list of participants!", ex);
+                    }
                 }
             }
 
             StateHasChanged();
         }
+    }
 
-
+    protected override void OnParametersSet()
+    {
+        errorBoundary?.Recover();
+    }
+    private void ResetError()
+    {
+        errorBoundary?.Recover();
     }
 }

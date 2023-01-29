@@ -3,21 +3,29 @@
 @using BlazorApplication.Components.TaskCategoryTable
 @using BlazorApplication.Components
 
-<div class="row">
-    <div class="col-md-8">
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        <div class="row">
+            <div class="col-md-8">
         
-    </div>
-    <div class="col-md-4">
-        <a href="/createTaskCategory">Create Task Category</a>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <TaskCategoryTable TaskCategories="TaskCategoryList" OnDeleted="DeleteTaskCategory" />
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+            </div>
+            <div class="col-md-4">
+                <a href="/createTaskCategory">Create Task Category</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <TaskCategoryTable TaskCategories="TaskCategoryList" OnDeleted="DeleteTaskCategory" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+            </div>
+        </div>
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering task categories page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

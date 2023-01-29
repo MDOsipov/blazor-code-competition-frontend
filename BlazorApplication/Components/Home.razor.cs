@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.Xml.Linq;
 
 namespace BlazorApplication.Components
 {
 	public partial class Home
 	{
+		private ErrorBoundary? errorBoundary;
 		[Parameter]
 		public string Title { get; set; }
 
@@ -16,5 +18,13 @@ namespace BlazorApplication.Components
 
 		[Parameter]
 		public RenderFragment VisitShopContent { get; set; }
+		protected override void OnParametersSet()
+		{
+			errorBoundary?.Recover();
+		}
+		private void ResetError()
+		{
+			errorBoundary?.Recover();
+		}
 	}
 }

@@ -2,26 +2,34 @@
 @using BlazorApplication.Components.TeamTable
 @using BlazorApplication.Components
 
-<EditForm Model="TeamList" OnValidSubmit="Create" class="card card-body bg-light mt-5">
-    <DataAnnotationsValidator />
-    <SuccessNotification @ref="_notification" _navUrl=@navUrlToSend />
+<ErrorBoundary @ref="errorBoundary">
+	<ChildContent>
+        <EditForm Model="TeamList" OnValidSubmit="Create" class="card card-body bg-light mt-5">
+            <DataAnnotationsValidator />
+            <SuccessNotification @ref="_notification" _navUrl=@navUrlToSend />
 
-    <div class="mb-3 row">
-        <label for="price" class="col-md-2 col-form-label">Team name:</label>
-        <div class="col-md-10">
-            <select class="form-select" aria-label="Choose a task" @bind="newTeamId">
-                @foreach (var team in TeamList)
-                {
-                    <option value=@team.Id>@team.TeamName</option>
-                }
-            </select>
-        </div>
-    </div>
+            <div class="mb-3 row">
+                <label for="price" class="col-md-2 col-form-label">Team name:</label>
+                <div class="col-md-10">
+                    <select class="form-select" aria-label="Choose a task" @bind="newTeamId">
+                        @foreach (var team in TeamList)
+                        {
+                            <option value=@team.Id>@team.TeamName</option>
+                        }
+                    </select>
+                </div>
+            </div>
 
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <button type="submit" class="btn btn-success">Create</button>
-        </div>
-    </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success">Create</button>
+                </div>
+            </div>
 
-</EditForm>
+        </EditForm>
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering add team page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

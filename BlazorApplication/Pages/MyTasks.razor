@@ -25,11 +25,20 @@
 </div>
 <div class="row">
     <div class="col">
-        <TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+        <ErrorBoundary @ref="errorBoundary">
+	        <ChildContent>
+                <TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+            </ChildContent>
+            <ErrorContent Context="Some">
+                <p class="error-message">Oops! Something went wrong while rendering my tasks page!</p>
+                <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+            </ErrorContent>
+        </ErrorBoundary>
     </div>
 </div>
 <div class="row">
     <div class="col">
-       <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
     </div>
 </div>
+    

@@ -2,6 +2,7 @@
 using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorApplication.Pages
 {
@@ -10,6 +11,7 @@ namespace BlazorApplication.Pages
         public List<Competition> CompetitionList { get; set; } = new List<Competition>();
         public MetaData MetaData { get; set; } = new MetaData();
         private CompetitionParameters _competitionParameters = new CompetitionParameters();
+        private ErrorBoundary? errorBoundary;
 
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
@@ -18,27 +20,47 @@ namespace BlazorApplication.Pages
         {
             await GetCompetitions();
         }
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
 
-        
         private async System.Threading.Tasks.Task SelectedPage(int page)
         {
             _competitionParameters.PageNumber = page;
             await GetCompetitions();
         }
         
-
         protected async System.Threading.Tasks.Task GetCompetitions()
         {
-            var pagingResponse = await CompetitionRepo.GetCompetitions(_competitionParameters);
-            CompetitionList = pagingResponse.Items;
-            MetaData = pagingResponse.MetaData;
+            try 
+            {
+                var pagingResponse = await CompetitionRepo.GetCompetitions(_competitionParameters);
+                CompetitionList = pagingResponse.Items;
+                MetaData = pagingResponse.MetaData;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+            }
         }
 
         private async System.Threading.Tasks.Task DeleteCompetition(int id)
         {
-            await CompetitionRepo.DeleteCompetition(id);
-            _competitionParameters.PageNumber = 1;
-            await GetCompetitions();
+            try
+            {
+                await CompetitionRepo.DeleteCompetition(id);
+                _competitionParameters.PageNumber = 1;
+                await GetCompetitions();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting a competition!", ex);
+            }
         }
     }
 }

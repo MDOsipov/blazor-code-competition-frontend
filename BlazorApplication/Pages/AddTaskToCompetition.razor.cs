@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.Diagnostics;
 using Task = BlazorApplication.Models.Task;
 
@@ -12,8 +13,16 @@ namespace BlazorApplication.Pages
 	{
 		[Parameter]
         public string competitionIdStr { get; set; } = "";
-
-		public string navUrlToSend { get; set; } = "";
+        private ErrorBoundary? errorBoundary;
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
+        public string navUrlToSend { get; set; } = "";
         public int competitionId { get; set; } = 0;
         private SuccessNotification? _notification;
 		public int newTaskId { get; set; } = 0;
@@ -42,9 +51,16 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetTasks()
 		{
-			var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
-			TaskList = pagingResponse.Items;
-			newTaskId = TaskList.FirstOrDefault().Id;
+			try
+			{
+                var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
+                TaskList = pagingResponse.Items;
+                newTaskId = TaskList.FirstOrDefault().Id;
+            }
+			catch (Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+            }
         }
 
         private async void Create()
@@ -54,9 +70,16 @@ namespace BlazorApplication.Pages
 				CompetitionId = competitionId,
 				TaskId = newTaskId
 			};
-            await TaskToCompetitionRepo.AddTaskToCompetition(taskToCompetition);
 
-            _notification.Show();
+            try 
+            {
+                await TaskToCompetitionRepo.AddTaskToCompetition(taskToCompetition);
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while adding a new task!", ex);
+            }
         }
     }
 }

@@ -3,24 +3,32 @@
 @using BlazorApplication.Components.TaskTable
 @using BlazorApplication.Components
 
-<div class="row">
-    <div class="col-md-5">
-        <Search OnSearchChanged="SearchChanged" />
-    </div>
-    <div class="col-md-5">
-        <Sort OnSortChanged="SortChanged" />
-    </div>
-    <div class="col-md-2">
-        <a href="/createTask">Create Task</a>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <TaskTable Tasks="TaskList" OnDeleted="DeleteTask" />
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-       <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        <div class="row">
+            <div class="col-md-5">
+                <Search OnSearchChanged="SearchChanged" />
+            </div>
+            <div class="col-md-5">
+                <Sort OnSortChanged="SortChanged" />
+            </div>
+            <div class="col-md-2">
+                <a href="/createTask">Create Task</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <TaskTable Tasks="TaskList" OnDeleted="DeleteTask" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+               <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+            </div>
+        </div>
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering tasks page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

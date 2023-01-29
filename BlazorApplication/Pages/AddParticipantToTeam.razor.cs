@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorApplication.Pages
 {
@@ -10,6 +11,7 @@ namespace BlazorApplication.Pages
 	{
 		[Parameter]
 		public string teamIdStr { get; set; } = "";
+		private ErrorBoundary? errorBoundary;
 
 		public string navUrlToSend { get; set; } = "";
 		public int teamId { get; set; } = 0;
@@ -35,23 +37,38 @@ namespace BlazorApplication.Pages
 			}
 			await GetParticipants();
 		}
-
+		protected override void OnParametersSet()
+		{
+			errorBoundary?.Recover();
+		}
+		private void ResetError()
+		{
+			errorBoundary?.Recover();
+		}
 		protected async System.Threading.Tasks.Task GetParticipants()
 		{
-            /*
-			var pagingResponse = await ParticipantRepo.GetParticipants(_participantParameters);
-			ParticipantList = pagingResponse.Items;
-			newParticipantId = ParticipantList.FirstOrDefault().id; */
-
-            ParticipantList = (List<Participant>)await ParticipantRepo.GetParticipantsLimited();
-			newParticipantId = ParticipantList.FirstOrDefault().id;
-
+			try
+			{
+                ParticipantList = (List<Participant>)await ParticipantRepo.GetParticipantsLimited();
+                newParticipantId = ParticipantList.FirstOrDefault().id;
+            }
+			catch(Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+            }
         }
 
 		private async void Create()
 		{
-			await ParticipantRepo.AddTeamToParticipant(teamIdStr, newParticipantId.ToString());
-			_notification.Show();
+			try
+			{
+                await ParticipantRepo.AddTeamToParticipant(teamIdStr, newParticipantId.ToString());
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while adding a new participant!", ex);
+            }
 		}
 	}
 }

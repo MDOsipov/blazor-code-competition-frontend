@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.Text.Json;
 
 namespace BlazorApplication.Pages
@@ -11,7 +12,7 @@ namespace BlazorApplication.Pages
     {
         private Participant _participant = new Participant();
         private SuccessNotification _notification;
-
+        private ErrorBoundary? errorBoundary;
         public List<Team> teamList { get; set; } = new List<Team>();
 
         [Inject]
@@ -25,25 +26,60 @@ namespace BlazorApplication.Pages
 
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
+            await GetTeams();
+            await GetParticipant();
+        }
+        private async System.Threading.Tasks.Task GetTeams()
+        {
             TeamParameters teamParameters = new TeamParameters
             {
                 switchOff = true
             };
 
-            PagingResponse<Team> teamListPaging = await TeamRepo.GetTeams(teamParameters);
-            teamList = teamListPaging.Items;
-
-            _participant = await ParticipantRepo.GetParticipantById(Id);
-            Console.WriteLine("Got participant object: ");
-            Console.WriteLine(JsonSerializer.Serialize(_participant));
+            try
+            {
+                PagingResponse<Team> teamListPaging = await TeamRepo.GetTeams(teamParameters);
+                teamList = teamListPaging.Items;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+            }
         }
 
+        private async System.Threading.Tasks.Task GetParticipant()
+        {
+            try
+            {
+                _participant = await ParticipantRepo.GetParticipantById(Id);
+                Console.WriteLine("Got participant object: ");
+                Console.WriteLine(JsonSerializer.Serialize(_participant));
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting the participant to update!", ex);
+            }
+        }
         private async System.Threading.Tasks.Task Update()
         {
-            Console.WriteLine("I'm here!");
+           try
+           {
+               await ParticipantRepo.UpdateParticipant(_participant);
+               _notification.Show();
+           }
+           catch (Exception ex)
+           {
+               throw new System.Exception("Oops! Something went wrong while updating the participant!", ex);
+           }
 
-            await ParticipantRepo.UpdateParticipant(_participant);
-            _notification.Show();
+        }
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
         }
     }
 }

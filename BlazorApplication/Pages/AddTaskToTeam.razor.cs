@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Task = BlazorApplication.Models.Task;
 
 namespace BlazorApplication.Pages
@@ -20,8 +21,10 @@ namespace BlazorApplication.Pages
 		public int teamId { get; set; } = 0;
 		private SuccessNotification? _notification;
 		public int newTaskId { get; set; } = 0;
+        private ErrorBoundary? errorBoundary;
 
-		[Inject]
+
+        [Inject]
 		public ITaskToTeamHttpRepository TaskToTeamRepo { get; set; }
 
 		[Inject]
@@ -38,8 +41,15 @@ namespace BlazorApplication.Pages
 		public List<Task> TaskList { get; set; } = new List<Task>();
 		public List<TaskWithTimesDto> CurrentTasksToTeamInProcess { get; set; } = new List<TaskWithTimesDto>();
 		public List<TaskWithTimesDto> CurrentTasksToTeamSubmitted { get; set; } = new List<TaskWithTimesDto>();
-
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
+        protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			if (teamIdStr != "")
 			{
@@ -55,15 +65,36 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetTasks()
 		{
-			var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
-			TaskList = pagingResponse.Items;
-			
-			var pagingResponseForCurrentTasksInProcess = await TaskRepo.GetTasksByTeamId(_taskParameters, teamIdStr);
-			CurrentTasksToTeamInProcess = pagingResponseForCurrentTasksInProcess.Items;
+			try
+			{
+                var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
+                TaskList = pagingResponse.Items;
+            }
+			catch (Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+			}
 
-			var pagingResponseForCurrentTasksSubmitted = await TaskRepo.GetSubmittedTasksByTeamId(_taskParameters, teamIdStr);
-			CurrentTasksToTeamSubmitted = pagingResponseForCurrentTasksSubmitted.Items;
+			try
+			{
+                var pagingResponseForCurrentTasksInProcess = await TaskRepo.GetTasksByTeamId(_taskParameters, teamIdStr);
+                CurrentTasksToTeamInProcess = pagingResponseForCurrentTasksInProcess.Items;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks in progress by team id!", ex);
+            }
 
+			try
+			{
+                var pagingResponseForCurrentTasksSubmitted = await TaskRepo.GetSubmittedTasksByTeamId(_taskParameters, teamIdStr);
+                CurrentTasksToTeamSubmitted = pagingResponseForCurrentTasksSubmitted.Items;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of submitted tasks by team id!", ex);
+            }
+           
 			TaskList = TaskList.Where(tl => CurrentTasksToTeamInProcess.Select(ctt => ctt.Id).ToList().IndexOf(tl.Id) == -1).ToList();
 			TaskList = TaskList.Where(tl => CurrentTasksToTeamSubmitted.Select(ctt => ctt.Id).ToList().IndexOf(tl.Id) == -1).ToList();
 
@@ -84,9 +115,16 @@ namespace BlazorApplication.Pages
 				StartTime = DateTime.Now,
 				EndTime = DateTime.MaxValue
 			};
-			await TaskToTeamRepo.AddTaskToTeam(taskToTeam);
 
-			_notification.Show();
-		}
+			try
+			{
+                await TaskToTeamRepo.AddTaskToTeam(taskToTeam);
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while adding a new task!", ex);
+            }
+        }
 	}
 }

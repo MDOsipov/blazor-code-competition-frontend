@@ -3,6 +3,8 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
@@ -12,7 +14,7 @@ namespace BlazorApplication.Pages
 
         public List<Competition> competitionList { get; set; } = new List<Competition>();
 		public List<Participant> participantList { get; set; } = new List<Participant>();
-
+        private ErrorBoundary? errorBoundary;
         public int leaderId { get; set; } = 1;
         public int competitionId { get; set; } = 1;
 
@@ -29,42 +31,73 @@ namespace BlazorApplication.Pages
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
+            await GetCompetitions();
+            await GetParticipants();
+        }
+
+        private async Task GetCompetitions()
+        {
             CompetitionParameters competitionParameters = new CompetitionParameters
             {
                 switchOff = true
             };
 
-            var competitionPagingResponse = await CompetitionRepo.GetCompetitions(competitionParameters);
-            competitionList = competitionPagingResponse.Items;
+            try
+            {
+                var competitionPagingResponse = await CompetitionRepo.GetCompetitions(competitionParameters);
+                competitionList = competitionPagingResponse.Items;
+            }
+            catch (Exception ex) 
+            {
+                throw new System.Exception("Oops! Something went wrong while getting competitions!", ex);
+            }
+        }
 
+        private async Task GetParticipants()
+        {
             ParticipantParameters participantParameters = new ParticipantParameters
             {
                 switchOff = true
             };
 
-            var participantPagingResponse = await ParticipantRepo.GetParticipants(participantParameters);
-            participantList = participantPagingResponse.Items;
+            try 
+            {
+                var participantPagingResponse = await ParticipantRepo.GetParticipants(participantParameters);
+                participantList = participantPagingResponse.Items;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting participants!", ex);
+            }
         }
 
         private void AssignImageUrl(string imgUrl) => _team.IconImage = imgUrl; 
 
 		private async void Create()
         {
-            //_team.CreateDate = DateTime.Now;
-            //_team.UpdateDate = DateTime.Now;
-            //_team.CreateUserId = 1;
-            //_team.UpdateUserId = 1;
-            //_team.StatusId = (int)Enums.Status.Active;
-
-            _team.CompetitionId = competitionId;
-            _team.TeamLeaderId = leaderId;
-
-            if (competitionId > 0 && leaderId > 0)
+            try
             {
-                await TeamRepo.CreateTeam(_team);
-                _notification.Show();
-            }
+                _team.CompetitionId = competitionId;
+                _team.TeamLeaderId = leaderId;
 
+                if (competitionId > 0 && leaderId > 0)
+                {
+                    await TeamRepo.CreateTeam(_team);
+                    _notification.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new team!", ex);
+            }
+        }
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
         }
     }
 }

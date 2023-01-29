@@ -1,10 +1,27 @@
 ﻿<div>
 	
 	<AuthorizeView Roles="system administrator">
-		<SystemAdminDashboard></SystemAdminDashboard>
+		<ErrorBoundary @ref="errorBoundary">
+			<ChildContent>
+				<SystemAdminDashboard></SystemAdminDashboard>
+			</ChildContent>
+			<ErrorContent Context="Some">
+				<p class="error-message">Oops! Something went wrong while rendering system administrator dashboard!</p>
+				<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+			</ErrorContent>
+		</ErrorBoundary>
 	</AuthorizeView>
+	
 	<AuthorizeView Roles="participant">
-		<ParticipantDashboard></ParticipantDashboard>
+		<ErrorBoundary @ref="errorBoundary">
+			<ChildContent>
+				<ParticipantDashboard></ParticipantDashboard>
+			</ChildContent>
+			<ErrorContent Context="some">
+				<p class="error-message">Oops! Something went wrong while rendering participant dashboard!</p>
+				<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+			</ErrorContent>
+		</ErrorBoundary>
 	</AuthorizeView>
 	
 </div>

@@ -79,3 +79,11 @@ main {
         padding-right: 1.5rem !important;
     }
 }
+
+.error-message {
+    background-color: darkred;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
