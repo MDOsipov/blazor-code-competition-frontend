@@ -14,6 +14,9 @@ namespace BlazorApplication.Pages
 		[Inject]
 		public IParticipantHttpRepository ParticipantRepo { get; set; }
 
+		[Parameter]
+		public bool successResponse { get; set; }
+
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetParticipants();
@@ -32,6 +35,7 @@ namespace BlazorApplication.Pages
 			var pagingResponse = await ParticipantRepo.GetParticipants(_participantParameters);
 			ParticipantsList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
+			successResponse = pagingResponse.SuccessRequest;
 		}
 
 		private async System.Threading.Tasks.Task DeleteParticipant(int id)

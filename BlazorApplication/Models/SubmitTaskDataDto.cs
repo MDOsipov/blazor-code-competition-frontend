@@ -7,6 +7,6 @@ namespace BlazorApplication.Models
         [Required(ErrorMessage = "Github url is required field")]
         public string GithubUrl { get; set; } = "";
         public string SubmitterComment { get; set; } = "";
-        public bool? SuccessRequest { get; set; } = false;
+        public bool SuccessRequest { get; set; } = false;
     }
 }

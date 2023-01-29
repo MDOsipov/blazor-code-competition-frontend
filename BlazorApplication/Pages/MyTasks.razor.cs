@@ -22,7 +22,13 @@ namespace BlazorApplication.Pages
         public ITeamHttpRepository TeamRepo { get; set; }
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
-        public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
+
+		[Inject]
+		public ITaskHttpRepository TaskRepo { get; set; }
+
+        [Parameter]
+        public bool successResponse { get; set; }
+		public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
 
@@ -34,11 +40,7 @@ namespace BlazorApplication.Pages
         private int CompetitionId = 0;
         private int maxNumTasks = 0;
 
-
-        [Inject]
-        public ITaskHttpRepository TaskRepo { get; set; }
-
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             await GetUserId();
             await GetUserEmail();
@@ -64,13 +66,13 @@ namespace BlazorApplication.Pages
             var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
             var users = pagingResponse.Items;
             LogedUserEmail = users.Where(u => u.Id == LogedUserId).FirstOrDefault().Email;
-            Console.WriteLine("User's email: ");
-            Console.WriteLine(LogedUserEmail);
+            //Console.WriteLine("User's email: ");
+            //Console.WriteLine(LogedUserEmail);
         }
 
         private async Task GetUserTeam()
         {
-            Console.WriteLine("Started get user team");
+            //Console.WriteLine("Started get user team");
             ParticipantParameters participantParameters = new ParticipantParameters()
             {
                 switchOff = true
@@ -78,53 +80,54 @@ namespace BlazorApplication.Pages
 
             var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
             var participant = pagingResponse.Items.FirstOrDefault();
-            Console.WriteLine("Participant: ");
-            Console.WriteLine(JsonSerializer.Serialize(participant));
+            //Console.WriteLine("Participant: ");
+            //Console.WriteLine(JsonSerializer.Serialize(participant));
 
             if (participant?.teamId is not null)
             {
                 UserTeamId = (int)participant.teamId;
                 ParticipantId = participant.id;
-                Console.WriteLine("User's team id: ");
-                Console.WriteLine(UserTeamId);
+                //Console.WriteLine("User's team id: ");
+                //Console.WriteLine(UserTeamId);
             }
 
             if (UserTeamId > 0)
             {
                 var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
                 UserTeamName = team.TeamName;
-                Console.WriteLine("User's team name: ");
-                Console.WriteLine(UserTeamName);
+                //Console.WriteLine("User's team name: ");
+                //Console.WriteLine(UserTeamName);
             }
             else
             {
                 UserTeamName = "No team";
-                Console.WriteLine("User's team name: ");
-                Console.WriteLine(UserTeamName);
+                //Console.WriteLine("User's team name: ");
+                //Console.WriteLine(UserTeamName);
             }
 
         }
-        private async System.Threading.Tasks.Task SelectedPage(int page)
+        private async Task SelectedPage(int page)
         {
             _taskParameters.PageNumber = page;
             await GetTasksByTeamId();
         }
 
-        protected async System.Threading.Tasks.Task GetTasksByTeamId()
+        protected async Task GetTasksByTeamId()
         {
             var pagingResponse = await TaskRepo.GetTasksByTeamId(_taskParameters, UserTeamId.ToString());
             TaskList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
+            successResponse = pagingResponse.SuccessRequest;
         }
 
-		private async System.Threading.Tasks.Task RemoveTaskFromTeam(int taskId)
+		private async Task RemoveTaskFromTeam(int taskId)
 		{
 			await TaskToTeamRepo.DeleteTeamTaskByTaskIdAndTeamId(taskId.ToString(), UserTeamId.ToString());
 			_taskParameters.PageNumber = 1;
 			await GetTasksByTeamId();
 		}
 
-        private async System.Threading.Tasks.Task GetCompetitionId()
+        private async Task GetCompetitionId()
         {
             var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
             if (team.CompetitionId is not null)
@@ -133,7 +136,7 @@ namespace BlazorApplication.Pages
             }
         }
 
-        private async System.Threading.Tasks.Task GetMaxNumTasks()
+        private async Task GetMaxNumTasks()
         {
             if (CompetitionId > 0)
             {
@@ -141,7 +144,7 @@ namespace BlazorApplication.Pages
                 if (competition is not null)
                 {
                     maxNumTasks = competition.maxTaskPerGroups;
-                    Console.WriteLine("Max possible task number = " + maxNumTasks.ToString());
+                    //Console.WriteLine("Max possible task number = " + maxNumTasks.ToString());
                 }
             }
         }

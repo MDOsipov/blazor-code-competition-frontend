@@ -25,13 +25,24 @@
         <a href="/addParticipantToTeam/@id">Add participants to team</a>
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <ParticipantTable Participants="ParticipantList" OnDeleted="DeleteTask" isParticipantToTeamFlag=true />
+@if (successResponse && ParticipantList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no any Participant yet, please add anybody to a team.</h5>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<ParticipantTable Participants="ParticipantList" OnDeleted="DeleteTask" isParticipantToTeamFlag=true />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

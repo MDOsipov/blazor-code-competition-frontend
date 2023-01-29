@@ -11,6 +11,6 @@ namespace BlazorApplication.Models
 
         [Required(ErrorMessage = "Category description is required field")]
         public string? CategoryDescription { get; set; }
-        public bool? SuccessRequest { get; set; } = false;
+        public bool SuccessRequest { get; set; } = false;
     }
 }

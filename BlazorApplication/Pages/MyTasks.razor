@@ -23,13 +23,24 @@
         }
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+@if (successResponse && TaskList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no Task still, please choose one from the list.</h5>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-       <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

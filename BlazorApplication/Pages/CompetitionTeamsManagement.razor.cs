@@ -10,6 +10,9 @@ namespace BlazorApplication.Pages
         [Parameter]
         public string id { get; set; } = "";
 
+        [Parameter]
+        public bool successResponse { get; set; }
+
         [Inject]
         public ITaskToCompetitionRepository taskToCompetitionRepo { get; set; }
 
@@ -36,6 +39,7 @@ namespace BlazorApplication.Pages
             var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
             TeamList = pagingResponse.Items.Where(t => t.CompetitionId == Int32.Parse(id)).ToList();
             MetaData = pagingResponse.MetaData;
+            successResponse = pagingResponse.SuccessRequest;
         }
 
         

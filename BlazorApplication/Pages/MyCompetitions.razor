@@ -9,13 +9,24 @@
         @*Place for search and sort*@
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <CompetitionTable Competitions="CompetitionList" IsCompetitionAdmin=true OnDeleted="DeleteCompetition" />
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+@if (successResponse && CompetitionList.Count == 0)
+{
+	<div>
+		<p></p>
+		<p></p>
+		<h5 class="text-primary">There is no Competition now, please ask administrator to add new</h5>
+	</div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<CompetitionTable Competitions="CompetitionList" IsCompetitionAdmin=true OnDeleted="DeleteCompetition" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

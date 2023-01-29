@@ -20,7 +20,13 @@ namespace BlazorApplication.Pages
         public ITaskToTeamHttpRepository TaskToTeamRepo { get; set; }
         [Inject]
         public ITeamHttpRepository TeamRepo { get; set; }
-        public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
+
+		[Inject]
+		public ITaskHttpRepository TaskRepo { get; set; }
+
+        [Parameter]
+        public bool successResponse { get; set; }
+		public List<TaskWithTimesDto> TaskList { get; set; } = new List<TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
 
@@ -30,10 +36,7 @@ namespace BlazorApplication.Pages
         private int ParticipantId = 0;
         private string UserTeamName = "";
 
-        [Inject]
-        public ITaskHttpRepository TaskRepo { get; set; }
-
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             await GetUserId();
             await GetUserEmail();
@@ -97,17 +100,18 @@ namespace BlazorApplication.Pages
             }
 
         }
-        private async System.Threading.Tasks.Task SelectedPage(int page)
+        private async Task SelectedPage(int page)
         {
             _taskParameters.PageNumber = page;
             await GetTasksByTeamId();
         }
 
-        protected async System.Threading.Tasks.Task GetTasksByTeamId()
+        protected async Task GetTasksByTeamId()
         {
             var pagingResponse = await TaskRepo.GetSubmittedTasksByTeamId(_taskParameters, UserTeamId.ToString());
             TaskList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
+            successResponse = pagingResponse.SuccessRequest;
         }
 
     }

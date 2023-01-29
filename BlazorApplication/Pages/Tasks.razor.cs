@@ -14,6 +14,9 @@ namespace BlazorApplication.Pages
 		[Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
 
+		[Parameter]
+		public bool successResponse { get; set; }
+
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetTasks();
@@ -30,6 +33,7 @@ namespace BlazorApplication.Pages
 			var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
 			TaskList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
+			successResponse = pagingResponse.SuccessRequest;
 		}
 
 		private async System.Threading.Tasks.Task DeleteTask(int id)

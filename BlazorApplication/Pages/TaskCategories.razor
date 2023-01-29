@@ -12,13 +12,24 @@
         <a href="/createTaskCategory">Create Task Category</a>
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <TaskCategoryTable TaskCategories="TaskCategoryList" OnDeleted="DeleteTaskCategory" />
+@if (successResponse && TaskCategoryList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no any Category, please create new one.</h5>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<TaskCategoryTable TaskCategories="TaskCategoryList" OnDeleted="DeleteTaskCategory" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

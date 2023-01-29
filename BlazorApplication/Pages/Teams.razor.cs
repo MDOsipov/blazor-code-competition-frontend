@@ -15,6 +15,9 @@ namespace BlazorApplication.Pages
 		[Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
 
+		[Parameter]
+		public bool successResponse { get; set; }
+
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetTeams();
@@ -30,7 +33,8 @@ namespace BlazorApplication.Pages
 			var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
 			TeamList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
-			Console.WriteLine("Team list:" + JsonSerializer.Serialize(TeamList));
+			successResponse = pagingResponse.SuccessRequest;
+			//Console.WriteLine("Team list:" + JsonSerializer.Serialize(TeamList));
 		}
 
         private async System.Threading.Tasks.Task DeleteTeam(int id)

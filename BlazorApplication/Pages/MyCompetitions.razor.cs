@@ -12,9 +12,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
-    
-    public partial class MyCompetitions
-    {
+
+	public partial class MyCompetitions
+	{
 		[Inject]
 		public AuthTest authTest { get; set; }
 		public List<Competition> CompetitionList { get; set; } = new List<Competition>();
@@ -27,26 +27,30 @@ namespace BlazorApplication.Pages
 
 		private string LogedUserId = "";
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		[Parameter]
+		public bool successResponse { get; set; }
+
+		protected async override Task OnInitializedAsync()
 		{
 			await LogUsername();
 			await GetUserId();
 			await GetCompetitions();
 		}
 
-		protected async System.Threading.Tasks.Task GetCompetitions()
+		protected async Task GetCompetitions()
 		{
 			var pagingResponse = await CompetitionRepo.GetCompetitionsByAdminId(LogedUserId, _competitionParameters);
 			CompetitionList = pagingResponse.Items;
 			MetaData = pagingResponse.MetaData;
+			successResponse = pagingResponse.SuccessRequest;
 		}
-		private async System.Threading.Tasks.Task DeleteCompetition(int id)
+		private async Task DeleteCompetition(int id)
 		{
 			await CompetitionRepo.DeleteCompetition(id);
 			_competitionParameters.PageNumber = 1;
 			await GetCompetitions();
 		}
-		private async System.Threading.Tasks.Task SelectedPage(int page)
+		private async Task SelectedPage(int page)
 		{
 			_competitionParameters.PageNumber = page;
 			await GetCompetitions();
@@ -56,8 +60,8 @@ namespace BlazorApplication.Pages
 		{
 			var identity = await authTest.GetIdentity();
 			//Console.WriteLine(identity.Name);
-			Console.WriteLine("Identity: ");
-			Console.WriteLine(JsonSerializer.Serialize(identity));
+			//Console.WriteLine("Identity: ");
+			//Console.WriteLine(JsonSerializer.Serialize(identity));
 		}
 
 		private async Task LogClaims()
@@ -75,7 +79,7 @@ namespace BlazorApplication.Pages
 			var claims = await authTest.GetClaims();
 			LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
 
-			Console.WriteLine("Our user id: " + LogedUserId);
+			//Console.WriteLine("Our user id: " + LogedUserId);
 		}
 	}
 }

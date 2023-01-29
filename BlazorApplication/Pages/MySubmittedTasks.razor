@@ -16,13 +16,24 @@
         
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <TaskToTeamTable Tasks="TaskList" IsSubmitted=true ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+@if (successResponse && TaskList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no Submited task now, when you submit any task, you can it here.</h5>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-       <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<TaskToTeamTable Tasks="TaskList" IsSubmitted=true ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

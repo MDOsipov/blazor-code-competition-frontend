@@ -12,22 +12,33 @@
         <a href="/createTeam">Create Team</a>
     </div>
 </div>
-<AuthorizeView Roles="system administrator">
-    <div class="row">
-        <div class="col">
-            <TeamTable Teams="TeamList" OnDeleted="DeleteTeam"/>
-        </div>
+@if (successResponse && TeamList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no any Team yet, please create new one.</h5>
     </div>
-</AuthorizeView>
-<AuthorizeView Roles="competition administrator">
-    <div class="row">
-        <div class="col">
-            <TeamTable Teams="TeamList" OnDeleted="DeleteTeam" IsCompetitionAdmin=true/>
-        </div>
-    </div>
-</AuthorizeView>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+}
+else
+{
+	<AuthorizeView Roles="system administrator">
+		<div class="row">
+			<div class="col">
+				<TeamTable Teams="TeamList" OnDeleted="DeleteTeam" />
+			</div>
+		</div>
+	</AuthorizeView>
+	<AuthorizeView Roles="competition administrator">
+		<div class="row">
+			<div class="col">
+				<TeamTable Teams="TeamList" OnDeleted="DeleteTeam" IsCompetitionAdmin=true />
+			</div>
+		</div>
+	</AuthorizeView>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

@@ -12,13 +12,24 @@
         <a href="/createCompetition">Create Competition</a>
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <CompetitionTable Competitions="CompetitionList" OnDeleted="DeleteCompetition" />
+@if (successResponse && CompetitionList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no Competition now, please add new</h5>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+}
+else
+{
+    <div class="row">
+        <div class="col">
+            <CompetitionTable Competitions="CompetitionList" OnDeleted="DeleteCompetition" />
+        </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col">
+            <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+        </div>
+    </div>
+}

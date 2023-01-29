@@ -12,13 +12,24 @@
         <a href="/createParticipant">Create Participant</a>
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <ParticipantTable Participants="ParticipantsList" OnDeleted="DeleteParticipant" />
+@if (successResponse && ParticipantsList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no Participant yet, please check Users table.</h5>
     </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<ParticipantTable Participants="ParticipantsList" OnDeleted="DeleteParticipant" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}

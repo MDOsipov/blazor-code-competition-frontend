@@ -14,6 +14,8 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
 
+        [Parameter]
+        public bool successResponse { get; set; }
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
             await GetTaskСategories();
@@ -30,6 +32,7 @@ namespace BlazorApplication.Pages
             var pagingResponse = await TaskCategoryRepo.GetTaskCategory(_taskCategoryParameters);
             TaskCategoryList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
+            successResponse = pagingResponse.SuccessRequest;
         }
 
         
