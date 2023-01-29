@@ -29,7 +29,7 @@ namespace BlazorApplication.Pages
             //Console.WriteLine("Update task created with id = " + Id);
             
             _task = await TaskRepo.GetTaskById(Id);
-            //_timeFrameMode = _task.Timeframe.ToString();            
+            _timeFrameMode = _task.Timeframe.ToString();            
             await GetTaskCategories();            
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
         }
