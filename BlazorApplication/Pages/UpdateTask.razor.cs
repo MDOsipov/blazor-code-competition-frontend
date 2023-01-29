@@ -113,7 +113,7 @@ namespace BlazorApplication.Pages
             };
 
             var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
-            TaskCategories = pagingResponse.Items;            
+            TaskCategories = pagingResponse.Items;
         }
 
     }

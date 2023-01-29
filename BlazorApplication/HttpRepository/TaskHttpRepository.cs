@@ -89,23 +89,26 @@ namespace BlazorApplication.HttpRepository
 
         public async Task<Models.Task> GetTaskById(string id)
 		{
-			var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);
 
-			await AddToken.RequestAuthToken(_tokenProvider, _client);
-			//Console.WriteLine(url);
-			var response = await _client.GetAsync(url);
-			var content = await response.Content.ReadAsStringAsync();
+            var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);
 
-			if (!response.IsSuccessStatusCode)
+            //await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+            var response = await _client.GetAsync(url);
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
 			{
 				throw new ApplicationException(content);
 			}
 
 			var task = JsonSerializer.Deserialize<Models.Task>(content, _options);
 
-			task.SuccessRequest = true;
 
-			return task;
+            task.SuccessRequest = true;
+
+            return task;
 		}
 
 		public async Task<PagingResponse<Models.Task>> GetTasks(TaskParameters taskParameters)
