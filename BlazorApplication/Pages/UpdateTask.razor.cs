@@ -13,8 +13,13 @@ namespace BlazorApplication.Pages
         private string _taskCategory { get; set; }
         private List<Models.TaskCategory> TaskCategories { get; set; }
 
-
         private SuccessNotification _notification;
+
+        [Parameter]
+        public bool successResponse { get; set; }
+
+        [Parameter]
+        public string Id { get; set; }
 
         [Inject]
         public ITaskHttpRepository TaskRepo { get; set; }
@@ -22,18 +27,15 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
 
-        [Parameter]
-        public string Id { get; set; }
+        
 
         protected async override Task OnInitializedAsync()
-        {
-            //Console.WriteLine("Update task created with id = " + Id);
-            
+        {            
             _task = await TaskRepo.GetTaskById(Id);
-            Console.WriteLine(JsonSerializer.Serialize(_task));
             _timeFrameMode = _task.Timeframe.ToString();            
             await GetTaskCategories();            
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
+            successResponse = _task.SuccessRequest;
         }
 
 		private async Task Update()
