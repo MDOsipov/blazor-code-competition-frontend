@@ -20,16 +20,30 @@ namespace BlazorApplication.HttpRepository
 
 		public async Task<IIdentity> GetIdentity()
 		{
-			var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-			var user = authState.User;
-			return user.Identity;
-		}
+            try 
+			{
+                var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                return user.Identity;
+            }
+            catch (Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+            }
+        }
 
 		public async Task<IEnumerable<Claim>> GetClaims()
 		{
-			var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-			var claims = authState.User.Claims;
-			return claims;
-		}
+			try 
+			{
+                var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+                var claims = authState.User.Claims;
+                return claims;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+            }
+        }
 	}
 }

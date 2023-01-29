@@ -32,14 +32,21 @@ namespace BlazorApplication.HttpRepository
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskToTeam", bodyContent);
-			var postContent = await postResult.Content.ReadAsStringAsync();
-
-			if (!postResult.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(postContent);
-			}
-		}
+                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskToTeam", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
+
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+			catch(Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while adding a task to the team!", ex);
+            }
+        }
 
 		public async System.Threading.Tasks.Task DeleteTeamTaskByTaskIdAndTeamId(string taskId, string teamId)
 		{
@@ -53,14 +60,21 @@ namespace BlazorApplication.HttpRepository
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			var deleteResult = await _client.DeleteAsync(QueryHelpers.AddQueryString(url, queryStringParam));
-			var deleteContent = await deleteResult.Content.ReadAsStringAsync();
-
-			if (!deleteResult.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(deleteContent);
-			}
-		}
+                var deleteResult = await _client.DeleteAsync(QueryHelpers.AddQueryString(url, queryStringParam));
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while removing a task from the team!", ex);
+            }
+        }
 
 		public async System.Threading.Tasks.Task SubmitTask(string taskId, string teamId, SubmitTaskDataDto submitTaskDataDto)
 		{
@@ -73,15 +87,23 @@ namespace BlazorApplication.HttpRepository
 			var url = Path.Combine(_backEndConnections.CSharpUri + "TaskToTeam/submit");
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
-			var bodyContent = new StringContent(JsonSerializer.Serialize(submitTaskDataDto), Encoding.UTF8, "application/json");
 
-			var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(url, queryStringParam), bodyContent);
-			var putContent = await putResult.Content.ReadAsStringAsync();
-
-			if (!putResult.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(putContent);
-			}
-		}
+                var bodyContent = new StringContent(JsonSerializer.Serialize(submitTaskDataDto), Encoding.UTF8, "application/json");
+
+                var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(url, queryStringParam), bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while submitting a task!", ex);
+            }
+        }
 	}
 }

@@ -48,15 +48,22 @@ namespace BlazorApplication.HttpRepository
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-			var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
-			var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant", queryStringParam), bodyContent);
-			var putContent = await putResult.Content.ReadAsStringAsync();
+            try
+            {
+                var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
+                var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant", queryStringParam), bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
 
-			if (!putResult.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(putContent);
-			}
-		}
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex) 
+            {
+                throw new System.Exception("Oops! Something went wrong while adding a new team to the participant!", ex);
+            }
+        }
 
 		public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
         {
@@ -64,12 +71,20 @@ namespace BlazorApplication.HttpRepository
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "participant", bodyContent);
-            var postContent = await postResult.Content.ReadAsStringAsync();
 
-            if (!postResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(postContent);
+                var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "participant", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
+
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
             }
         }
 
@@ -78,12 +93,20 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id.ToString());
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var deleteResult = await _client.DeleteAsync(url);
-            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
-            if (!deleteResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(deleteContent);
+                var deleteResult = await _client.DeleteAsync(url);
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting the participant!", ex);
             }
         }
 
@@ -92,27 +115,35 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id);
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var response = await _client.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var localParticipant = JsonSerializer.Deserialize<LocalParticipant>(content, _options);
+
+                var participant = new Participant
+                {
+                    id = localParticipant.id,
+                    firstName = localParticipant.firstName,
+                    lastName = localParticipant.lastName,
+                    email = localParticipant.email,
+                    userId = localParticipant.userId,
+                    teamId = localParticipant.teamId
+                };
+
+                return participant;
             }
-
-            var localParticipant = JsonSerializer.Deserialize<LocalParticipant>(content, _options);
-           
-            var participant = new Participant
+            catch (Exception ex)
             {
-                id = localParticipant.id,
-                firstName = localParticipant.firstName,
-                lastName = localParticipant.lastName,
-                email = localParticipant.email,
-                userId = localParticipant.userId,
-                teamId = localParticipant.teamId
-            };
-
-            return participant;
+                throw new System.Exception("Oops! Something went wrong while getting a participant by id!", ex);
+            }
         }
 
         public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
@@ -125,22 +156,28 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/extended", queryStringParam));			
-			var content = await response.Content.ReadAsStringAsync();
-
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new ApplicationException(content);
-			}
-
-            var pagingResponse = new PagingResponse<Models.Participant>
+            try
             {
-                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/extended", queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
 
-            return pagingResponse;
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
 
+                var pagingResponse = new PagingResponse<Models.Participant>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+            }
         }
 
         public async Task<PagingResponse<Participant>> GetParticipantsByEmail(ParticipantParameters participantParameters, string email)
@@ -153,21 +190,28 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byEmail/"+email, queryStringParam));
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byEmail/" + email, queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var pagingResponse = new PagingResponse<Models.Participant>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
             }
-
-            var pagingResponse = new PagingResponse<Models.Participant>
+            catch (Exception ex)
             {
-                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
-
-            return pagingResponse;
+                throw new System.Exception("Oops! Something went wrong while getting a list of participants by email!", ex);
+            }
         }
 
         public async Task<PagingResponse<Participant>> GetParticipantsByTeamId(ParticipantParameters participantParameters, string teamId)
@@ -180,21 +224,28 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byTeamId/" + teamId, queryStringParam));
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byTeamId/" + teamId, queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var pagingResponse = new PagingResponse<Models.Participant>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
             }
-
-            var pagingResponse = new PagingResponse<Models.Participant>
+            catch (Exception ex)
             {
-                Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
-
-            return pagingResponse;
+                throw new System.Exception("Oops! Something went wrong while getting a list of participants by team id!", ex);
+            }
         }
 
         public async Task<IEnumerable<Participant>> GetParticipantsLimited()
@@ -202,16 +253,23 @@ namespace BlazorApplication.HttpRepository
            
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-            var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "participant");
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
-            }
+                var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "participant");
+                var content = await response.Content.ReadAsStringAsync();
 
-            var toReturn = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options);
-            return toReturn;
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var toReturn = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options);
+                return toReturn;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list (without wide info) of participants by team id!", ex);
+            }
         }
 
         public async System.Threading.Tasks.Task RemoveTeamFromParticipant(string participantId)
@@ -223,13 +281,20 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-            var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
-            var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/remove/teamFromParticipant", queryStringParam), bodyContent);
-            var putContent = await putResult.Content.ReadAsStringAsync();
-
-            if (!putResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(putContent);
+                var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
+                var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/remove/teamFromParticipant", queryStringParam), bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while removing team from participant!", ex);
             }
         }
 
@@ -240,12 +305,20 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", participant.id.ToString());
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-			var putResult = await _client.PutAsync(url, bodyContent);
-            var putContent = await putResult.Content.ReadAsStringAsync();
 
-            if (!putResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(putContent);
+                var putResult = await _client.PutAsync(url, bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while updating the participant!", ex);
             }
         }
     }

@@ -31,13 +31,20 @@ namespace BlazorApplication.HttpRepository
             var content = JsonSerializer.Serialize(taskCategory);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-            var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskCategory", bodyContent);
-            var postContent = await postResult.Content.ReadAsStringAsync();
-
-            if (!postResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(postContent);
+                await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskCategory", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
+
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+            catch (Exception ex) 
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new task category!", ex);
             }
         }
 
@@ -46,12 +53,20 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.CSharpUri + "TaskCategory", id.ToString());
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-            var deleteResult = await _client.DeleteAsync(url);
-            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
-            if (!deleteResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(deleteContent);
+                var deleteResult = await _client.DeleteAsync(url);
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting the task category!", ex);
             }
         }
 
@@ -65,22 +80,28 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "TaskCategory", queryStringParam));
-            var content = await response.Content.ReadAsStringAsync();
-
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
-            };
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "TaskCategory", queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
 
-            var pagingResponse = new PagingResponse<Models.TaskCategory>
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                };
+
+                var pagingResponse = new PagingResponse<Models.TaskCategory>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.TaskCategory>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
+            }
+            catch (Exception ex)
             {
-                Items = JsonSerializer.Deserialize<List<Models.TaskCategory>>(content, _options),
-                MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-            };
-
-            return pagingResponse;
+                throw new System.Exception("Oops! Something went wrong while getting a list of task categories!", ex);
+            }
         }
 
         public async Task<TaskCategory> GetTaskCategoryById(string id)
@@ -88,19 +109,27 @@ namespace BlazorApplication.HttpRepository
             var url = Path.Combine(_backEndConnections.CSharpUri + "TaskCategory", id);
 
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-            var response = await _client.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(content);
+                var response = await _client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+
+                var taskCategory = JsonSerializer.Deserialize<TaskCategory>(content, _options);
+
+                Console.WriteLine("We got task category: " + JsonSerializer.Serialize(taskCategory));
+
+                return taskCategory;
             }
-
-            var taskCategory = JsonSerializer.Deserialize<TaskCategory>(content, _options);
-
-            Console.WriteLine("We got task category: " + JsonSerializer.Serialize(taskCategory));  
-
-            return taskCategory;
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a task category by id!", ex);
+            }
         }
 
         public async System.Threading.Tasks.Task UpdateTaskCategory(TaskCategory taskCategory)
@@ -109,13 +138,20 @@ namespace BlazorApplication.HttpRepository
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var url = Path.Combine(_backEndConnections.CSharpUri + "TaskCategory", taskCategory.Id.ToString());
 
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
-            var putResult = await _client.PutAsync(url, bodyContent);
-            var putContent = await putResult.Content.ReadAsStringAsync();
-
-            if (!putResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(putContent);
+                await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+                var putResult = await _client.PutAsync(url, bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while updating the task category!", ex);
             }
         }
     }

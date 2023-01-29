@@ -2,34 +2,42 @@
 @using BlazorApplication.Components.ParticipantTable
 @using BlazorApplication.Components
 
-<nav class="navbar navbar-expand-lg bg-light">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="teamParticipantsManagement/@id">Participants</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="teamParticipantsManagement/@id">Participants</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-<div class="row">
-    <div class="col-md-3">
-    </div>
-    <div class="col-md-3">
-    </div>
-    <div class="col-md-6">
-        <a href="/addParticipantToTeam/@id">Add participants to team</a>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <ParticipantTable Participants="ParticipantList" OnDeleted="DeleteTask" isParticipantToTeamFlag=true />
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-    </div>
-</div>
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-6">
+                <a href="/addParticipantToTeam/@id">Add participants to team</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <ParticipantTable Participants="ParticipantList" OnDeleted="DeleteParticipant" isParticipantToTeamFlag=true />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+            </div>
+        </div>
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering team participants management page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

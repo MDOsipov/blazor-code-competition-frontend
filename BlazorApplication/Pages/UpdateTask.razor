@@ -1,6 +1,8 @@
 ﻿@page "/updateTask/{id}"
 
-@if (@_task != null)
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        @if (@_task != null)
 {
     <EditForm Model="@_task" OnValidSubmit="Update" class="card card-body bg-light mt-5">
         <DataAnnotationsValidator />
@@ -74,3 +76,9 @@
     </EditForm>
     <SuccessNotification @ref="_notification" _navUrl="/tasks" />
 }
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering update task page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

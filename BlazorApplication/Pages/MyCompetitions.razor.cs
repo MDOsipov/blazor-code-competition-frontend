@@ -4,6 +4,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Json;
@@ -21,8 +22,9 @@ namespace BlazorApplication.Pages
 
 		public MetaData MetaData { get; set; } = new MetaData();
 		private CompetitionParameters _competitionParameters = new CompetitionParameters();
+        private ErrorBoundary? errorBoundary;
 
-		[Inject]
+        [Inject]
 		public ICompetitionHttpRepository CompetitionRepo { get; set; }
 
 		private string LogedUserId = "";
@@ -36,14 +38,28 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetCompetitions()
 		{
-			var pagingResponse = await CompetitionRepo.GetCompetitionsByAdminId(LogedUserId, _competitionParameters);
-			CompetitionList = pagingResponse.Items;
-			MetaData = pagingResponse.MetaData;
+			try
+			{
+                var pagingResponse = await CompetitionRepo.GetCompetitionsByAdminId(LogedUserId, _competitionParameters);
+                CompetitionList = pagingResponse.Items;
+                MetaData = pagingResponse.MetaData;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+            }
 		}
 		private async System.Threading.Tasks.Task DeleteCompetition(int id)
 		{
-			await CompetitionRepo.DeleteCompetition(id);
-			_competitionParameters.PageNumber = 1;
+			try
+			{
+                await CompetitionRepo.DeleteCompetition(id);
+                _competitionParameters.PageNumber = 1;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while removing a competition!", ex);
+            }
 			await GetCompetitions();
 		}
 		private async System.Threading.Tasks.Task SelectedPage(int page)
@@ -72,10 +88,24 @@ namespace BlazorApplication.Pages
 
 		private async Task GetUserId()
 		{
-			var claims = await authTest.GetClaims();
-			LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
-
-			Console.WriteLine("Our user id: " + LogedUserId);
-		}
-	}
+			try
+			{
+                var claims = await authTest.GetClaims();
+                LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
+                Console.WriteLine("Our user id: " + LogedUserId);
+            }
+			catch(Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+            }
+        }
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
+    }
 }

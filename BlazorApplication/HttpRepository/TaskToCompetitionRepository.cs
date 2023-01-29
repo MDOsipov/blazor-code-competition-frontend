@@ -32,12 +32,19 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskToCompetition", bodyContent);
-            var postContent = await postResult.Content.ReadAsStringAsync();
-
-            if (!postResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(postContent);
+                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskToCompetition", bodyContent);
+                var postContent = await postResult.Content.ReadAsStringAsync();
+
+                if (!postResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(postContent);
+                }
+            }
+            catch(Exception ex) 
+            {
+                throw new System.Exception("Oops! Something went wrong while adding a task to the competition!", ex);
             }
         }
 
@@ -53,12 +60,19 @@ namespace BlazorApplication.HttpRepository
 
             await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-            var deleteResult = await _client.DeleteAsync(QueryHelpers.AddQueryString(url, queryStringParam));
-            var deleteContent = await deleteResult.Content.ReadAsStringAsync();
-
-            if (!deleteResult.IsSuccessStatusCode)
+            try
             {
-                throw new ApplicationException(deleteContent);
+                var deleteResult = await _client.DeleteAsync(QueryHelpers.AddQueryString(url, queryStringParam));
+                var deleteContent = await deleteResult.Content.ReadAsStringAsync();
+
+                if (!deleteResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(deleteContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while removing a task from the competition!", ex);
             }
         }
     }

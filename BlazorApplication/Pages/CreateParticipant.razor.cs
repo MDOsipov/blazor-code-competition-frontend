@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorApplication.Pages
 {
@@ -11,8 +12,9 @@ namespace BlazorApplication.Pages
         private Participant _participant = new Participant();
 
         private SuccessNotification _notification;
+        private ErrorBoundary? errorBoundary;
 
-		public List<Team> teamList { get; set; } = new List<Team>();
+        public List<Team> teamList { get; set; } = new List<Team>();
 
 		[Inject]
         public IParticipantHttpRepository ParticipantRepo { get; set; }
@@ -28,14 +30,35 @@ namespace BlazorApplication.Pages
                 switchOff = true
             };
 
-			PagingResponse<Team> teamListPaging = await TeamRepo.GetTeams(teamParameters);
-            teamList = teamListPaging.Items;
-		}
-
+            try
+            {
+                PagingResponse<Team> teamListPaging = await TeamRepo.GetTeams(teamParameters);
+                teamList = teamListPaging.Items;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+            }
+        }
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
         private async void Create()
         {
-            await ParticipantRepo.CreateParticipant(_participant);
-            _notification.Show();
+            try
+            {
+                await ParticipantRepo.CreateParticipant(_participant);
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
+            }
         }
     }
 }

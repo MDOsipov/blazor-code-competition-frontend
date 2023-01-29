@@ -13,7 +13,23 @@
 
         <article class="content px-4">
             <CascadingValue Name="HeadingColor" Value="@_color">
-                @Body
+                <ErrorBoundary @ref="errorBoundary">
+                    <ChildContent>
+                        @Body
+                    </ChildContent>
+                    <ErrorContent Context="Exception">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-9 error-message">
+                                    <h5>@Exception.Message</h5>
+                                </div>
+                                <div class="col-3">
+                                    <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </ErrorContent>
+                </ErrorBoundary>
             </CascadingValue>
         </article>
     </main>
@@ -21,5 +37,14 @@
 
 @code {
     private readonly string _color = "#0505b5";
+    private ErrorBoundary? errorBoundary;
 
+    protected override void OnParametersSet()
+    {
+        errorBoundary?.Recover();
+    }
+    private void ResetError()
+    {
+        errorBoundary?.Recover();
+    }
 }

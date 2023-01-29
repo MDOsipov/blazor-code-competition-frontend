@@ -11,6 +11,6 @@ namespace BlazorApplication.Interfaces
         Task CreateTask(Models.Task task);
         Task<Models.Task> GetTaskById(string id);
         Task UpdateTask(Models.Task task);
-        Task DeleteProduct(int id);
+        Task DeleteTask(int id);
     }
 }

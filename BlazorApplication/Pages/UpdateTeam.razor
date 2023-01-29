@@ -1,6 +1,8 @@
 ﻿@page "/updateTeam/{id}"
 
-@if (@_team != null)
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        @if (@_team != null)
 {
     <EditForm Model="@_team" OnValidSubmit="Update" class="card card-body bg-light mt-5">
         <DataAnnotationsValidator />
@@ -62,3 +64,9 @@
     </EditForm>
     <SuccessNotification @ref="_notification" _navUrl="/teams" />
 }
+    </ChildContent>
+    <ErrorContent Context="Some">
+        <p class="error-message">Oops! Something went wrong while rendering update team page!</p>
+        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
+    </ErrorContent>
+</ErrorBoundary>

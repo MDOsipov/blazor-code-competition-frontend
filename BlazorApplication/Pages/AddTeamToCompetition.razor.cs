@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorApplication.Pages
 {
@@ -15,8 +16,9 @@ namespace BlazorApplication.Pages
 		public int competitionId { get; set; } = 0;
 		private SuccessNotification? _notification;
 		public int newTeamId { get; set; } = 0;
+        private ErrorBoundary? errorBoundary;
 
-		[Inject]
+        [Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
 
 		private TeamParameters _teamParameters = new TeamParameters()
@@ -34,22 +36,50 @@ namespace BlazorApplication.Pages
 			}
 			await GetTeams();
 		}
-
-		protected async System.Threading.Tasks.Task GetTeams()
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
+        protected async System.Threading.Tasks.Task GetTeams()
 		{
-			var pagingResponse = await TeamRepo.GetTeamsLimited(_teamParameters);
-			TeamList = pagingResponse.Items;
-			newTeamId = TeamList.FirstOrDefault().Id;
-		}
+			try
+			{
+                var pagingResponse = await TeamRepo.GetTeamsLimited(_teamParameters);
+                TeamList = pagingResponse.Items;
+                newTeamId = TeamList.FirstOrDefault().Id;
+            }
+			catch (Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+            }
+        }
 
 		private async void Create()
 		{
-			Team newTeam = await TeamRepo.GetTeamById(newTeamId.ToString());
-			newTeam.CompetitionId = competitionId;
-
-            await TeamRepo.UpdateTeam(newTeam);
-
-			_notification.Show(); 
-		}
+			Team newTeam;
+			try
+			{
+                newTeam = await TeamRepo.GetTeamById(newTeamId.ToString());
+                newTeam.CompetitionId = competitionId;
+            }
+			catch (Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting a team to add!", ex);
+            }
+			
+			try
+			{
+                await TeamRepo.UpdateTeam(newTeam);
+				_notification.Show();
+            }
+            catch (Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while adding a team to competition!", ex);
+            }
+        }
 	}
 }

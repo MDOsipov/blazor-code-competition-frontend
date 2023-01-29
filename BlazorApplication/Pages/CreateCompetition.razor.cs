@@ -4,6 +4,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
@@ -19,11 +20,10 @@ namespace BlazorApplication.Pages
 		public List<CompetitionStatus> competitionStatusesList { get; set; } = new List<CompetitionStatus>();
 		
 		private SuccessNotification _notification;
+        private ErrorBoundary? errorBoundary;
 
-
-		[Inject]
+        [Inject]
 		public ICompetitionHttpRepository CompetitionRepo { get; set; }
-
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -32,10 +32,24 @@ namespace BlazorApplication.Pages
             _competition.CompetitionAdministratorId = _users.FirstOrDefault().Id;
             _competition.CompetitionStatusId = competitionStatusesList.FirstOrDefault().Id;
         }
-
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
         private async Task GetStatuses()
 		{
-            competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+            try
+            {
+                competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
+            }
         }
 
         private async Task GetUsers()
@@ -44,14 +58,28 @@ namespace BlazorApplication.Pages
             {
                 switchOff = true
             };
-            var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
-            _users = pagingResponse.Items;
+            try
+            {
+                var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
+                _users = pagingResponse.Items;
+            }
+            catch(Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
+            }
         }
 
         private async void Create()
 		{
-			await CompetitionRepo.CreateCompetition(_competition);
-			_notification.Show();
+            try 
+            {
+                await CompetitionRepo.CreateCompetition(_competition);
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while creating a new competition!", ex);
+            }
 		}
 
 	}

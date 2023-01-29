@@ -37,21 +37,28 @@ namespace BlazorApplication.HttpRepository
 				["switchOffString"] = userParameters.switchOff ? "1" : "0"
 			};
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "user/withRoles", queryStringParam));
-			var content = await response.Content.ReadAsStringAsync();
-
-			if (!response.IsSuccessStatusCode)
+			try
 			{
-				throw new ApplicationException(content);
-			}
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "user/withRoles", queryStringParam));
+                var content = await response.Content.ReadAsStringAsync();
 
-			var pagingResponse = new PagingResponse<UserDto>
-			{
-				Items = JsonSerializer.Deserialize<List<UserDto>>(content, _options),
-				MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-			};
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
 
-			return pagingResponse;
-		}
+                var pagingResponse = new PagingResponse<UserDto>
+                {
+                    Items = JsonSerializer.Deserialize<List<UserDto>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
+            }
+        }
 	}
 }

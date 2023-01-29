@@ -2,6 +2,7 @@
 using BlazorApplication.Interfaces;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.Text.Json;
 
 namespace BlazorApplication.Pages
@@ -12,7 +13,7 @@ namespace BlazorApplication.Pages
         private string _timeFrameMode { get; set; }
         private string _taskCategory { get; set; }
         private List<Models.TaskCategory> TaskCategories { get; set; }
-
+        private ErrorBoundary? errorBoundary;
 
         private SuccessNotification _notification;
 
@@ -27,18 +28,23 @@ namespace BlazorApplication.Pages
 
         protected async override Task OnInitializedAsync()
         {
-            Console.WriteLine("Update task created with id = " + Id);
-
-            _task = await TaskRepo.GetTaskById(Id);
-
-            _timeFrameMode = _task.Timeframe.ToString();
-
+            await GetTask();
             await GetTaskCategories();
-
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
-
         }
 
+        private async Task GetTask()
+        {
+            try
+            {
+                _task = await TaskRepo.GetTaskById(Id);
+                _timeFrameMode = _task.Timeframe.ToString();
+            }
+            catch(Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting participants!", ex);
+            }
+        }
 		private async Task Update()
         {
             _task.TaskCategoryId = TaskCategories.Where(tc => tc.CategoryName == _taskCategory).Select(tc => tc.Id).FirstOrDefault();
@@ -102,8 +108,15 @@ namespace BlazorApplication.Pages
                 }
             }
 
-            await TaskRepo.UpdateTask(_task);
-            _notification.Show();
+            try
+            {
+                await TaskRepo.UpdateTask(_task);
+                _notification.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while updating the task", ex);
+            }
         }
 
         protected async Task GetTaskCategories()
@@ -112,9 +125,24 @@ namespace BlazorApplication.Pages
             {
                 switchOff = true
             };
-            var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
-            TaskCategories = pagingResponse.Items;
-        }
 
+            try
+            {
+                var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
+                TaskCategories = pagingResponse.Items;
+            }
+            catch(Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while getting a list of task categories", ex);
+            }
+        }
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
     }
 }

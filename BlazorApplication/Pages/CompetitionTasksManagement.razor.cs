@@ -2,6 +2,7 @@
 using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System.Globalization;
 
 namespace BlazorApplication.Pages
@@ -14,20 +15,28 @@ namespace BlazorApplication.Pages
 
 		[Inject]
 		public ITaskToCompetitionRepository taskToCompetitionRepo { get; set; }
-
+			
 		public List<Models.Task> TaskList { get; set; } = new List<Models.Task>();
 		public MetaData MetaData { get; set; } = new MetaData();
 		private TaskParameters _taskParameters = new TaskParameters();
+        private ErrorBoundary? errorBoundary;
 
-		[Inject]
+        [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetTasks();
 		}
-
-		private async System.Threading.Tasks.Task SelectedPage(int page)
+        protected override void OnParametersSet()
+        {
+            errorBoundary?.Recover();
+        }
+        private void ResetError()
+        {
+            errorBoundary?.Recover();
+        }
+        private async System.Threading.Tasks.Task SelectedPage(int page)
 		{
 			_taskParameters.PageNumber = page;
 			await GetTasks();
@@ -35,17 +44,31 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetTasks()
 		{
-			var pagingResponse = await TaskRepo.GetTasksByCompetitionId(_taskParameters, id);
-			TaskList = pagingResponse.Items;
-			MetaData = pagingResponse.MetaData;
-		}
+			try
+			{
+                var pagingResponse = await TaskRepo.GetTasksByCompetitionId(_taskParameters, id);
+                TaskList = pagingResponse.Items;
+                MetaData = pagingResponse.MetaData;
+            }
+			catch(Exception ex)
+			{
+                throw new System.Exception("Oops! Something went wrong while getting a list of tasks for this competition!", ex);
+            }
+        }
 
 		private async System.Threading.Tasks.Task DeleteTask(int taskId)
 		{
-			await taskToCompetitionRepo.DeleteTaskToCompetition(taskId, Int32.Parse(id));
-			_taskParameters.PageNumber = 1;
-			await GetTasks();
-		}
+			try
+			{
+                await taskToCompetitionRepo.DeleteTaskToCompetition(taskId, Int32.Parse(id));
+                _taskParameters.PageNumber = 1;
+                await GetTasks();
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Oops! Something went wrong while deleting a task for this competition!", ex);
+            }
+        }
 
 		private async System.Threading.Tasks.Task SearchChanged(string searchString)
 		{
@@ -59,7 +82,5 @@ namespace BlazorApplication.Pages
 			_taskParameters.OrderBy = orderBy;
 			await GetTasks();
 		}
-
-
 	}
 }
