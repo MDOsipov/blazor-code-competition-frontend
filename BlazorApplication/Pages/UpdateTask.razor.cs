@@ -13,7 +13,6 @@ namespace BlazorApplication.Pages
         private string _taskCategory { get; set; }
         private List<Models.TaskCategory> TaskCategories { get; set; }
 
-
         private SuccessNotification _notification;
 
         [Inject]
@@ -30,8 +29,7 @@ namespace BlazorApplication.Pages
             //Console.WriteLine("Update task created with id = " + Id);
             
             _task = await TaskRepo.GetTaskById(Id);
-            Console.WriteLine(JsonSerializer.Serialize(_task));
-            _timeFrameMode = _task.Timeframe.ToString();            
+            //_timeFrameMode = _task.Timeframe.ToString();            
             await GetTaskCategories();            
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
         }
@@ -111,7 +109,7 @@ namespace BlazorApplication.Pages
             };
 
             var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
-            TaskCategories = pagingResponse.Items;            
+            TaskCategories = pagingResponse.Items;
         }
 
     }

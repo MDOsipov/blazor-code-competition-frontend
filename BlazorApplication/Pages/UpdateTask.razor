@@ -9,7 +9,7 @@
     <EditForm Model="@_task" OnValidSubmit="Update" class="card card-body bg-light mt-5">
         <DataAnnotationsValidator />
 
-        @if (_task.TaskName == null || TaskCategories == null)
+        @if (TaskCategories.Count == 0)
         {
             <Loading Placeholders="6" />
         }

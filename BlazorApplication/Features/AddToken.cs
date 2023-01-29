@@ -10,7 +10,7 @@ namespace BlazorApplication.Features
             var requestToken = await _accessTokenProvider.RequestAccessToken();
             requestToken.TryGetToken(out var token);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-            //Console.WriteLine("Bearer " + token.Value);            
+            Console.WriteLine("Bearer " + token.Value);            
         }
     }
 }
