@@ -29,7 +29,7 @@ namespace BlazorApplication.HttpRepository
         private readonly HttpClient _client;
 		private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
-        private readonly Models.BackEndConnections _backEndConnections;
+        private readonly BackEndConnections _backEndConnections;
         private readonly ILogger<ParticipantHttpRepository> _logger;
         public ParticipantHttpRepository(IAccessTokenProvider accessTokenProvider, HttpClient client, IConfiguration configuration, ILogger<ParticipantHttpRepository> logger)
 		{
@@ -37,7 +37,7 @@ namespace BlazorApplication.HttpRepository
             _client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
-			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
             _logger = logger;
 		}
 
@@ -69,7 +69,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex) 
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while adding a new team to the participant!", ex);
+                throw new Exception("Oops! Something went wrong while adding a new team to the participant!", ex);
             }
         }
 
@@ -97,7 +97,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new participant!", ex);
             }
         }
 
@@ -124,7 +124,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting the participant!", ex);
+                throw new Exception("Oops! Something went wrong while deleting the participant!", ex);
             }
         }
 
@@ -165,7 +165,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a participant by id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a participant by id!", ex);
             }
         }
 
@@ -190,10 +190,10 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Participant>
+                var pagingResponse = new PagingResponse<Participant>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
                 pagingResponse.SuccessRequest = true;
@@ -203,7 +203,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
 
@@ -229,10 +229,10 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Participant>
+                var pagingResponse = new PagingResponse<Participant>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
                 pagingResponse.SuccessRequest = true;
@@ -242,7 +242,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants by email!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants by email!", ex);
             }
         }
 
@@ -267,10 +267,10 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Participant>
+                var pagingResponse = new PagingResponse<Participant>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
                 pagingResponse.SuccessRequest = true;
@@ -280,7 +280,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants by team id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants by team id!", ex);
             }
         }
 
@@ -311,7 +311,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list (without wide info) of participants by team id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list (without wide info) of participants by team id!", ex);
             }
         }
 
@@ -341,7 +341,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while removing team from participant!", ex);
+                throw new Exception("Oops! Something went wrong while removing team from participant!", ex);
             }
         }
 
@@ -370,7 +370,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the participant!", ex);
+                throw new Exception("Oops! Something went wrong while updating the participant!", ex);
             }
         }
     }

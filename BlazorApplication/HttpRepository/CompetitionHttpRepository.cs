@@ -37,7 +37,7 @@ namespace BlazorApplication.HttpRepository
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
-            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
 			_accessTokenProvider = accessTokenProvider;
             _logger = logger;
 		}
@@ -65,7 +65,7 @@ namespace BlazorApplication.HttpRepository
             catch(Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new competition!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new competition!", ex);
             }
         }
 
@@ -86,12 +86,15 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 _logger.LogInformation($"Success. Competition statuses: {content}");
-                return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
+ 
+                var result = JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
+
+				return 
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
             }
         }
 
@@ -130,7 +133,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions by id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions by id!", ex);
             }
         }
 
@@ -157,10 +160,10 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Competition>
+                var pagingResponse = new PagingResponse<Competition>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
                 pagingResponse.SuccessRequest = true;
@@ -171,7 +174,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
@@ -200,7 +203,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the competition!", ex);
+                throw new Exception("Oops! Something went wrong while updating the competition!", ex);
             }
         }
 
@@ -227,7 +230,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting the competition!", ex);
+                throw new Exception("Oops! Something went wrong while deleting the competition!", ex);
             }
 
         }
@@ -255,10 +258,10 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Competition>
+                var pagingResponse = new PagingResponse<Competition>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
                 pagingResponse.SuccessRequest = true;
@@ -268,7 +271,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
+                throw new Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
             }
         }
 	}

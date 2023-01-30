@@ -32,9 +32,6 @@ namespace BlazorApplication.Pages
         [Inject]
         public ILogger<UpdateTask> Logger { get; set; }
 
-        [Parameter]
-        public string Id { get; set; }
-
         protected async override Task OnInitializedAsync()
         {
             await GetTask();

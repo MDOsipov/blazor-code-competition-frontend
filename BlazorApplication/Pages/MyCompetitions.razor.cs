@@ -5,30 +5,26 @@ using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Text.Json;
 using static Microsoft.AspNetCore.Components.Authorization.AuthenticationState;
 using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
-
 	public partial class MyCompetitions
 	{
 		[Inject]
-		public AuthTest authTest { get; set; }
-		public List<Competition> CompetitionList { get; set; } = new List<Competition>();
-
-		public MetaData MetaData { get; set; } = new MetaData();
-		private CompetitionParameters _competitionParameters = new CompetitionParameters();
-        private ErrorBoundary? errorBoundary;
-
-        [Inject]
 		public ICompetitionHttpRepository CompetitionRepo { get; set; }
 
 		[Inject]
 		public ILogger<MyCompetitions> Logger { get; set; }
+
+		[Inject]
+		public AuthTest authTest { get; set; }
+		public List<Competition> CompetitionList { get; set; } = new List<Competition>();
+		public MetaData MetaData { get; set; } = new MetaData();
+		private CompetitionParameters _competitionParameters = new CompetitionParameters();
+        private ErrorBoundary? errorBoundary;
 
 		private string LogedUserId = "";
 
@@ -36,7 +32,7 @@ namespace BlazorApplication.Pages
 		public bool successResponse { get; set; }
 
 		protected async override Task OnInitializedAsync()
-		{
+		{            
 			await LogUsername();
 			await GetUserId();
 			await GetCompetitions();
@@ -56,7 +52,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
 		}
 		private async Task DeleteCompetition(int id)
@@ -71,7 +67,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while removing a competition!", ex);
+                throw new Exception("Oops! Something went wrong while removing a competition!", ex);
             }
 			await GetCompetitions();
 		}
@@ -84,9 +80,6 @@ namespace BlazorApplication.Pages
 		private async Task LogUsername()
 		{
 			var identity = await authTest.GetIdentity();
-			//Console.WriteLine(identity.Name);
-			//Console.WriteLine("Identity: ");
-			//Console.WriteLine(JsonSerializer.Serialize(identity));
 		}
 
 		private async Task LogClaims()
@@ -106,13 +99,12 @@ namespace BlazorApplication.Pages
             {
                 var claims = await authTest.GetClaims();
                 LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
-                Console.WriteLine("Our user id: " + LogedUserId);
                 Logger.LogInformation($"Success. User id: {JsonSerializer.Serialize(LogedUserId)}");
             }
             catch (Exception ex)
 			{
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }
 

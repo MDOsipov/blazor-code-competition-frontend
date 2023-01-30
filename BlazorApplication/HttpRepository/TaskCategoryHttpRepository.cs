@@ -51,7 +51,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex) 
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new task category!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new task category!", ex);
             }
         }
 
@@ -78,7 +78,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting the task category!", ex);
+                throw new Exception("Oops! Something went wrong while deleting the task category!", ex);
             }
         }
 
