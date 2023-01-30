@@ -16,18 +16,21 @@ namespace BlazorApplication.HttpRepository
 		private readonly JsonSerializerOptions _options;
 		private readonly IConfiguration _configuration;
 		private readonly Models.BackEndConnections _backEndConnections;
+        private readonly ILogger<TaskToTeamHttpRepository> _logger;
 
-		public TaskToTeamHttpRepository(IAccessTokenProvider tokenProvider, HttpClient client, IConfiguration configuration)
+        public TaskToTeamHttpRepository(IAccessTokenProvider tokenProvider, HttpClient client, IConfiguration configuration, ILogger<TaskToTeamHttpRepository> logger)
 		{
 			_tokenProvider = tokenProvider;
 			_client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 			_configuration = configuration;
 			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+			_logger = logger;
 		}
 		public async System.Threading.Tasks.Task AddTaskToTeam(TaskToTeam taskToTeam)
 		{
-			var content = JsonSerializer.Serialize(taskToTeam);
+            _logger.LogInformation("Add task to team http repository method is called");
+            var content = JsonSerializer.Serialize(taskToTeam);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
 			await AddToken.RequestAuthToken(_tokenProvider, _client);
@@ -41,16 +44,21 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(postContent);
                 }
+
+                _logger.LogInformation($"Success. A new task is added to the team");
             }
-			catch(Exception ex)
+            catch (Exception ex)
 			{
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while adding a task to the team!", ex);
             }
         }
 
 		public async System.Threading.Tasks.Task DeleteTeamTaskByTaskIdAndTeamId(string taskId, string teamId)
 		{
-			var queryStringParam = new Dictionary<string, string>
+            _logger.LogInformation("Delete team task by task id and team id http repository method is called");
+
+            var queryStringParam = new Dictionary<string, string>
 			{
 				["taskId"] = taskId.ToString(),
 				["teamId"] = teamId.ToString()
@@ -69,16 +77,21 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(deleteContent);
                 }
+
+                _logger.LogInformation($"Success. A task is removed from the team");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while removing a task from the team!", ex);
             }
         }
 
 		public async System.Threading.Tasks.Task SubmitTask(string taskId, string teamId, SubmitTaskDataDto submitTaskDataDto)
 		{
-			var queryStringParam = new Dictionary<string, string>
+            _logger.LogInformation("Submit task http repository method is called");
+
+            var queryStringParam = new Dictionary<string, string>
 			{
 				["taskId"] = taskId.ToString(),
 				["teamId"] = teamId.ToString()
@@ -99,9 +112,12 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(putContent);
                 }
+
+                _logger.LogInformation($"Success. The task is submitted");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while submitting a task!", ex);
             }
         }

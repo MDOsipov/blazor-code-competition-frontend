@@ -4,6 +4,8 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using Task = BlazorApplication.Models.Task;
 
 namespace BlazorApplication.Pages
@@ -29,7 +31,8 @@ namespace BlazorApplication.Pages
 
 		[Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
-		
+		[Inject]
+		public ILogger<AddTaskToTeam> Logger { get; set; }
 
 		[Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
@@ -65,13 +68,15 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetTasks()
 		{
-			try
-			{
+            Logger.LogInformation("Get tasks method is called");
+            try
+            {
                 var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
                 TaskList = pagingResponse.Items;
             }
-			catch (Exception ex)
+            catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
 			}
 
@@ -82,6 +87,7 @@ namespace BlazorApplication.Pages
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of tasks in progress by team id!", ex);
             }
 
@@ -92,20 +98,20 @@ namespace BlazorApplication.Pages
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of submitted tasks by team id!", ex);
             }
            
 			TaskList = TaskList.Where(tl => CurrentTasksToTeamInProcess.Select(ctt => ctt.Id).ToList().IndexOf(tl.Id) == -1).ToList();
 			TaskList = TaskList.Where(tl => CurrentTasksToTeamSubmitted.Select(ctt => ctt.Id).ToList().IndexOf(tl.Id) == -1).ToList();
+            Logger.LogInformation($"Success. Task list: {JsonSerializer.Serialize(TaskList)}");
 
-			newTaskId = TaskList.FirstOrDefault().Id;
+            newTaskId = TaskList.FirstOrDefault().Id;
 		}
-
-		
-
 		private async System.Threading.Tasks.Task Create()
 		{
-			TaskToTeam taskToTeam = new TaskToTeam()
+            Logger.LogInformation("Create method is called");
+            TaskToTeam taskToTeam = new TaskToTeam()
 			{
 				TeamId = teamId,
 				TaskId = newTaskId,
@@ -119,10 +125,12 @@ namespace BlazorApplication.Pages
 			try
 			{
                 await TaskToTeamRepo.AddTaskToTeam(taskToTeam);
+                Logger.LogInformation($"Success. A new task to the team is added");
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while adding a new task!", ex);
             }
         }

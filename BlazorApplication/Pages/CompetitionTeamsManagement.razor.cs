@@ -3,6 +3,9 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace BlazorApplication.Pages
 {
@@ -21,6 +24,8 @@ namespace BlazorApplication.Pages
 
         [Inject]
         public ITeamHttpRepository TeamRepo { get; set; }
+        [Inject]
+        public ILogger<CompetitionTeamsManagement> Logger { get; set; } 
 
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
@@ -42,14 +47,17 @@ namespace BlazorApplication.Pages
 
         protected async System.Threading.Tasks.Task GetTeams()
         {
+            Logger.LogInformation("Get teams method is called");
             try
             {
                 var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
                 TeamList = pagingResponse.Items.Where(t => t.CompetitionId == Int32.Parse(id)).ToList();
                 MetaData = pagingResponse.MetaData;
+                Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(TeamList)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of teams for this competition!", ex);
             }
         }
@@ -57,6 +65,7 @@ namespace BlazorApplication.Pages
         
         private async System.Threading.Tasks.Task DeleteTeam(int teamId)
         {
+            Logger.LogInformation("Delete team method is called");
             Team newTeam;
             try
             {
@@ -65,6 +74,7 @@ namespace BlazorApplication.Pages
             }
             catch(Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a team to delete!", ex);
             }
 
@@ -72,9 +82,11 @@ namespace BlazorApplication.Pages
             {
                 await TeamRepo.UpdateTeam(newTeam);
                 _teamParameters.PageNumber = 1;
+                Logger.LogInformation($"Success. The team is removed from the competition");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting a team for the competition!", ex);
             }
             

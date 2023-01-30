@@ -14,7 +14,9 @@ namespace BlazorApplication.Pages
 
         [Inject]
         public ITaskToTeamHttpRepository? TaskToTeamRepo { get; set; }
-
+        
+        [Inject]
+        public ILogger<SubmitTask> Logger { get; set; }
 		[Parameter]
 		public string taskIdStr { get; set; } = "";
         [Parameter]
@@ -25,15 +27,18 @@ namespace BlazorApplication.Pages
 
 		private async System.Threading.Tasks.Task Submit()
 		{
+            Logger.LogInformation("Submit method is called");
             if (_notification is not null && TaskToTeamRepo is not null)
             {
                 try
                 {
                     await TaskToTeamRepo.SubmitTask(taskIdStr, teamIdStr, _submitData);
+                    Logger.LogInformation($"Success. The task is successfully submitted");
                     _notification.Show();
                 }
                 catch(Exception ex)
                 {
+                    Logger.LogError($"Error: {ex}");
                     throw new System.Exception("Oops! Something went wrong while submitting a task!", ex);
                 }
             }

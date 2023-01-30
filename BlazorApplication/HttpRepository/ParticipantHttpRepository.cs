@@ -6,6 +6,8 @@ using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using System.Text.Json;
 using BlazorApplication.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorApplication.HttpRepository
 {
@@ -28,19 +30,22 @@ namespace BlazorApplication.HttpRepository
 		private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
         private readonly Models.BackEndConnections _backEndConnections;
-
-		public ParticipantHttpRepository(IAccessTokenProvider accessTokenProvider,HttpClient client, IConfiguration configuration)
+        private readonly ILogger<ParticipantHttpRepository> _logger;
+        public ParticipantHttpRepository(IAccessTokenProvider accessTokenProvider, HttpClient client, IConfiguration configuration, ILogger<ParticipantHttpRepository> logger)
 		{
             _accessTokenProvider = accessTokenProvider;
             _client = client;
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
 			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+            _logger = logger;
 		}
 
 		public async System.Threading.Tasks.Task AddTeamToParticipant(string teamId, string participantId)
 		{
-			var queryStringParam = new Dictionary<string, string>
+            _logger.LogInformation("Add team to participant http repository method is called");
+
+            var queryStringParam = new Dictionary<string, string>
 			{
 				["teamId"] = teamId,
 				["participantId"] = participantId
@@ -58,15 +63,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(putContent);
                 }
+
+                _logger.LogInformation($"Success. A new team is added to the competition");
             }
             catch (Exception ex) 
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while adding a new team to the participant!", ex);
             }
         }
 
 		public async System.Threading.Tasks.Task CreateParticipant(Participant participant)
         {
+            _logger.LogInformation("Create participant http repository method is called");
+
             var content = JsonSerializer.Serialize(participant);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
@@ -81,15 +91,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(postContent);
                 }
+
+                _logger.LogInformation($"Success. A new participant is created");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
             }
         }
 
         public async System.Threading.Tasks.Task DeleteParticipant(int id)
         {
+            _logger.LogInformation("Delete participant http repository method is called");
+
             var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id.ToString());
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -103,15 +118,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(deleteContent);
                 }
+
+                _logger.LogInformation($"Success. The participant is deleted");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting the participant!", ex);
             }
         }
 
         public async Task<Participant> GetParticipantById(string id)
         {
+            _logger.LogInformation("Get participant by id http repository method is called");
+
             var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id);
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -138,16 +158,19 @@ namespace BlazorApplication.HttpRepository
                     teamId = localParticipant.teamId
                 };
 
+                _logger.LogInformation($"Success. Participant: {JsonSerializer.Serialize(participant)}");
                 return participant;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a participant by id!", ex);
             }
         }
 
         public async Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters)
 		{
+            _logger.LogInformation("Get participants http repository method is called");
             var queryStringParam = new Dictionary<string, string>
             {
                 ["pageNumber"] = participantParameters.PageNumber.ToString(),
@@ -172,16 +195,20 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
 
         public async Task<PagingResponse<Participant>> GetParticipantsByEmail(ParticipantParameters participantParameters, string email)
         {
+            _logger.LogInformation("Get participants by email http repository method is called");
+
             var queryStringParam = new Dictionary<string, string>
             {
                 ["pageNumber"] = participantParameters.PageNumber.ToString(),
@@ -206,16 +233,19 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of participants by email!", ex);
             }
         }
 
         public async Task<PagingResponse<Participant>> GetParticipantsByTeamId(ParticipantParameters participantParameters, string teamId)
         {
+            _logger.LogInformation("Get participants by team id http repository method is called");
             var queryStringParam = new Dictionary<string, string>
             {
                 ["pageNumber"] = participantParameters.PageNumber.ToString(),
@@ -240,17 +270,19 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of participants by team id!", ex);
             }
         }
 
         public async Task<IEnumerable<Participant>> GetParticipantsLimited()
         {
-           
+            _logger.LogInformation("Get participants limited http repository method is called");
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
             try
@@ -263,17 +295,20 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
+                _logger.LogInformation($"Success. Participants: {content}");
                 var toReturn = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options);
                 return toReturn;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list (without wide info) of participants by team id!", ex);
             }
         }
 
         public async System.Threading.Tasks.Task RemoveTeamFromParticipant(string participantId)
         {
+            _logger.LogInformation("Remove team from participant http repository method is called");
             var queryStringParam = new Dictionary<string, string>
             {
                 ["participantId"] = participantId
@@ -291,15 +326,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(putContent);
                 }
+
+                _logger.LogInformation($"Success. A team from the participant is removed");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while removing team from participant!", ex);
             }
         }
 
         public async System.Threading.Tasks.Task UpdateParticipant(Participant participant)
         {
+            _logger.LogInformation("Update participant http repository method is called");
+
             var content = JsonSerializer.Serialize(participant);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", participant.id.ToString());
@@ -315,9 +355,12 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(putContent);
                 }
+
+                _logger.LogInformation($"Success. The participant is updated");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while updating the participant!", ex);
             }
         }

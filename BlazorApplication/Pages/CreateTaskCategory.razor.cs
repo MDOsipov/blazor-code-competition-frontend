@@ -16,6 +16,8 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
 
+        [Inject]
+        public ILogger<CreateTaskCategory> Logger { get; set; }
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
           
@@ -23,13 +25,16 @@ namespace BlazorApplication.Pages
 
         private async void Create()
         {
+            Logger.LogInformation("Create method is called");
             try
             {
                 await TaskCategoryRepo.CreateTaskCategory(_taskCategory);
+                Logger.LogInformation($"Success. A new task category is created");
                 _notification.Show();
             }
             catch(Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while creating a new task category!", ex);
             }
 

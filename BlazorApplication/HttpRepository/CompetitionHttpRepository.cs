@@ -1,8 +1,10 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
+using BlazorApplication.Pages;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
@@ -28,19 +30,22 @@ namespace BlazorApplication.HttpRepository
         private readonly IConfiguration _configuration;
         private readonly Models.BackEndConnections _backEndConnections;
         private readonly IAccessTokenProvider _accessTokenProvider;
+        private readonly ILogger<CompetitionHttpRepository> _logger;
 
-        public CompetitionHttpRepository(HttpClient client, IConfiguration configuration, IAccessTokenProvider accessTokenProvider)
+        public CompetitionHttpRepository(HttpClient client, IConfiguration configuration, IAccessTokenProvider accessTokenProvider, ILogger<CompetitionHttpRepository> logger)
         {
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
             _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
-			_accessTokenProvider = accessTokenProvider; 
+			_accessTokenProvider = accessTokenProvider;
+            _logger = logger;
 		}
 
 		public async System.Threading.Tasks.Task CreateCompetition(Competition competition)
         {
-			var content = JsonSerializer.Serialize(competition);
+            _logger.LogInformation("Get competition http repository method is called");
+            var content = JsonSerializer.Serialize(competition);
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -54,16 +59,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(postContent);
                 }
+
+                _logger.LogInformation($"Success. Competition is created");
             }
             catch(Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while creating a new competition!", ex);
             }
         }
 
 		public async Task<IEnumerable<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            _logger.LogInformation("Get all competition statuses http repository method is called");
+            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
             try
             {
@@ -76,18 +85,21 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
+                _logger.LogInformation($"Success. Competition statuses: {content}");
                 return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
             }
         }
 
         public async Task<Competition> GetCompetitionById(string id)
         {
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id);
+            _logger.LogInformation("Get competition by id http repository method is called");
 
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id);
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
             try
@@ -111,16 +123,20 @@ namespace BlazorApplication.HttpRepository
                     HashCode = localCompetition.hashCode
                 };
 
+                _logger.LogInformation($"Success. Competition: {JsonSerializer.Serialize(competition)}");
                 return competition;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions by id!", ex);
             }
         }
 
         public async Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters)
         {
+            _logger.LogInformation("Get competitions http repository method is called");
+
             var queryStringParam = new Dictionary<string, string>
             {
                 ["pageNumber"] = competitionParameters.PageNumber.ToString(),
@@ -146,16 +162,21 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                _logger.LogInformation($"Success. Competitions: {content}");
+
                 return pagingResponse;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
         public async System.Threading.Tasks.Task UpdateCompetition(Competition competition)
         {
+            _logger.LogInformation("Update competition http repository method is called");
+
             var content = JsonSerializer.Serialize(competition);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
             var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", competition.id.ToString());
@@ -171,15 +192,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(putContent);
                 }
+
+                _logger.LogInformation($"Success. Competition is updated");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while updating the competition!", ex);
             }
         }
 
         public async System.Threading.Tasks.Task DeleteCompetition(int id)
         {
+            _logger.LogInformation("Delete competition http repository method is called");
+
             var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id.ToString());
 
 			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -193,9 +219,12 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(deleteContent);
                 }
+
+                _logger.LogInformation($"Success. Competition is deleted");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting the competition!", ex);
             }
 
@@ -203,7 +232,9 @@ namespace BlazorApplication.HttpRepository
 
 		public async Task<PagingResponse<Competition>> GetCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters)
 		{
-			var queryStringParam = new Dictionary<string, string>
+            _logger.LogInformation("Get competition by admin id http repository method is called");
+
+            var queryStringParam = new Dictionary<string, string>
 			{
 				["pageNumber"] = competitionParameters.PageNumber.ToString(),
 				["switchOff"] = competitionParameters.switchOff ? "1" : "0"
@@ -228,10 +259,12 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                _logger.LogInformation($"Success. Competitions: {content}");
                 return pagingResponse;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
             }
         }

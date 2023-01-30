@@ -2,6 +2,8 @@
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Diagnostics;
+using System.Text.Json;
 using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
@@ -18,20 +20,26 @@ namespace BlazorApplication.Pages
         [Inject]
 		public ITeamHttpRepository teamRepo { get; set; }
 
+        [Inject]
+        public ILogger<TeamManagement> Logger { get; set; }
+
 		protected async override Task OnInitializedAsync()
 		{
             await GetTeam();
         }
         private async Task GetTeam()
         {
+            Logger.LogInformation("Get team method is called");
             Team team;
             try
             {
                 team = await teamRepo.GetTeamById(id);
                 teamName = team.TeamName;
+                Logger.LogInformation($"Success. Team: {JsonSerializer.Serialize(team)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a team!", ex);
             }
         }

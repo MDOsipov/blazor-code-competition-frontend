@@ -17,6 +17,9 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
 
+        [Inject]
+        public ILogger<UpdateTaskCategory> Logger { get; set; }
+
         [Parameter]
         public string Id { get; set; } = "";
 
@@ -27,27 +30,32 @@ namespace BlazorApplication.Pages
 
         private async System.Threading.Tasks.Task GetTaskCategory()
         {
-            try 
+            Logger.LogInformation("Get task category method is called");
+            try
             {
                 _taskCategory = await TaskCategoryRepo.GetTaskCategoryById(Id);
-                Console.WriteLine("Got task category object: ");
-                Console.WriteLine(JsonSerializer.Serialize(_taskCategory));
+                Logger.LogInformation($"Success. Task category: {JsonSerializer.Serialize(_taskCategory)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting participants!", ex);
             }
         }
 
         private async System.Threading.Tasks.Task Update()
         {
+            Logger.LogInformation("Update method is called");
+
             try
             {
                 await TaskCategoryRepo.UpdateTaskCategory(_taskCategory);
+                Logger.LogInformation($"Success. The task category is updated");
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while updating the task category!", ex);
             }
         }

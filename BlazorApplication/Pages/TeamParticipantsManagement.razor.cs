@@ -18,6 +18,8 @@ namespace BlazorApplication.Pages
         [Inject]
         public IParticipantHttpRepository participantRepo { get; set; }
 
+        [Inject]
+        public ILogger<TeamParticipantsManagement> Logger { get; set; }
         public List<Models.Participant> ParticipantList { get; set; } = new List<Models.Participant>();
 		public MetaData MetaData { get; set; } = new MetaData();
 		private ParticipantParameters _participantParameters = new ParticipantParameters();
@@ -38,27 +40,32 @@ namespace BlazorApplication.Pages
 		}
 		protected async System.Threading.Tasks.Task GetParticipants()
 		{
-			try
-			{
+            Logger.LogInformation("Get participants method is called");
+            try
+            {
                 var pagingResponse = await participantRepo.GetParticipantsByTeamId(_participantParameters, id);
                 ParticipantList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                Console.WriteLine("Participant list: " + JsonSerializer.Serialize(ParticipantList));
+                Logger.LogInformation($"Success. Participants: {JsonSerializer.Serialize(ParticipantList)}");
             }
-			catch(Exception ex)
+            catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
 		private async System.Threading.Tasks.Task DeleteParticipant(int participantId)
 		{
-			try
-			{
+            Logger.LogInformation("Delete participant method is called");
+            try
+            {
                 await participantRepo.RemoveTeamFromParticipant(participantId.ToString());
                 _participantParameters.PageNumber = 1;
+                Logger.LogInformation($"Success. The participant is deleted");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while removing a participant from a team!", ex);
             }
             await GetParticipants(); 

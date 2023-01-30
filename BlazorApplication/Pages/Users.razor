@@ -94,6 +94,8 @@
 
     [Inject]
     public IParticipantHttpRepository participantRepo { get; set; }
+    [Inject]
+    public ILogger<Users> Logger { get; set; }
 
     private Models.BackEndConnections _backEndConnections;
 
@@ -112,26 +114,32 @@
 
     protected async System.Threading.Tasks.Task GetUsers()
     {
+        Logger.LogInformation("Get users method is called");
         try
         {
             var userPagingResponse = await UserRepo.GetUsersExtended(userParameters);
             userList = userPagingResponse.Items;
             MetaData = userPagingResponse.MetaData;
+            Logger.LogInformation($"Success. Users: {JsonSerializer.Serialize(userList)}");
         }
         catch(Exception ex)
         {
+            Logger.LogError($"Error: {ex}");
             throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
         }
     }
 
     protected async System.Threading.Tasks.Task GetRoles()
     {
+        Logger.LogInformation("Get roles method is called");
         try
         {
             roleList = await Http.GetFromJsonAsync<RoleDto[]>(_backEndConnections.CSharpUri + "user/allRoles");
+            Logger.LogInformation($"Success. Roles: {JsonSerializer.Serialize(roleList)}");
         }
         catch (Exception ex)
         {
+            Logger.LogError($"Error: {ex}");
             throw new System.Exception("Oops! Something went wrong while getting a list of roles!", ex);
         }
     }
@@ -139,6 +147,7 @@
 
     public async void ChangeModeFun(string userIdToChange)
     {
+        Logger.LogInformation("Change mode method is called");
         ChangeMode = !ChangeMode;
         CurrentUserIdToChange = userIdToChange;
 
@@ -168,6 +177,7 @@
             }
             catch(Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while assigning a new role to the user!", ex);
             }
 
@@ -189,6 +199,7 @@
                 }
                 catch (Exception ex)
                 {
+                    Logger.LogError($"Error: {ex}");
                     throw new System.Exception("Oops! Something went wrong while getting a corresponding participants!", ex);
                 }
 
@@ -208,9 +219,11 @@
                     try
                     {
                         await participantRepo.CreateParticipant(newParticipant);
+                        Logger.LogInformation($"Success. New participant is created");
                     }
                     catch (Exception ex)
                     {
+                        Logger.LogError($"Error: {ex}");
                         throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
                     }
                 }
@@ -232,6 +245,7 @@
                 }
                 catch (Exception ex)
                 {
+                    Logger.LogError($"Error: {ex}");
                     throw new System.Exception("Oops! Something went wrong while getting corresponding participants!", ex);
                 }
 
@@ -242,14 +256,15 @@
                     try
                     {
                         await participantRepo.DeleteParticipant(toDeleteId);
+                        Logger.LogInformation($"Success. The participant is deleted");
                     }
                     catch (Exception ex)
                     {
+                        Logger.LogError($"Error: {ex}");
                         throw new System.Exception("Oops! Something went wrong while deleting a user from the list of participants!", ex);
                     }
                 }
             }
-
             StateHasChanged();
         }
     }

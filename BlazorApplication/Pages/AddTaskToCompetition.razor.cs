@@ -4,7 +4,9 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Text.Json;
 using Task = BlazorApplication.Models.Task;
 
 namespace BlazorApplication.Pages
@@ -29,6 +31,8 @@ namespace BlazorApplication.Pages
 
         [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
+        [Inject]
+        public ILogger<AddTaskToCompetition> Logger { get; set; }   
 
         [Inject]
         public ITaskToCompetitionRepository TaskToCompetitionRepo { get; set; }
@@ -51,21 +55,25 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetTasks()
 		{
-			try
-			{
+            Logger.LogInformation("Get tasks method is called");
+            try
+            {
                 var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
                 TaskList = pagingResponse.Items;
                 newTaskId = TaskList.FirstOrDefault().Id;
+                Logger.LogInformation($"Success. Task list: {JsonSerializer.Serialize(TaskList)}");
             }
-			catch (Exception ex)
+            catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
             }
         }
 
         private async void Create()
         {
-			TaskToCompetition taskToCompetition = new TaskToCompetition()
+            Logger.LogInformation("Create method is called");
+            TaskToCompetition taskToCompetition = new TaskToCompetition()
 			{
 				CompetitionId = competitionId,
 				TaskId = newTaskId
@@ -74,10 +82,12 @@ namespace BlazorApplication.Pages
             try 
             {
                 await TaskToCompetitionRepo.AddTaskToCompetition(taskToCompetition);
+                Logger.LogInformation($"Success. New task to competition is added");
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while adding a new task!", ex);
             }
         }

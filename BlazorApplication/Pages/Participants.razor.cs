@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text.Json;
 
 namespace BlazorApplication.Pages
 {
@@ -15,6 +16,8 @@ namespace BlazorApplication.Pages
 
         [Inject]
 		public IParticipantHttpRepository ParticipantRepo { get; set; }
+        [Inject]
+        ILogger<Participants> Logger { get; set; }   
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -31,27 +34,32 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetParticipants()
 		{
-			try
+            Logger.LogInformation("Get participants method is called");
+            try
 			{
                 var pagingResponse = await ParticipantRepo.GetParticipants(_participantParameters);
                 ParticipantsList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                Logger.LogInformation($"Success. Participant list: {JsonSerializer.Serialize(ParticipantsList)}");
             }
             catch(Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
-
         }
 
 		private async System.Threading.Tasks.Task DeleteParticipant(int id)
 		{
+            Logger.LogInformation("Delete participants method is called");
             try
             {
                 await ParticipantRepo.DeleteParticipant(id);
+                Logger.LogInformation($"Success. Successfully deleted");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting a participant!", ex);
             }
 

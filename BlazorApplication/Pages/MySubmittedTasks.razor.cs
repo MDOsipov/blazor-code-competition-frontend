@@ -21,6 +21,9 @@ namespace BlazorApplication.Pages
         public ITaskToTeamHttpRepository TaskToTeamRepo { get; set; }
         [Inject]
         public ITeamHttpRepository TeamRepo { get; set; }
+
+        [Inject]
+        public ILogger<MySubmittedTasks> Logger { get; set; }   
         public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
@@ -52,20 +55,24 @@ namespace BlazorApplication.Pages
         }
         private async Task GetUserId()
         {
+            Logger.LogInformation("Get user id method is called");
             try
             {
                 var claims = await AuthTest.GetClaims();
                 LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
                 Console.WriteLine("Our user id: " + LogedUserId);
+                Logger.LogInformation($"Success. User id: {JsonSerializer.Serialize(LogedUserId)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a user info!", ex);
             }
         }
 
         private async Task GetUserEmail()
         {
+            Logger.LogInformation("Get user email method is called");
             UserParameters userParameters = new UserParameters()
             {
                 switchOff = true
@@ -76,18 +83,18 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
                 var users = pagingResponse.Items;
                 LogedUserEmail = users.Where(u => u.Id == LogedUserId).FirstOrDefault().Email;
-                Console.WriteLine("User's email: ");
-                Console.WriteLine(LogedUserEmail);
+                Logger.LogInformation($"Success. User email: {JsonSerializer.Serialize(LogedUserEmail)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a user info!", ex);
             }
         }
 
         private async Task GetUserTeam()
         {
-            Console.WriteLine("Started get user team");
+            Logger.LogInformation("Get user team method is called");
             ParticipantParameters participantParameters = new ParticipantParameters()
             {
                 switchOff = true
@@ -98,21 +105,17 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
                 participant = pagingResponse.Items.FirstOrDefault();
-                Console.WriteLine("Participant: ");
-                Console.WriteLine(JsonSerializer.Serialize(participant));
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a user info!", ex);
             }
             
-
             if (participant?.teamId is not null)
             {
                 UserTeamId = (int)participant.teamId;
                 ParticipantId = participant.id;
-                Console.WriteLine("User's team id: ");
-                Console.WriteLine(UserTeamId);
             }
 
             if (UserTeamId > 0)
@@ -121,21 +124,20 @@ namespace BlazorApplication.Pages
                 {
                     var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
                     UserTeamName = team.TeamName;
-                    Console.WriteLine("User's team name: ");
-                    Console.WriteLine(UserTeamName);
+                    Logger.LogInformation($"Success. User team: {JsonSerializer.Serialize(UserTeamName)}");
+
                 }
                 catch (Exception ex)
                 {
+                    Logger.LogError($"Error: {ex}");
                     throw new System.Exception("Oops! Something went wrong while getting a user team!", ex);
                 }
             }
             else
             {
                 UserTeamName = "No team";
-                Console.WriteLine("User's team name: ");
-                Console.WriteLine(UserTeamName);
+                Logger.LogInformation($"Success. User team: {JsonSerializer.Serialize(UserTeamName)}");
             }
-
         }
         private async System.Threading.Tasks.Task SelectedPage(int page)
         {
@@ -145,14 +147,17 @@ namespace BlazorApplication.Pages
 
         protected async System.Threading.Tasks.Task GetTasksByTeamId()
         {
+            Logger.LogInformation("Get tasks by team id method is called");
             try
             {
                 var pagingResponse = await TaskRepo.GetSubmittedTasksByTeamId(_taskParameters, UserTeamId.ToString());
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
             }  
         }
