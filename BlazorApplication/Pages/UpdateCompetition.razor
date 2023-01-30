@@ -3,7 +3,13 @@
 
 <h2>Update Competition @_competition.CompetitionName</h2>
 
-<a href="competitions">Go Back</a>
+<AuthorizeView Roles="system administrator">
+	<a href="competitions">Go Back</a>
+</AuthorizeView>
+
+<AuthorizeView Roles="competition administrator">
+	<a href="myCompetitions">Go Back</a>
+</AuthorizeView>
 
 @if (@_competition != null && boolString == "0")
 {

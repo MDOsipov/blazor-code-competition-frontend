@@ -26,7 +26,7 @@ namespace BlazorApplication.Components
         private string UserTeamName = string.Empty;
 
 
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             await GetUserId();
 			
