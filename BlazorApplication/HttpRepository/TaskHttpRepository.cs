@@ -31,13 +31,13 @@ namespace BlazorApplication.HttpRepository
             _logger.LogInformation("Create task http repository method is called");
 
             var content = JsonSerializer.Serialize(task);
-			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");            
 
 			try 
 			{
-                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Task", bodyContent);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Task", bodyContent);
                 var postContent = await postResult.Content.ReadAsStringAsync();
 
                 if (!postResult.IsSuccessStatusCode)
@@ -50,7 +50,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex) 
 			{
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a task!", ex);
+                throw new Exception("Oops! Something went wrong while creating a task!", ex);
             }
         }
 
@@ -58,13 +58,13 @@ namespace BlazorApplication.HttpRepository
 		{
             _logger.LogInformation("Delete task http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id.ToString());
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id.ToString());            
 
 			try
 			{
-                var deleteResult = await _client.DeleteAsync(url);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var deleteResult = await _client.DeleteAsync(url);
                 var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
                 if (!deleteResult.IsSuccessStatusCode)
@@ -77,7 +77,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting the task!", ex);
+                throw new Exception("Oops! Something went wrong while deleting the task!", ex);
             }
         }
 
@@ -89,13 +89,13 @@ namespace BlazorApplication.HttpRepository
             {
                 ["pageNumber"] = taskParameters.PageNumber.ToString(),
                 ["switchOffString"] = taskParameters.switchOff ? "1" : "0"
-            };
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            };            
 
 			try
 			{
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/submitted/byTeamId/" + teamId, queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/submitted/byTeamId/" + teamId, queryStringParam));
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -109,6 +109,8 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
+
                 _logger.LogInformation($"Success. Submitted tasks: {content}");
 
                 return pagingResponse;
@@ -116,7 +118,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of submitted tasks by team id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of submitted tasks by team id!", ex);
             }
         }
 
@@ -124,14 +126,13 @@ namespace BlazorApplication.HttpRepository
 		{
             _logger.LogInformation("Get task by id http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);
-
-			await AddToken.RequestAuthToken(_tokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.CSharpUri + "Task", id);			
 
 			try
 			{
-                //Console.WriteLine(url);
-                var response = await _client.GetAsync(url);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -148,7 +149,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a task by id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a task by id!", ex);
             }
         }
 
@@ -173,13 +174,13 @@ namespace BlazorApplication.HttpRepository
             if (taskParameters.OrderBy != string.Empty)
 			{
 				queryStringParam.Add("orderby", taskParameters.OrderBy);
-			};
-
-			await AddToken.RequestAuthToken(_tokenProvider, _client);
+			};			
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/extended", queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/extended", queryStringParam));
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -194,6 +195,7 @@ namespace BlazorApplication.HttpRepository
                 };
 
                 pagingResponse.SuccessRequest = true;
+
                 _logger.LogInformation($"Success. Tasks: {content}");
 
                 return pagingResponse;
@@ -201,7 +203,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks!", ex);
             }
         }
 
@@ -213,13 +215,13 @@ namespace BlazorApplication.HttpRepository
 			{
 				["pageNumber"] = taskParameters.PageNumber.ToString(),
 				["switchOffString"] = taskParameters.switchOff ? "1" : "0"
-			};
-
-			await AddToken.RequestAuthToken(_tokenProvider, _client);
+			};			
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byCompetitionId/" + id, queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byCompetitionId/" + id, queryStringParam));
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -242,7 +244,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks by competition id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks by competition id!", ex);
             }
         }
 
@@ -254,13 +256,13 @@ namespace BlazorApplication.HttpRepository
             {
                 ["pageNumber"] = taskParameters.PageNumber.ToString(),
                 ["switchOffString"] = taskParameters.switchOff ? "1" : "0"
-            };
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            };            
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byTeamId/" + teamId, queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/byTeamId/" + teamId, queryStringParam));
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -282,7 +284,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks by team id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks by team id!", ex);
             }
         }
 
@@ -312,7 +314,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the task!", ex);
+                throw new Exception("Oops! Something went wrong while updating the task!", ex);
             }
         }
 	}

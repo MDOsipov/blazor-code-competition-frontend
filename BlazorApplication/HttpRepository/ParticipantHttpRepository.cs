@@ -49,13 +49,13 @@ namespace BlazorApplication.HttpRepository
 			{
 				["teamId"] = teamId,
 				["participantId"] = participantId
-			};
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			};			
 
             try
             {
-                var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
                 var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant", queryStringParam), bodyContent);
                 var putContent = await putResult.Content.ReadAsStringAsync();
 
@@ -78,13 +78,13 @@ namespace BlazorApplication.HttpRepository
             _logger.LogInformation("Create participant http repository method is called");
 
             var content = JsonSerializer.Serialize(participant);
-            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");			
 
             try
             {
-                var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "participant", bodyContent);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "participant", bodyContent);
                 var postContent = await postResult.Content.ReadAsStringAsync();
 
                 if (!postResult.IsSuccessStatusCode)
@@ -105,13 +105,13 @@ namespace BlazorApplication.HttpRepository
         {
             _logger.LogInformation("Delete participant http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id.ToString());
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id.ToString());			
 
             try
             {
-                var deleteResult = await _client.DeleteAsync(url);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var deleteResult = await _client.DeleteAsync(url);
                 var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
                 if (!deleteResult.IsSuccessStatusCode)
@@ -132,13 +132,13 @@ namespace BlazorApplication.HttpRepository
         {
             _logger.LogInformation("Get participant by id http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id);
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", id);			
 
             try
             {
-                var response = await _client.GetAsync(url);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -176,13 +176,13 @@ namespace BlazorApplication.HttpRepository
             {
                 ["pageNumber"] = participantParameters.PageNumber.ToString(),
                 ["switchOff"] = participantParameters.switchOff ? "1" : "0"
-            };
-
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            };            
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/extended", queryStringParam));
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/extended", queryStringParam));
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -215,13 +215,13 @@ namespace BlazorApplication.HttpRepository
             {
                 ["pageNumber"] = participantParameters.PageNumber.ToString(),
                 ["switchOff"] = participantParameters.switchOff ? "1" : "0"
-            };
-
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            };            
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byEmail/" + email, queryStringParam));
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byEmail/" + email, queryStringParam));
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -253,13 +253,13 @@ namespace BlazorApplication.HttpRepository
             {
                 ["pageNumber"] = participantParameters.PageNumber.ToString(),
                 ["switchOff"] = participantParameters.switchOff ? "1" : "0"
-            };
-
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            };            
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byTeamId/" + teamId, queryStringParam));
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/byTeamId/" + teamId, queryStringParam));
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -287,11 +287,12 @@ namespace BlazorApplication.HttpRepository
         public async Task<ResponseWithSuccess<Participant>> GetParticipantsLimited()
         {
             _logger.LogInformation("Get participants limited http repository method is called");
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
 
             try
             {
-                var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "participant");
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "participant");
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -322,13 +323,13 @@ namespace BlazorApplication.HttpRepository
             var queryStringParam = new Dictionary<string, string>
             {
                 ["participantId"] = participantId
-            };
-
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            };            
 
             try
             {
-                var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var bodyContent = new StringContent("", Encoding.UTF8, "application/json");
                 var putResult = await _client.PutAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "participant/remove/teamFromParticipant", queryStringParam), bodyContent);
                 var putContent = await putResult.Content.ReadAsStringAsync();
 
@@ -352,13 +353,13 @@ namespace BlazorApplication.HttpRepository
 
             var content = JsonSerializer.Serialize(participant);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", participant.id.ToString());
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "participant", participant.id.ToString());			
 
             try
             {
-                var putResult = await _client.PutAsync(url, bodyContent);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var putResult = await _client.PutAsync(url, bodyContent);
                 var putContent = await putResult.Content.ReadAsStringAsync();
 
                 if (!putResult.IsSuccessStatusCode)

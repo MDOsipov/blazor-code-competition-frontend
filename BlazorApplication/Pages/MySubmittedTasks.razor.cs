@@ -30,7 +30,7 @@ namespace BlazorApplication.Pages
         public ILogger<MySubmittedTasks> Logger { get; set; }
 
         [Parameter]
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 		public List<TaskWithTimesDto> TaskList { get; set; } = new List<TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
@@ -64,13 +64,12 @@ namespace BlazorApplication.Pages
             {
                 var claims = await AuthTest.GetClaims();
                 LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
-                Console.WriteLine("Our user id: " + LogedUserId);
                 Logger.LogInformation($"Success. User id: {JsonSerializer.Serialize(LogedUserId)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting a user info!", ex);
             }
         }
 
@@ -92,7 +91,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting a user info!", ex);
             }
         }
 
@@ -113,7 +112,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting a user info!", ex);
             }
             
             if (participant?.teamId is not null)
@@ -134,7 +133,7 @@ namespace BlazorApplication.Pages
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error: {ex}");
-                    throw new System.Exception("Oops! Something went wrong while getting a user team!", ex);
+                    throw new Exception("Oops! Something went wrong while getting a user team!", ex);
                 }
             }
             else
@@ -158,12 +157,13 @@ namespace BlazorApplication.Pages
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
                 successResponse = pagingResponse.SuccessRequest;
+                Console.WriteLine("____________________", successResponse);
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks!", ex);
             }  
         }
     }

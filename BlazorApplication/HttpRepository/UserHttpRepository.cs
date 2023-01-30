@@ -24,7 +24,7 @@ namespace BlazorApplication.HttpRepository
 			_client = client;
 			_configuration = configuration;
 			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
-			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive= true };
+			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 			_logger = logger;
 		}
 
@@ -51,7 +51,7 @@ namespace BlazorApplication.HttpRepository
                 var pagingResponse = new PagingResponse<UserDto>
                 {
                     Items = JsonSerializer.Deserialize<List<UserDto>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
                 pagingResponse.SuccessRequest = true;
@@ -62,7 +62,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of users!", ex);
             }
         }
 	}
