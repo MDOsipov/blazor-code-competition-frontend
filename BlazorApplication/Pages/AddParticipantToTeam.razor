@@ -1,30 +1,42 @@
 ﻿@page "/addParticipantToTeam/{teamIdStr}"
-@using BlazorApplication.Components.ParticipantTable
+@attribute [Authorize]
+
 @using BlazorApplication.Components
+
+<h2>Adding participant to team</h2>
+<a href="/teamParticipantsManagement/@teamIdStr">Go Back</a>
 
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-        <EditForm Model="ParticipantList" OnValidSubmit="Create" class="card card-body bg-light mt-5">
-            <DataAnnotationsValidator />
-            <SuccessNotification @ref="_notification" _navUrl=@navUrlToSend />
+<EditForm Model="ParticipantList" OnValidSubmit="Create" class="card card-body bg-light mt-5">
+	<DataAnnotationsValidator />
+	<SuccessNotification @ref="_notification" _navUrl=@navUrlToSend />
 
-            <div class="mb-3 row">
-                <label for="price" class="col-md-2 col-form-label">Participant:</label>
-                <div class="col-md-10">
-                    <select class="form-select" aria-label="Choose a task" @bind="newParticipantId">
-                        @foreach (var participant in ParticipantList)
-                        {
-                            <option value=@participant.id>@participant.email</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-success">Create</button>
-                </div>
-            </div>
-        </EditForm>
+	@if (ParticipantList.Count == 0)
+	{
+		<Loading Placeholders="1" />
+	}
+	else
+	{
+		<div class="mb-3 row">
+			<label for="price" class="col-md-2 col-form-label">Participant:</label>
+			<div class="col-md-10">
+				<select class="form-select" aria-label="Choose a task" @bind="newParticipantId">
+					@foreach (var participant in ParticipantList)
+					{
+						<option value=@participant.id>@participant.email</option>
+					}
+				</select>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12 text-right">
+				<button type="submit" class="btn btn-success">Create</button>
+			</div>
+		</div>
+	}
+</EditForm>
     </ChildContent>
 	<ErrorContent Context="Some">
         <p class="error-message">Oops! Something went wrong while rendering add participant page!</p>

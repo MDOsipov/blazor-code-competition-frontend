@@ -14,6 +14,10 @@ namespace BlazorApplication.Pages
         private CompetitionParameters _competitionParameters = new CompetitionParameters();
         private ErrorBoundary? errorBoundary;
 
+        [Parameter]
+
+        public bool successResponse { get; set; }
+
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
         [Inject]
@@ -45,6 +49,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await CompetitionRepo.GetCompetitions(_competitionParameters);
                 CompetitionList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(CompetitionList)}");
             }
             catch (Exception ex)

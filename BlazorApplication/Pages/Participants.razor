@@ -1,28 +1,41 @@
 ﻿@page "/participants"
+@attribute [Authorize]
+
 @using BlazorApplication.Components.ParticipantTable
 @using BlazorApplication.Components
 
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-        <div class="row">
-            <div class="col-md-10">
-                @*Place for search and sort*@
-            </div>
-            <div class="col-md-2">
-                <a href="/createParticipant">Create Participant</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <ParticipantTable Participants="ParticipantsList" OnDeleted="DeleteParticipant" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-            </div>
-        </div>
-    </ChildContent>
+<div class="row">
+    <div class="col-md-10">
+        @*Place for search and sort*@
+    </div>
+    <div class="col-md-2">
+        <a href="/createParticipant">Create Participant</a>
+    </div>
+</div>
+@if (successResponse && ParticipantsList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no Participant yet, please check Users table.</h5>
+    </div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<ParticipantTable Participants="ParticipantsList" OnDeleted="DeleteParticipant" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}
+</ChildContent>
      <ErrorContent Context="Some">
        <p class="error-message">Oops! Something went wrong while rendering participants page!</p>
         <button class="btn btn-warning" @onclick="ResetError">Reset</button>

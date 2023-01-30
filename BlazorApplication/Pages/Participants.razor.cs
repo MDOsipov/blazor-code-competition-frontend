@@ -19,6 +19,9 @@ namespace BlazorApplication.Pages
         [Inject]
         ILogger<Participants> Logger { get; set; }   
 
+		[Parameter]
+		public bool successResponse { get; set; }
+
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetParticipants();
@@ -40,6 +43,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await ParticipantRepo.GetParticipants(_participantParameters);
                 ParticipantsList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Participant list: {JsonSerializer.Serialize(ParticipantsList)}");
             }
             catch(Exception ex)

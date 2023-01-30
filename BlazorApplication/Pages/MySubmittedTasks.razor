@@ -16,18 +16,29 @@
             </div>
             <div class="col-md-4">
         
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <TaskToTeamTable Tasks="TaskList" IsSubmitted=true ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-               <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-            </div>
-        </div>
+    </div>
+</div>
+@if (successResponse && TaskList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no Submited task now, when you submit any task, you will see it here.</h5>
+    </div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<TaskToTeamTable Tasks="TaskList" IsSubmitted=true ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}
     </ChildContent>
     <ErrorContent Context="Some">
         <p class="error-message">Oops! Something went wrong while rendering my submitted tasks page!</p>

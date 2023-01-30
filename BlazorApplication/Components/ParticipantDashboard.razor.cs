@@ -23,16 +23,17 @@ namespace BlazorApplication.Components
 		public ITeamHttpRepository TeamRepo { get; set; }
 
 		private string LogedUserId = "";
-        private string LogedUserEmail = "";
+        private string LogedUserEmail = string.Empty;
         private int UserTeamId = 0;
-        private string UserTeamName = "";
+        private string UserTeamName = string.Empty;
 
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+
+        protected async override Task OnInitializedAsync()
         {
             await GetUserId();
-			Console.WriteLine("Step 1");
+			
 			await GetUserEmail();
-			Console.WriteLine("Step 2");
+			
 			await GetUserTeam();
 		}
 
@@ -40,7 +41,7 @@ namespace BlazorApplication.Components
         {
             var claims = await AuthTest.GetClaims();
             LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
-            Console.WriteLine("Our user id: " + LogedUserId);
+            //Console.WriteLine("Our user id: " + LogedUserId);
         }
 
         private async Task GetUserEmail()
@@ -53,13 +54,13 @@ namespace BlazorApplication.Components
 			var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
             var users = pagingResponse.Items;
             LogedUserEmail = users.Where(u => u.Id == LogedUserId).FirstOrDefault().Email;
-            Console.WriteLine("User's email: ");
-            Console.WriteLine(LogedUserEmail); 
+            //Console.WriteLine("User's email: ");
+            //Console.WriteLine(LogedUserEmail); 
 		}
 
         private async Task GetUserTeam()
         {
-            Console.WriteLine("Started get user team");
+            //Console.WriteLine("Started get user team");
             ParticipantParameters participantParameters = new ParticipantParameters()
             {
                 switchOff = true
@@ -67,28 +68,28 @@ namespace BlazorApplication.Components
 
             var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
             var participant = pagingResponse.Items.FirstOrDefault();
-			Console.WriteLine("Participant: ");
-			Console.WriteLine(JsonSerializer.Serialize(participant));
+			//Console.WriteLine("Participant: ");
+			//Console.WriteLine(JsonSerializer.Serialize(participant));
 
 			if (participant?.teamId is not null)
             {
 				UserTeamId = (int)participant.teamId;
-				Console.WriteLine("User's team id: ");
-				Console.WriteLine(UserTeamId);
+				//Console.WriteLine("User's team id: ");
+				//Console.WriteLine(UserTeamId);
 			}
 
 			if (UserTeamId > 0)
             {
 				var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
                 UserTeamName = team.TeamName;
-				Console.WriteLine("User's team name: ");
-				Console.WriteLine(UserTeamName);
+				//Console.WriteLine("User's team name: ");
+				//Console.WriteLine(UserTeamName);
 			}
             else
             {
                 UserTeamName = "No team";
-				Console.WriteLine("User's team name: ");
-				Console.WriteLine(UserTeamName);
+				//Console.WriteLine("User's team name: ");
+				//Console.WriteLine(UserTeamName);
 			}
 
 		}

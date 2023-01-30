@@ -1,4 +1,6 @@
 ﻿@page "/teamParticipantsManagement/{id}"
+@attribute [Authorize]
+
 @using BlazorApplication.Components.ParticipantTable
 @using BlazorApplication.Components
 
@@ -16,25 +18,36 @@
             </div>
         </nav>
 
-        <div class="row">
-            <div class="col-md-3">
-            </div>
-            <div class="col-md-3">
-            </div>
-            <div class="col-md-6">
-                <a href="/addParticipantToTeam/@id">Add participants to team</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <ParticipantTable Participants="ParticipantList" OnDeleted="DeleteParticipant" isParticipantToTeamFlag=true />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-            </div>
-        </div>
+<div class="row">
+    <div class="col-md-3">
+    </div>
+    <div class="col-md-3">
+    </div>
+    <div class="col-md-6">
+        <a href="/addParticipantToTeam/@id">Add participants to team</a>
+    </div>
+</div>
+@if (successResponse && ParticipantList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no any Participant yet, please add anybody to a team.</h5>
+    </div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<ParticipantTable Participants="ParticipantList" OnDeleted="DeleteParticipant" isParticipantToTeamFlag=true />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}
     </ChildContent>
     <ErrorContent Context="Some">
         <p class="error-message">Oops! Something went wrong while rendering team participants management page!</p>

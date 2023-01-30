@@ -23,7 +23,7 @@ namespace BlazorApplication.HttpRepository
 		{
 			_client = client;
 			_configuration = configuration;
-			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
 			_options = new JsonSerializerOptions { PropertyNameCaseInsensitive= true };
 			_logger = logger;
 		}
@@ -54,6 +54,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Users: {content}");
 
                 return pagingResponse;

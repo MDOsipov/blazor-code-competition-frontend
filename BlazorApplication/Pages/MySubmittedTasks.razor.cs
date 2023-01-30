@@ -22,9 +22,16 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITeamHttpRepository TeamRepo { get; set; }
 
+
+		[Inject]
+		public ITaskHttpRepository TaskRepo { get; set; }
+
         [Inject]
-        public ILogger<MySubmittedTasks> Logger { get; set; }   
-        public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
+        public ILogger<MySubmittedTasks> Logger { get; set; }
+
+        [Parameter]
+        public bool successResponse { get; set; }
+		public List<TaskWithTimesDto> TaskList { get; set; } = new List<TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
 
@@ -35,10 +42,7 @@ namespace BlazorApplication.Pages
         private string UserTeamName = "";
         private ErrorBoundary? errorBoundary;
 
-        [Inject]
-        public ITaskHttpRepository TaskRepo { get; set; }
-
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             await GetUserId();
             await GetUserEmail();
@@ -139,13 +143,13 @@ namespace BlazorApplication.Pages
                 Logger.LogInformation($"Success. User team: {JsonSerializer.Serialize(UserTeamName)}");
             }
         }
-        private async System.Threading.Tasks.Task SelectedPage(int page)
+        private async Task SelectedPage(int page)
         {
             _taskParameters.PageNumber = page;
             await GetTasksByTeamId();
         }
 
-        protected async System.Threading.Tasks.Task GetTasksByTeamId()
+        protected async Task GetTasksByTeamId()
         {
             Logger.LogInformation("Get tasks by team id method is called");
             try
@@ -153,6 +157,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetSubmittedTasksByTeamId(_taskParameters, UserTeamId.ToString());
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)

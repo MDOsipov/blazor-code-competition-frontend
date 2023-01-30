@@ -17,6 +17,9 @@ namespace BlazorApplication.Pages
         [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
 
+		[Parameter]
+		public bool successResponse { get; set; }
+
 		[Inject]
 		public ILogger<Tasks> Logger { get; set; }
 
@@ -39,6 +42,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)

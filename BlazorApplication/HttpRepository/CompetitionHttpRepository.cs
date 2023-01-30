@@ -28,7 +28,7 @@ namespace BlazorApplication.HttpRepository
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
-        private readonly Models.BackEndConnections _backEndConnections;
+        private readonly BackEndConnections _backEndConnections;
         private readonly IAccessTokenProvider _accessTokenProvider;
         private readonly ILogger<CompetitionHttpRepository> _logger;
 
@@ -69,7 +69,7 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-		public async Task<IEnumerable<CompetitionStatus>> GetAllCompetitionStatuses()
+		public async Task<ResponseWithSuccess<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
             _logger.LogInformation("Get all competition statuses http repository method is called");
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -120,7 +120,8 @@ namespace BlazorApplication.HttpRepository
                     maxTaskPerGroups = localCompetition.maxTaskPerGroups,
                     CompetitionStatusId = localCompetition.competitionStatus,
                     CompetitionAdministratorId = localCompetition.competitionAdministratorId,
-                    HashCode = localCompetition.hashCode
+                    HashCode = localCompetition.hashCode,
+                    SuccessRequest = true,
                 };
 
                 _logger.LogInformation($"Success. Competition: {JsonSerializer.Serialize(competition)}");
@@ -162,6 +163,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Competitions: {content}");
 
                 return pagingResponse;
@@ -259,6 +261,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Competitions: {content}");
                 return pagingResponse;
             }

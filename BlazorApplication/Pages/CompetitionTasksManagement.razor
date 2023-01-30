@@ -1,44 +1,59 @@
 ﻿@page "/competitionTasksManagement/{id}"
+@attribute [Authorize]
+
 @using BlazorApplication.Components.TaskTable
 @using BlazorApplication.Components
 
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-        <nav class="navbar navbar-expand-lg bg-light">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="competitionTasksManagement/@id">Tasks</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="competitionTeamsManagement/@id">Teams</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <h3>CompetitionTasksManagement</h3>
+<nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="competitionTasksManagement/@id">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="competitionTeamsManagement/@id">Teams</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<h3>Competition Tasks Management</h3>
 
-        <div class="row">
-            <div class="col-md-3">
-            </div>
-            <div class="col-md-3">
-            </div>
-            <div class="col-md-6">
-                <a href="/addTaskToCompetition/@id">Add task to competition</a>
-            </div>
+<div class="row">
+    <div class="col-md-3">
+        
+    </div>
+    <div class="col-md-3">
+        
+    </div>
+    <div class="col-md-6">
+        <a href="/addTaskToCompetition/@id">Add task to competition</a>
+    </div>
+</div>
+@if (successResponse && TaskList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no task now, please add new</h5>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col">
+            <TaskTable Tasks="TaskList" OnDeleted="DeleteTask" isTaskToCompetitionFlag=true />
         </div>
-        <div class="row">
-            <div class="col">
-                <TaskTable Tasks="TaskList" OnDeleted="DeleteTask" isTaskToCompetitionFlag=true />
-            </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
         </div>
-        <div class="row">
-            <div class="col">
-                <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-            </div>
-        </div>
+    </div>
+}
     </ChildContent>
     <ErrorContent Context="Some">
         <p class="error-message">Oops! Something went wrong while rendering competition tasks management page!</p>

@@ -13,9 +13,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
-    
-    public partial class MyCompetitions
-    {
+
+	public partial class MyCompetitions
+	{
 		[Inject]
 		public AuthTest authTest { get; set; }
 		public List<Competition> CompetitionList { get; set; } = new List<Competition>();
@@ -32,14 +32,17 @@ namespace BlazorApplication.Pages
 
 		private string LogedUserId = "";
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		[Parameter]
+		public bool successResponse { get; set; }
+
+		protected async override Task OnInitializedAsync()
 		{
 			await LogUsername();
 			await GetUserId();
 			await GetCompetitions();
 		}
 
-		protected async System.Threading.Tasks.Task GetCompetitions()
+		protected async Task GetCompetitions()
 		{
             Logger.LogInformation("Get competition method is called");
             try
@@ -47,6 +50,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await CompetitionRepo.GetCompetitionsByAdminId(LogedUserId, _competitionParameters);
                 CompetitionList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(CompetitionList)}");
             }
             catch (Exception ex)
@@ -55,7 +59,7 @@ namespace BlazorApplication.Pages
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
 		}
-		private async System.Threading.Tasks.Task DeleteCompetition(int id)
+		private async Task DeleteCompetition(int id)
 		{
             Logger.LogInformation("Delete competition method is called");
             try
@@ -71,7 +75,7 @@ namespace BlazorApplication.Pages
             }
 			await GetCompetitions();
 		}
-		private async System.Threading.Tasks.Task SelectedPage(int page)
+		private async Task SelectedPage(int page)
 		{
 			_competitionParameters.PageNumber = page;
 			await GetCompetitions();
@@ -81,8 +85,8 @@ namespace BlazorApplication.Pages
 		{
 			var identity = await authTest.GetIdentity();
 			//Console.WriteLine(identity.Name);
-			Console.WriteLine("Identity: ");
-			Console.WriteLine(JsonSerializer.Serialize(identity));
+			//Console.WriteLine("Identity: ");
+			//Console.WriteLine(JsonSerializer.Serialize(identity));
 		}
 
 		private async Task LogClaims()

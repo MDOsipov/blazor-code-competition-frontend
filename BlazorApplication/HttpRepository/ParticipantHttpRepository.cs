@@ -155,7 +155,8 @@ namespace BlazorApplication.HttpRepository
                     lastName = localParticipant.lastName,
                     email = localParticipant.email,
                     userId = localParticipant.userId,
-                    teamId = localParticipant.teamId
+                    teamId = localParticipant.teamId,
+                    SuccessRequest = true,
                 };
 
                 _logger.LogInformation($"Success. Participant: {JsonSerializer.Serialize(participant)}");
@@ -195,6 +196,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
@@ -233,6 +235,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
@@ -270,6 +273,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
@@ -280,7 +284,7 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-        public async Task<IEnumerable<Participant>> GetParticipantsLimited()
+        public async Task<ResponseWithSuccess<Participant>> GetParticipantsLimited()
         {
             _logger.LogInformation("Get participants limited http repository method is called");
             await AddToken.RequestAuthToken(_accessTokenProvider, _client);
@@ -296,8 +300,13 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 _logger.LogInformation($"Success. Participants: {content}");
-                var toReturn = JsonSerializer.Deserialize<List<Models.Participant>>(content, _options);
-                return toReturn;
+                var responseWithStatues = new ResponseWithSuccess<Participant>
+                {
+                    Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
+                    SuccessRequest = true,
+                };
+
+                return responseWithStatues;
             }
             catch (Exception ex)
             {

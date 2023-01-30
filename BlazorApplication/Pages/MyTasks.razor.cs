@@ -23,13 +23,23 @@ namespace BlazorApplication.Pages
         public ITeamHttpRepository TeamRepo { get; set; }
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
+
+		[Inject]
+		public ITaskHttpRepository TaskRepo { get; set; }
+
         [Inject]
         public ILogger<MyTasks> Logger { get; set; }
-        public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
+
+        [Parameter]
+        public bool successResponse { get; set; }
+
+        [Parameter]
+        public bool successResponseParticipant { get; set; } = false;
+		public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
+        private bool successResponseTeam { get; set; } = false;
         private ErrorBoundary? errorBoundary;
-
         private string LogedUserId = "";
         private string LogedUserEmail = "";
         private int UserTeamId = 0;
@@ -38,18 +48,16 @@ namespace BlazorApplication.Pages
         private int CompetitionId = 0;
         private int maxNumTasks = 0;
 
-
-        [Inject]
-        public ITaskHttpRepository TaskRepo { get; set; }
-
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
+
             await GetUserId();
             await GetUserEmail();
             await GetUserTeam();
             await GetCompetitionId();
-            await GetMaxNumTasks();
+            await GetMaxNumTasks(); 
             await GetTasksByTeamId();
+
         }
         private async Task GetUserId()
         {
@@ -102,17 +110,22 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
                 participant = pagingResponse.Items.FirstOrDefault();
+                successResponseParticipant = pagingResponse.SuccessRequest;
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
             }
-            
 
-            if (participant?.teamId is not null)
+
+            if (participant == null)
             {
-                UserTeamId = (int)participant.teamId;
+                UserTeamName = "No team";
+            }
+            else if (participant.teamId != null)
+            {
+                UserTeamId = participant.teamId;
                 ParticipantId = participant.id;
             }
 
@@ -137,13 +150,13 @@ namespace BlazorApplication.Pages
             }
 
         }
-        private async System.Threading.Tasks.Task SelectedPage(int page)
+        private async Task SelectedPage(int page)
         {
             _taskParameters.PageNumber = page;
             await GetTasksByTeamId();
         }
 
-        protected async System.Threading.Tasks.Task GetTasksByTeamId()
+        protected async Task GetTasksByTeamId()
         {
             Logger.LogInformation("Get tasks by team id method is called");
             try
@@ -151,6 +164,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetTasksByTeamId(_taskParameters, UserTeamId.ToString());
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
@@ -160,7 +174,7 @@ namespace BlazorApplication.Pages
             }
         }
 
-		private async System.Threading.Tasks.Task RemoveTaskFromTeam(int taskId)
+		private async Task RemoveTaskFromTeam(int taskId)
 		{
             Logger.LogInformation("Remove task from team method is called");
             try
@@ -184,7 +198,10 @@ namespace BlazorApplication.Pages
             Team team;
             try
             {
-                team = await TeamRepo.GetTeamById(UserTeamId.ToString());
+                if (UserTeamName != "No team")
+                {
+                    team = await TeamRepo.GetTeamById(UserTeamId.ToString());
+                }
             }
             catch (Exception ex)
             {
@@ -207,7 +224,7 @@ namespace BlazorApplication.Pages
             errorBoundary?.Recover();
         }
 
-        private async System.Threading.Tasks.Task GetMaxNumTasks()
+        private async Task GetMaxNumTasks()
         {
             Logger.LogInformation("Get maximum number of tasks method is called");
             if (CompetitionId > 0)

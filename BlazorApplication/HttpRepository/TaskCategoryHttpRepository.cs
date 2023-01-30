@@ -82,7 +82,7 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-        public async Task<PagingResponse<Models.TaskCategory>> GetTaskCategory(TaskCategoryParameters taskCategoryParameters)
+        public async Task<PagingResponse<TaskCategory>> GetTaskCategory(TaskCategoryParameters taskCategoryParameters)
         {
             _logger.LogInformation("Get task category http repository method is called");
 
@@ -104,12 +104,13 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 };
 
-                var pagingResponse = new PagingResponse<Models.TaskCategory>
-                {
-                    Items = JsonSerializer.Deserialize<List<Models.TaskCategory>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
-                };
+            var pagingResponse = new PagingResponse<TaskCategory>
+            {
+                Items = JsonSerializer.Deserialize<List<TaskCategory>>(content, _options),
+                MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+            };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Task category: {content}");
                 return pagingResponse;
             }
@@ -140,6 +141,7 @@ namespace BlazorApplication.HttpRepository
 
                 var taskCategory = JsonSerializer.Deserialize<TaskCategory>(content, _options);
 
+                taskCategory.SuccessRequest = true;
                 _logger.LogInformation($"Success. Task category: {content}");
                 return taskCategory;
             }

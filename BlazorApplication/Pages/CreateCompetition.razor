@@ -1,66 +1,76 @@
 ﻿@page "/createCompetition"
+@attribute [Authorize]
 
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-        <h2>Create Task Form</h2>
+<h2>Create Competition</h2>
 
-        <EditForm Model="_competition" OnValidSubmit="Create" class="card card-body bg-light mt-5">
-            <DataAnnotationsValidator />
-            <SuccessNotification @ref="_notification" _navUrl="/competitions" />
+<a href="competitions">Go Back</a>
 
-            <div class="mb-3 row">
-                <label for="name" class="col-md-2 col-form-label">Competition name:</label>
-                <div class="col-md-10">
-                    <InputText id="name" class="form-control" @bind-Value="_competition.CompetitionName" />
-                    <ValidationMessage For="@(() => _competition.CompetitionName)"></ValidationMessage>
-                </div>
+<EditForm Model="_competition" OnValidSubmit="Create" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <SuccessNotification @ref="_notification" _navUrl="/competitions" />
+
+    @if (competitionStatusesList.Count < 1 && _users.Count() < 1)
+    {
+        <Loading Placeholders="5" />
+    }
+    else
+    {
+        <div class="mb-3 row">
+            <label for="name" class="col-md-2 col-form-label">Competition name:</label>
+            <div class="col-md-10">
+                <InputText id="name" class="form-control" @bind-Value="_competition.CompetitionName" />
+                <ValidationMessage For="@(() => _competition.CompetitionName)"></ValidationMessage>
             </div>
+        </div>
 
-            <div class="mb-3 row">
-                <label for="name" class="col-md-2 col-form-label">Max tasks per group:</label>
-                <div class="col-md-10">
-                    <InputNumber id="name" class="form-control" @bind-Value="_competition.maxTaskPerGroups" />
-                    <ValidationMessage For="@(() => _competition.maxTaskPerGroups)"></ValidationMessage>
-                </div>
+        <div class="mb-3 row">
+            <label for="name" class="col-md-2 col-form-label">Max tasks per group:</label>
+            <div class="col-md-10">
+                <InputNumber id="name" class="form-control" @bind-Value="_competition.maxTaskPerGroups" />
+                <ValidationMessage For="@(() => _competition.maxTaskPerGroups)"></ValidationMessage>
             </div>
+        </div>
 
-            <div class="mb-3 row">
-                <label for="name" class="col-md-2 col-form-label">Hash:</label>
-                <div class="col-md-10">
-                    <InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
-                    <ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
-                </div>
+        <div class="mb-3 row">
+            <label for="name" class="col-md-2 col-form-label">Hash:</label>
+            <div class="col-md-10">
+                <InputText id="name" class="form-control" @bind-Value="_competition.HashCode" />
+                <ValidationMessage For="@(() => _competition.HashCode)"></ValidationMessage>
             </div>
+        </div>
 
-           <div class="mb-3 row">
-                <label for="price" class="col-md-2 col-form-label">Status:</label>
-                <div class="col-md-10">
-                    <select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionStatusId">
-                        @foreach (var competitionStatus in competitionStatusesList)
-                        {
-                            <option value=@competitionStatus.Id>@competitionStatus.StatusName</option>
-                        }
-                    </select>
-                </div>
+       <div class="mb-3 row">
+            <label for="price" class="col-md-2 col-form-label">Status:</label>
+            <div class="col-md-10">
+                <select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionStatusId">
+                    @foreach (var competitionStatus in competitionStatusesList)
+                    {
+                        <option value=@competitionStatus.Id>@competitionStatus.StatusName</option>
+                    }
+                </select>
             </div>
+        </div>
 
-            <div class="mb-3 row">
-                <label for="price" class="col-md-2 col-form-label">Administrator:</label>
-                <div class="col-md-10">
-                    <select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionAdministratorId">
-                        @foreach (var user in _users)
-                        {
-                            <option value=@user.Id>@user.Email</option>
-                        }
-                    </select>
-                </div>
+        <div class="mb-3 row">
+            <label for="price" class="col-md-2 col-form-label">Administrator:</label>
+            <div class="col-md-10">
+                <select class="form-select" aria-label="Choose competition" @bind="_competition.CompetitionAdministratorId">
+                    @foreach (var user in _users)
+                    {
+                        <option value=@user.Id>@user.Email</option>
+                    }
+                </select>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-success">Create</button>
-                </div>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-success">Create</button>
             </div>
+        </div>
+    }
 
         </EditForm>
     </ChildContent>

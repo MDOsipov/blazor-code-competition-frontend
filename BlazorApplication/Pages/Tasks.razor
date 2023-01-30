@@ -1,31 +1,43 @@
 ﻿@page "/tasks"
+@attribute [Authorize]
 
 @using BlazorApplication.Components.TaskTable
 @using BlazorApplication.Components
 
 <ErrorBoundary @ref="errorBoundary">
     <ChildContent>
-        <div class="row">
-            <div class="col-md-5">
-                <Search OnSearchChanged="SearchChanged" />
-            </div>
-            <div class="col-md-5">
-                <Sort OnSortChanged="SortChanged" />
-            </div>
-            <div class="col-md-2">
-                <a href="/createTask">Create Task</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <TaskTable Tasks="TaskList" OnDeleted="DeleteTask" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-               <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-            </div>
-        </div>
+<div class="row">
+    <div class="col-md-5">
+        <Search OnSearchChanged="SearchChanged" />
+    </div>
+    <div class="col-md-5">
+        <Sort OnSortChanged="SortChanged" />
+    </div>
+    <div class="col-md-2">
+        <a href="/createTask">Create Task</a>
+    </div>
+</div>
+@if (successResponse && TaskList.Count == 0)
+{
+    <div>
+        <p></p>
+        <p></p>
+        <h5 class="text-primary">There is no any Task yet, please create new one.</h5>
+    </div>
+}
+else
+{
+	<div class="row">
+		<div class="col">
+			<TaskTable Tasks="TaskList" OnDeleted="DeleteTask" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+		</div>
+	</div>
+}
     </ChildContent>
     <ErrorContent Context="Some">
         <p class="error-message">Oops! Something went wrong while rendering tasks page!</p>

@@ -18,8 +18,12 @@ namespace BlazorApplication.Pages
         [Inject]
         public IParticipantHttpRepository participantRepo { get; set; }
 
+		[Parameter]
+		public bool successResponse { get; set; }
+
         [Inject]
         public ILogger<TeamParticipantsManagement> Logger { get; set; }
+
         public List<Models.Participant> ParticipantList { get; set; } = new List<Models.Participant>();
 		public MetaData MetaData { get; set; } = new MetaData();
 		private ParticipantParameters _participantParameters = new ParticipantParameters();
@@ -46,6 +50,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await participantRepo.GetParticipantsByTeamId(_participantParameters, id);
                 ParticipantList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Participants: {JsonSerializer.Serialize(ParticipantList)}");
             }
             catch (Exception ex)

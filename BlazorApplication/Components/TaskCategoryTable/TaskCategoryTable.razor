@@ -2,9 +2,13 @@
 {
 	<table class="table">
 		<thead>
-			<th scope="col">Id</th>
-			<th scope="col">Category</th>
-			<th scope="col">Description</th>
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Category</th>
+				<th scope="col">Description</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
 		</thead>
 		<tbody>
 			@foreach (var taskCategory in TaskCategories)
@@ -33,6 +37,9 @@
 else
 {
 	<span>
-		Loading task categories...
+		<button class="btn btn-primary" type="button" disabled>
+			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			Loading task categories...
+		</button>
 	</span>
 }

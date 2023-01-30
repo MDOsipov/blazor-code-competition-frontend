@@ -19,7 +19,11 @@ namespace BlazorApplication.Pages
 
         [Inject]
         public ILogger<Teams> Logger { get; set; }
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+
+        [Parameter]
+		public bool successResponse { get; set; }
+
+		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetTeams();
 		}
@@ -37,6 +41,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
                 TeamList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                successResponse = pagingResponse.SuccessRequest;
                 Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(TeamList)}");
             }
             catch (Exception ex)

@@ -15,13 +15,12 @@ namespace BlazorApplication.Models
 		public int TotalPoints { get; set; }
 		public string CompetitionName { get; set; } = null!;
         public int? CompetitionId { get; set; }
-
-
         public string IconImage { get; set; }
 		public DateTime CreateDate { get; set; }
 		public DateTime UpdateDate { get; set; }
 		public int CreateUserId { get; set; }
 		public int UpdateUserId { get; set; }
 		public int StatusId { get; set; }
-	}
+        public bool SuccessRequest { get; set; } = false;
+    }
 }

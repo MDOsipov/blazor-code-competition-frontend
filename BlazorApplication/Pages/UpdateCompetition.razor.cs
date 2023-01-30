@@ -32,7 +32,7 @@ namespace BlazorApplication.Pages
         [Parameter]
         public string boolString { get; set; } = "0";
 
-        protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             await GetCompetition();
             await GetStatuses();
@@ -65,7 +65,8 @@ namespace BlazorApplication.Pages
             Logger.LogInformation("Get statuses method is called");
             try
             {
-                competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+                var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
+                competitionStatusesList = responseWithStatues.Items;
                 Logger.LogInformation($"Success. Competition statuses: {JsonSerializer.Serialize(competitionStatusesList)}");
             }
             catch (Exception ex)

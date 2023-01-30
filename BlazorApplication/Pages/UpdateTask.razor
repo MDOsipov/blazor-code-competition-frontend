@@ -1,80 +1,91 @@
 ﻿@page "/updateTask/{id}"
+@attribute [Authorize]
 
 <ErrorBoundary @ref="errorBoundary">
     <ChildContent>
         @if (@_task != null)
 {
+    <h2>Update Task @_task.TaskName</h2>
+    <a href="/tasks">Go Back</a>
+
     <EditForm Model="@_task" OnValidSubmit="Update" class="card card-body bg-light mt-5">
         <DataAnnotationsValidator />
 
-        <div class="mb-3 row">
-            <label for="name" class="col-md-2 col-form-label">Task name:</label>
-            <div class="col-md-10">
-                <InputText id="task name" class="form-control" @bind-Value="_task.TaskName" />
-                <ValidationMessage For="@(() => _task.TaskName)" />
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="supplier" class="col-md-2 col-form-label">Task description:</label>
-            <div class="col-md-10">
-                <InputText id="task description" class="form-control" @bind-Value="_task.TaskDescription" />
-                <ValidationMessage For="@(() => _task.TaskDescription)" />
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="price" class="col-md-2 col-form-label">Task content:</label>
-            <div class="col-md-10">
-                <InputText id="task content" class="form-control" @bind-Value="_task.TaskContent" />
-                <ValidationMessage For="@(() => _task.TaskContent)" />
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="price" class="col-md-2 col-form-label">Points:</label>
-            <div class="col-md-10">
-                <InputNumber id="price" class="form-control" @bind-Value="_task.Points" />
-                <ValidationMessage For="@(() => _task.Points)"></ValidationMessage>
-            </div>
-        </div>
+        @if (!successResponse || TaskCategories == null)
 
-        <div class="mb-3 row">
-            <label for="price" class="col-md-2 col-form-label">Task category:</label>
-            <div class="col-md-10">
-                <select class="form-select" aria-label="Choose category" @bind="_taskCategory">
-                    @foreach (var taskCategory in TaskCategories)
-                    {
-                        <option value=@taskCategory.CategoryName>@taskCategory.CategoryName</option>
-                    }
-                </select>
+        {
+            <Loading Placeholders="6" />
+        }
+        else
+        {
+            <div class="mb-3 row">
+                <label for="name" class="col-md-2 col-form-label">Task name:</label>
+                <div class="col-md-10">
+                    <InputText id="task name" class="form-control" @bind-Value="_task.TaskName" />
+                    <ValidationMessage For="@(() => _task.TaskName)" />
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3 row">
-            <label for="Timeframe" class="col-md-2 col-form-label">Timeframe(HH:MM:SS):</label>
-            <div class="col-md-10">
-                <InputText id="Timeframe" class="form-control" @bind-Value="_timeFrameMode" />
+            <div class="mb-3 row">
+                <label for="supplier" class="col-md-2 col-form-label">Task description:</label>
+                <div class="col-md-10">
+                    <InputText id="task description" class="form-control" @bind-Value="_task.TaskDescription" />
+                    <ValidationMessage For="@(() => _task.TaskDescription)" />
+                </div>
             </div>
-        </div>
 
-        @*<div class="mb-3 row">
-            <label for="price" class="col-md-2 col-form-label">Task timeframe:</label>
-            <div class="col-md-10">
-                <select class="form-select" aria-label="Choose timeframe" @bind="_timeFrameMode">
-                    <option value="1">0:30</option>
-                    <option value="2">1:00</option>
-                    <option value="3">1:30</option>
-                    <option value="4">2:00</option>
-                </select>
+            <div class="mb-3 row">
+                <label for="price" class="col-md-2 col-form-label">Task content:</label>
+                <div class="col-md-10">
+                    <InputText id="task content" class="form-control" @bind-Value="_task.TaskContent" />
+                    <ValidationMessage For="@(() => _task.TaskContent)" />
+                </div>
             </div>
-        </div>*@
-      
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <button type="submit" class="btn btn-success">Update</button>
-            </div>
-        </div>
 
+            <div class="mb-3 row">
+                <label for="price" class="col-md-2 col-form-label">Points:</label>
+                <div class="col-md-10">
+                    <InputNumber id="price" class="form-control" @bind-Value="_task.Points" />
+                    <ValidationMessage For="@(() => _task.Points)"></ValidationMessage>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label for="price" class="col-md-2 col-form-label">Task category:</label>
+                <div class="col-md-10">
+                    <select class="form-select" aria-label="Choose category" @bind="_taskCategory">
+                        @foreach (var taskCategory in TaskCategories)
+                        {
+                            <option value=@taskCategory.CategoryName>@taskCategory.CategoryName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label for="Timeframe" class="col-md-2 col-form-label">Timeframe(HH:MM:SS):</label>
+                <div class="col-md-10">
+                    <InputText id="Timeframe" class="form-control" @bind-Value="_timeFrameMode" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
+            </div>
+        }
     </EditForm>
     <SuccessNotification @ref="_notification" _navUrl="/tasks" />
+}
+else
+{
+    <span>
+        <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading tasks...
+        </button>
+    </span>
 }
     </ChildContent>
     <ErrorContent Context="Some">

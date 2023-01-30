@@ -130,7 +130,7 @@ namespace BlazorApplication.HttpRepository
 
 			try
 			{
-                Console.WriteLine(url);
+                //Console.WriteLine(url);
                 var response = await _client.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -140,6 +140,7 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 var task = JsonSerializer.Deserialize<Models.Task>(content, _options);
+                task.SuccessRequest = true;
                 _logger.LogInformation($"Success. Task: {content}");
 
                 return task;
@@ -192,6 +193,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Tasks: {content}");
 
                 return pagingResponse;
@@ -230,6 +232,8 @@ namespace BlazorApplication.HttpRepository
                     Items = JsonSerializer.Deserialize<List<Models.Task>>(content, _options),
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
+
+                pagingResponse.SuccessRequest = true;
 
                 _logger.LogInformation($"Success. Tasks: {content}");
 
@@ -270,6 +274,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Tasks: {content}");
 
                 return pagingResponse;

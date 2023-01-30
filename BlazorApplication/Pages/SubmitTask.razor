@@ -1,11 +1,14 @@
 ﻿@page "/submitTask/{taskIdStr}/{teamIdStr}"
 @attribute [Authorize(Roles = "participant")]
 
+<h2>Submitting Task</h2>
+<a href="/myTasks">Go Back</a>
+
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-        <EditForm Model="_submitData" OnValidSubmit="Submit" class="card card-body bg-light mt-5">
-            <DataAnnotationsValidator />
-            <SuccessfulSubmit @ref="_notification" _navUrl="/myTasks" />
+<EditForm Model="_submitData" OnValidSubmit="Submit" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <SuccessfulSubmit @ref="_notification" _navUrl="/myTasks" />
 
             <div class="mb-3 row">
                 <label for="name" class="col-md-2 col-form-label">Github url:</label>

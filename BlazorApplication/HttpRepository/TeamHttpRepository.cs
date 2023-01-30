@@ -102,6 +102,8 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 var team = JsonSerializer.Deserialize<Models.Team>(content, _options);
+                team.SuccessRequest = true;
+
                 _logger.LogInformation($"Success. Team: {content}");
 
                 return team;
@@ -141,6 +143,7 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
+                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Teams: {content}");
 
                 return pagingResponse;
@@ -179,6 +182,7 @@ namespace BlazorApplication.HttpRepository
                     Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
                     MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
+                pagingResponse.SuccessRequest = true;
 
                 _logger.LogInformation($"Success. Teams: {content}");
 

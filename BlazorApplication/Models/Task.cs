@@ -23,7 +23,8 @@ namespace BlazorApplication.Models
 
 		[Range(1, double.MaxValue, ErrorMessage = "Value for the point can't be lower than 1")]
 		public int Points { get; set; }
-        public string TaskCategoryName { get; set; }
+		public string TaskCategoryName { get; set; }
+		public bool SuccessRequest { get; set; } = false;
 
 		//public DateTime CreateDate { get; set; }
 		//public DateTime UpdateDate { get; set; }

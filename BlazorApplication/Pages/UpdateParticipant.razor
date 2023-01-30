@@ -1,12 +1,22 @@
 ﻿@page "/updateParticipant/{id}"
+@attribute [Authorize]
+
+<h2>Update Participant @_participant.firstName @_participant.lastName</h2>
+<a href="/participants">Go Back</a>
 
 <ErrorBoundary @ref="errorBoundary">
     <ChildContent>
-      @if (@_participant != null)
-    {
-        <EditForm Model="@_participant" OnValidSubmit="Update" class="card card-body bg-light mt-5">
-            <DataAnnotationsValidator />
+@if (@_participant != null)
+{
+    <EditForm Model="@_participant" OnValidSubmit="Update" class="card card-body bg-light mt-5">
+        <DataAnnotationsValidator />
 
+        @if (teamList == null)
+        {
+            <Loading Placeholders="4" />
+        }
+        else
+        {
             <div class="mb-3 row">
                 <label for="name" class="col-md-2 col-form-label">First name:</label>
                 <div class="col-md-10">
@@ -48,10 +58,19 @@
                     <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </div>
-
-        </EditForm>
-        <SuccessNotification @ref="_notification" _navUrl="/participants" />
-    }
+        }
+    </EditForm>
+    <SuccessNotification @ref="_notification" _navUrl="/participants" />
+}
+else
+{
+    <span>
+		<button class="btn btn-primary" type="button" disabled>
+			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			Loading tasks...
+		</button>
+	</span>
+}
     </ChildContent>
     <ErrorContent Context="Some">
         <p class="error-message">Oops! Something went wrong while rendering update participant page!</p>

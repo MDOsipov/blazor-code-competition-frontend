@@ -17,6 +17,12 @@ namespace BlazorApplication.Pages
 
         private SuccessNotification _notification;
 
+        [Parameter]
+        public bool successResponse { get; set; }
+
+        [Parameter]
+        public string Id { get; set; }
+
         [Inject]
         public ITaskHttpRepository TaskRepo { get; set; }
 
@@ -34,6 +40,7 @@ namespace BlazorApplication.Pages
             await GetTask();
             await GetTaskCategories();
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
+            successResponse = _task.SuccessRequest;
         }
 
         private async Task GetTask()

@@ -48,7 +48,8 @@ namespace BlazorApplication.Pages
             Logger.LogInformation("Get statuses method is called");
             try
             {
-                competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+                var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
+                competitionStatusesList = responseWithStatues.Items;
                 Logger.LogInformation($"Success. Competition statuses: {JsonSerializer.Serialize(competitionStatusesList)}");
             }
             catch (Exception ex)
