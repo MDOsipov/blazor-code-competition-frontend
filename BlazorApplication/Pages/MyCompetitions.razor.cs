@@ -27,6 +27,9 @@ namespace BlazorApplication.Pages
         [Inject]
 		public ICompetitionHttpRepository CompetitionRepo { get; set; }
 
+		[Inject]
+		public ILogger<MyCompetitions> Logger { get; set; }
+
 		private string LogedUserId = "";
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
@@ -38,26 +41,32 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetCompetitions()
 		{
-			try
-			{
+            Logger.LogInformation("Get competition method is called");
+            try
+            {
                 var pagingResponse = await CompetitionRepo.GetCompetitionsByAdminId(LogedUserId, _competitionParameters);
                 CompetitionList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(CompetitionList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
 		}
 		private async System.Threading.Tasks.Task DeleteCompetition(int id)
 		{
-			try
-			{
+            Logger.LogInformation("Delete competition method is called");
+            try
+            {
                 await CompetitionRepo.DeleteCompetition(id);
                 _competitionParameters.PageNumber = 1;
+                Logger.LogInformation($"Success. The competition is removed from the list of my competitions");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while removing a competition!", ex);
             }
 			await GetCompetitions();
@@ -88,17 +97,21 @@ namespace BlazorApplication.Pages
 
 		private async Task GetUserId()
 		{
-			try
-			{
+            Logger.LogInformation("Get user id method is called");
+            try
+            {
                 var claims = await authTest.GetClaims();
                 LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
                 Console.WriteLine("Our user id: " + LogedUserId);
+                Logger.LogInformation($"Success. User id: {JsonSerializer.Serialize(LogedUserId)}");
             }
-			catch(Exception ex)
+            catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }
+
         protected override void OnParametersSet()
         {
             errorBoundary?.Recover();

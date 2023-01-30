@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text.Json;
 
 namespace BlazorApplication.Pages
 {
@@ -15,7 +16,8 @@ namespace BlazorApplication.Pages
 
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
-
+        [Inject]
+        public ILogger<Competitions> Logger { get; set; }
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
             await GetCompetitions();
@@ -37,30 +39,36 @@ namespace BlazorApplication.Pages
         
         protected async System.Threading.Tasks.Task GetCompetitions()
         {
-            try 
+            Logger.LogInformation("Get competitions method is called");
+            try
             {
                 var pagingResponse = await CompetitionRepo.GetCompetitions(_competitionParameters);
                 CompetitionList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(CompetitionList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
         private async System.Threading.Tasks.Task DeleteCompetition(int id)
         {
+            Logger.LogInformation("Delete competition method is called");
             try
             {
                 await CompetitionRepo.DeleteCompetition(id);
                 _competitionParameters.PageNumber = 1;
-                await GetCompetitions();
+                Logger.LogInformation($"Success. Competition is deleted");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting a competition!", ex);
             }
+            await GetCompetitions();
         }
     }
 }

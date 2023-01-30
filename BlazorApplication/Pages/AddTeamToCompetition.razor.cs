@@ -4,6 +4,9 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace BlazorApplication.Pages
 {
@@ -20,6 +23,8 @@ namespace BlazorApplication.Pages
 
         [Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
+		[Inject]
+		public ILogger<AddTeamToCompetition> Logger { get; set; }
 
 		private TeamParameters _teamParameters = new TeamParameters()
 		{
@@ -46,38 +51,45 @@ namespace BlazorApplication.Pages
         }
         protected async System.Threading.Tasks.Task GetTeams()
 		{
-			try
-			{
+            Logger.LogInformation("Get teams method is called");
+            try
+            {
                 var pagingResponse = await TeamRepo.GetTeamsLimited(_teamParameters);
                 TeamList = pagingResponse.Items;
-                newTeamId = TeamList.FirstOrDefault().Id;
+				newTeamId = TeamList.FirstOrDefault().Id;
+                Logger.LogInformation($"Success. Team list: {JsonSerializer.Serialize(TeamList)}");
             }
-			catch (Exception ex)
+            catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
 
 		private async void Create()
 		{
-			Team newTeam;
+            Logger.LogInformation("Creat method is called");
+            Team newTeam;
 			try
 			{
                 newTeam = await TeamRepo.GetTeamById(newTeamId.ToString());
                 newTeam.CompetitionId = competitionId;
             }
-			catch (Exception ex)
+            catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a team to add!", ex);
             }
 			
 			try
 			{
                 await TeamRepo.UpdateTeam(newTeam);
-				_notification.Show();
+                Logger.LogInformation($"Success. A new team to the competition is added!");
+                _notification.Show();
             }
             catch (Exception ex)
 			{
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while adding a team to competition!", ex);
             }
         }

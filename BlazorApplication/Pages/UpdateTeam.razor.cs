@@ -4,6 +4,7 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text.Json;
 using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
@@ -26,6 +27,9 @@ namespace BlazorApplication.Pages
         [Inject]
         public IParticipantHttpRepository ParticipantRepo { get; set; }
 
+        [Inject]
+        public ILogger<UpdateTeam> Logger { get; set; }
+
         [Parameter]
 		public string Id { get; set; } = "";
         private void AssignImageUrl(string imgUrl) => _team.IconImage = imgUrl;
@@ -45,18 +49,22 @@ namespace BlazorApplication.Pages
 
         private async Task GetTeam()
         {
+            Logger.LogInformation("Get team method is called");
             try
             {
                 _team = await TeamRepo.GetTeamById(Id);
+                Logger.LogInformation($"Success. Team: {JsonSerializer.Serialize(_team)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting the team to update!", ex);
             }
         }
 
         private async Task GetCompetitions()
         {
+            Logger.LogInformation("Get competitions method is called");
             CompetitionParameters competitionParameters = new CompetitionParameters
             {
                 switchOff = true
@@ -66,15 +74,18 @@ namespace BlazorApplication.Pages
             {
                 var competitionPagingResponse = await CompetitionRepo.GetCompetitions(competitionParameters);
                 competitionList = competitionPagingResponse.Items;
+                Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(competitionList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
         private async Task GetParticipants()
         {
+            Logger.LogInformation("Get participants method is called");
             ParticipantParameters participantParameters = new ParticipantParameters
             {
                 switchOff = true
@@ -84,14 +95,17 @@ namespace BlazorApplication.Pages
             {
                 var participantPagingResponse = await ParticipantRepo.GetParticipants(participantParameters);
                 participantList = participantPagingResponse.Items;
+                Logger.LogInformation($"Success. Participants: {JsonSerializer.Serialize(participantList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
         private async Task Update()
 		{
+            Logger.LogInformation("Update method is called");
             _team.TeamLeaderId = leaderId;
             _team.CompetitionId = competitionId;
             _team.StatusId = 1;
@@ -99,10 +113,12 @@ namespace BlazorApplication.Pages
             try
             {
                 await TeamRepo.UpdateTeam(_team);
+                Logger.LogInformation($"Success. The team is updated");
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while updating the team!", ex);
             }
         }

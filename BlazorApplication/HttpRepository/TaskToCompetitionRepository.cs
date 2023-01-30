@@ -16,17 +16,21 @@ namespace BlazorApplication.HttpRepository
         private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
         private readonly Models.BackEndConnections _backEndConnections;
+        private readonly ILogger<TaskToCompetitionRepository> _logger;
 
-        public TaskToCompetitionRepository(IAccessTokenProvider tokenProvider, HttpClient client, IConfiguration configuration)
+        public TaskToCompetitionRepository(IAccessTokenProvider tokenProvider, HttpClient client, IConfiguration configuration, ILogger<TaskToCompetitionRepository> logger)
         {
             _tokenProvider = tokenProvider;
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
             _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+            _logger = logger;
         }
         public async System.Threading.Tasks.Task AddTaskToCompetition(TaskToCompetition taskToCompetition)
         {
+            _logger.LogInformation("Add task to competition http repository method is called");
+
             var content = JsonSerializer.Serialize(taskToCompetition);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 
@@ -41,15 +45,20 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(postContent);
                 }
+
+                _logger.LogInformation($"Success. A new task is added to the competition");
             }
-            catch(Exception ex) 
+            catch (Exception ex) 
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while adding a task to the competition!", ex);
             }
         }
 
         public async System.Threading.Tasks.Task DeleteTaskToCompetition(int taskId, int competitionId)
         {
+            _logger.LogInformation("Delete task to competition http repository method is called");
+
             var queryStringParam = new Dictionary<string, string>
             {
                 ["taskId"] = taskId.ToString(),
@@ -69,9 +78,12 @@ namespace BlazorApplication.HttpRepository
                 {
                     throw new ApplicationException(deleteContent);
                 }
+
+                _logger.LogInformation($"Success. A task is removed from the competition");
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while removing a task from the competition!", ex);
             }
         }

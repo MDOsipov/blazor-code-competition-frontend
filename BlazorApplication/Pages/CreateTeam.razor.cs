@@ -4,6 +4,7 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text.Json;
 using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
@@ -26,6 +27,9 @@ namespace BlazorApplication.Pages
 		[Inject]
 		public IParticipantHttpRepository ParticipantRepo { get; set; }
 
+        [Inject]
+        public ILogger<CreateTeam> Logger { get; set; }
+
 		[Inject]
         public ITeamHttpRepository TeamRepo { get; set; }
 
@@ -37,6 +41,7 @@ namespace BlazorApplication.Pages
 
         private async Task GetCompetitions()
         {
+            Logger.LogInformation("Get competition method is called");
             CompetitionParameters competitionParameters = new CompetitionParameters
             {
                 switchOff = true
@@ -46,15 +51,18 @@ namespace BlazorApplication.Pages
             {
                 var competitionPagingResponse = await CompetitionRepo.GetCompetitions(competitionParameters);
                 competitionList = competitionPagingResponse.Items;
+                Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(competitionList)}");
             }
             catch (Exception ex) 
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting competitions!", ex);
             }
         }
 
         private async Task GetParticipants()
         {
+            Logger.LogInformation("Get participants method is called");
             ParticipantParameters participantParameters = new ParticipantParameters
             {
                 switchOff = true
@@ -64,9 +72,11 @@ namespace BlazorApplication.Pages
             {
                 var participantPagingResponse = await ParticipantRepo.GetParticipants(participantParameters);
                 participantList = participantPagingResponse.Items;
+                Logger.LogInformation($"Success. Participants: {JsonSerializer.Serialize(participantList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting participants!", ex);
             }
         }
@@ -75,6 +85,7 @@ namespace BlazorApplication.Pages
 
 		private async void Create()
         {
+            Logger.LogInformation("Create method is called");
             try
             {
                 _team.CompetitionId = competitionId;
@@ -83,11 +94,13 @@ namespace BlazorApplication.Pages
                 if (competitionId > 0 && leaderId > 0)
                 {
                     await TeamRepo.CreateTeam(_team);
+                    Logger.LogInformation($"Success. A new team is created");
                     _notification.Show();
                 }
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while creating a new team!", ex);
             }
         }

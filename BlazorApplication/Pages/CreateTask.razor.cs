@@ -4,6 +4,7 @@ using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace BlazorApplication.Pages
@@ -23,15 +24,17 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
 
+        [Inject]
+        public ILogger<CreateTask> Logger { get; set; }
+
         protected async override Task OnInitializedAsync()
         {
             _task.TaskCategoryId = -1;
             await GetTaskCategories();
         }
-
         private async void Create()
 		{
-
+            Logger.LogInformation("Create method is called");
             if (_time.Contains('.'))
             {
                 _time = _time.Replace('.', ':');
@@ -94,10 +97,12 @@ namespace BlazorApplication.Pages
             try
             {
                 await TaskRepo.CreateTask(_task);
+                Logger.LogInformation($"Success. A new task is created");
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while creating a new task!", ex);
             }
 
@@ -105,6 +110,7 @@ namespace BlazorApplication.Pages
 
         protected async Task GetTaskCategories()
         {
+            Logger.LogInformation("Get task categories method is called");
             TaskCategoryParameters taskCategoryParameters = new TaskCategoryParameters()
             {
                 switchOff = true
@@ -114,9 +120,11 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await TaskCategoryRepo.GetTaskCategory(taskCategoryParameters);
                 TaskCategories = pagingResponse.Items;
+                Logger.LogInformation($"Success. Task categories: {JsonSerializer.Serialize(TaskCategories)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of task categories!", ex);
             }
 

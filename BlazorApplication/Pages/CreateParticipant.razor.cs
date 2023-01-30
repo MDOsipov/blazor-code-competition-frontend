@@ -4,6 +4,8 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text.Json;
+using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Pages
 {
@@ -21,10 +23,18 @@ namespace BlazorApplication.Pages
 
 		[Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
+        [Inject]
+        public ILogger<CreateParticipant> Logger { get; set; }
 
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
+            await GetTeams();
+        }
+
+        private async Task GetTeams()
+        {
+            Logger.LogInformation("Get teams method is called");
             TeamParameters teamParameters = new TeamParameters
             {
                 switchOff = true
@@ -34,12 +44,15 @@ namespace BlazorApplication.Pages
             {
                 PagingResponse<Team> teamListPaging = await TeamRepo.GetTeams(teamParameters);
                 teamList = teamListPaging.Items;
+                Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(teamList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
+
         protected override void OnParametersSet()
         {
             errorBoundary?.Recover();
@@ -50,13 +63,16 @@ namespace BlazorApplication.Pages
         }
         private async void Create()
         {
+            Logger.LogInformation("Create method is called");
             try
             {
                 await ParticipantRepo.CreateParticipant(_participant);
+                Logger.LogInformation($"Success. A new participant is created");
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
             }
         }

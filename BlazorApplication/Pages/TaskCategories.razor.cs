@@ -3,6 +3,7 @@ using BlazorApplication.Interfaces;
 using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Text.Json;
 
 namespace BlazorApplication.Pages
 {
@@ -16,6 +17,8 @@ namespace BlazorApplication.Pages
         [Inject]
         public ITaskCategoryHttpRepository TaskCategoryRepo { get; set; }
 
+        [Inject]
+        public ILogger<TaskCategories> Logger { get; set; }
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
             await GetTaskСategories();
@@ -29,14 +32,17 @@ namespace BlazorApplication.Pages
 
         protected async System.Threading.Tasks.Task GetTaskСategories()
         {
+            Logger.LogInformation("Get task categories method is called");
             try
             {
                 var pagingResponse = await TaskCategoryRepo.GetTaskCategory(_taskCategoryParameters);
                 TaskCategoryList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
+                Logger.LogInformation($"Success. Task categories: {JsonSerializer.Serialize(TaskCategoryList)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of task categories!", ex);
             }
         }
@@ -44,13 +50,16 @@ namespace BlazorApplication.Pages
         
         private async System.Threading.Tasks.Task DeleteTaskCategory(int id)
         {
+            Logger.LogInformation("Delete task category method is called");
             try
             {
                 await TaskCategoryRepo.DeleteTaskCategory(id);
                 _taskCategoryParameters.PageNumber = 1;
+                Logger.LogInformation($"Success. The task category is deleted");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting a task category!", ex);
             }
             await GetTaskСategories();

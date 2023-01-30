@@ -17,7 +17,9 @@ namespace BlazorApplication.Pages
         [Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+        [Inject]
+        public ILogger<Teams> Logger { get; set; }
+        protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			await GetTeams();
 		}
@@ -29,28 +31,33 @@ namespace BlazorApplication.Pages
 
 		protected async System.Threading.Tasks.Task GetTeams()
 		{
-			try
-			{
+            Logger.LogInformation("Get teams method is called");
+            try
+            {
                 var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
                 TeamList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                Console.WriteLine("Team list:" + JsonSerializer.Serialize(TeamList));
+                Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(TeamList)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
 
         private async System.Threading.Tasks.Task DeleteTeam(int id)
         {
+            Logger.LogInformation("Delete team method is called");
             try
             {
                 await TeamRepo.DeleteTeam(id);
                 _teamParameters.PageNumber = 1;
+                Logger.LogInformation($"Success. The team is deleted");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while deleting a team!", ex);
             }
             await GetTeams();

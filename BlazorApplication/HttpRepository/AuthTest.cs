@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using BlazorApplication.Pages;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text.Json;
 
 namespace BlazorApplication.HttpRepository
 {
 	public class AuthTest
 	{
 		private readonly AuthenticationStateProvider _authenticationStateProvider;
-
-		public AuthTest()
+		private readonly ILogger<AuthTest> _logger;	
+		public AuthTest(ILogger<AuthTest> logger)
 		{
-
+			_logger = logger;
 		}
 
 		public AuthTest(AuthenticationStateProvider authenticationStateProvider)
@@ -20,28 +23,34 @@ namespace BlazorApplication.HttpRepository
 
 		public async Task<IIdentity> GetIdentity()
 		{
-            try 
-			{
+            _logger.LogInformation("Get identity http repository method is called");
+            try
+            {
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
+                _logger.LogInformation($"Success. User identity: {user.Identity}");
                 return user.Identity;
             }
             catch (Exception ex)
 			{
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }
 
 		public async Task<IEnumerable<Claim>> GetClaims()
 		{
-			try 
-			{
+            _logger.LogInformation("Get claims http repository method is called");
+            try
+            {
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
                 var claims = authState.User.Claims;
+                _logger.LogInformation($"Success. Claims: {claims}");
                 return claims;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }

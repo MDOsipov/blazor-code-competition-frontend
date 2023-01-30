@@ -5,6 +5,7 @@ using BlazorApplication.Models;
 using BlazorApplication.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Diagnostics;
 using System.Text.Json;
 using Task = System.Threading.Tasks.Task;
 
@@ -22,6 +23,8 @@ namespace BlazorApplication.Pages
 		public IUserHttpRepository UserRepo { get; set; }
 		[Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
+        [Inject]
+        public ILogger<UpdateCompetition> Logger { get; set; }
 
         [Parameter]
         public string Id { get; set; } = "";
@@ -38,6 +41,7 @@ namespace BlazorApplication.Pages
 
         private async Task GetUsers()
         {
+            Logger.LogInformation("Get users method is called");
             var userParameters = new UserParameters()
             {
                 switchOff = true
@@ -47,49 +51,58 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await UserRepo.GetUsersExtended(userParameters);
                 _users = pagingResponse.Items;
+                Logger.LogInformation($"Success. Users: {JsonSerializer.Serialize(_users)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
             }
         }
 
         private async Task GetStatuses()
         {
+            Logger.LogInformation("Get statuses method is called");
             try
             {
                 competitionStatusesList = (List<CompetitionStatus>)await CompetitionRepo.GetAllCompetitionStatuses();
+                Logger.LogInformation($"Success. Competition statuses: {JsonSerializer.Serialize(competitionStatusesList)}");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
             }
         }
 
         private async Task GetCompetition()
         {
+            Logger.LogInformation("Get competition method is called");
             try
             {
                 _competition = await CompetitionRepo.GetCompetitionById(Id);
-                Console.WriteLine("Got competition object: ");
-                Console.WriteLine(JsonSerializer.Serialize(_competition));
+                Logger.LogInformation($"Success. Competition: {JsonSerializer.Serialize(_competition)}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
         private async Task Update()
         {
+            Logger.LogInformation("Update method is called");
             try
             {
                 await CompetitionRepo.UpdateCompetition(_competition);
+                Logger.LogInformation($"Success. The competition is updated");
                 StateHasChanged();
                 _notification.Show();
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error: {ex}");
                 throw new System.Exception("Oops! Something went wrong while updating the competition!", ex);
             }
         }
