@@ -15,7 +15,7 @@ namespace BlazorApplication.HttpRepository
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _options;
         private readonly IConfiguration _configuration;
-        private readonly Models.BackEndConnections _backEndConnections;
+        private readonly BackEndConnections _backEndConnections;
         private readonly ILogger<TaskCategoryHttpRepository> _logger;
 
         public TaskCategoryHttpRepository(IAccessTokenProvider accessTokenProvider, HttpClient client, IConfiguration configuration, ILogger<TaskCategoryHttpRepository> logger) 
@@ -24,7 +24,7 @@ namespace BlazorApplication.HttpRepository
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
-            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
             _logger = logger;
         }
 

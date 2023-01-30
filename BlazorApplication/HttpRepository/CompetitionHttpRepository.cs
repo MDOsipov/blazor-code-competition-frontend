@@ -72,11 +72,13 @@ namespace BlazorApplication.HttpRepository
 		public async Task<ResponseWithSuccess<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
             _logger.LogInformation("Get all competition statuses http repository method is called");
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            
 
             try
             {
-                var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -86,10 +88,14 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 _logger.LogInformation($"Success. Competition statuses: {content}");
- 
-                var result = JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
 
-				return 
+				var responseWithStatues = new ResponseWithSuccess<CompetitionStatus>
+				{
+					Items = JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options),
+					SuccessRequest = true
+				};
+
+                return responseWithStatues;
             }
             catch (Exception ex)
             {
@@ -167,6 +173,7 @@ namespace BlazorApplication.HttpRepository
                 };
 
                 pagingResponse.SuccessRequest = true;
+
                 _logger.LogInformation($"Success. Competitions: {content}");
 
                 return pagingResponse;
@@ -232,7 +239,6 @@ namespace BlazorApplication.HttpRepository
                 _logger.LogError($"Error: {ex}");
                 throw new Exception("Oops! Something went wrong while deleting the competition!", ex);
             }
-
         }
 
 		public async Task<PagingResponse<Competition>> GetCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters)

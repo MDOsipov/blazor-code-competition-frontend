@@ -300,6 +300,7 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 _logger.LogInformation($"Success. Participants: {content}");
+
                 var responseWithStatues = new ResponseWithSuccess<Participant>
                 {
                     Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
