@@ -18,8 +18,8 @@ namespace BlazorApplication.Pages
         [Inject]
         public IParticipantHttpRepository participantRepo { get; set; }
 
-		[Parameter]
-		public bool successResponse { get; set; }
+        [Parameter]
+        public bool successResponse { get; set; } = false;
 
         [Inject]
         public ILogger<TeamParticipantsManagement> Logger { get; set; }
@@ -50,13 +50,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await participantRepo.GetParticipantsByTeamId(_participantParameters, id);
                 ParticipantList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Participants: {JsonSerializer.Serialize(ParticipantList)}");
             }
             catch (Exception ex)
 			{
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
 		private async System.Threading.Tasks.Task DeleteParticipant(int participantId)
@@ -71,7 +71,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while removing a participant from a team!", ex);
+                throw new Exception("Oops! Something went wrong while removing a participant from a team!", ex);
             }
             await GetParticipants(); 
 		}

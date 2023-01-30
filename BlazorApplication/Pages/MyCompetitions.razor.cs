@@ -28,8 +28,8 @@ namespace BlazorApplication.Pages
 
 		private string LogedUserId = "";
 
-		[Parameter]
-		public bool successResponse { get; set; }
+        [Parameter]
+        public bool successResponse { get; set; } = false;
 
 		protected async override Task OnInitializedAsync()
 		{            
@@ -46,7 +46,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await CompetitionRepo.GetCompetitionsByAdminId(LogedUserId, _competitionParameters);
                 CompetitionList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(CompetitionList)}");
             }
             catch (Exception ex)

@@ -31,7 +31,7 @@ namespace BlazorApplication.Pages
         public ILogger<MyTasks> Logger { get; set; }
 
         [Parameter]
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 
         [Parameter]
         public bool successResponseParticipant { get; set; } = false;
@@ -108,7 +108,7 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
                 participant = pagingResponse.Items.FirstOrDefault();
-                successResponseParticipant = pagingResponse.SuccessRequest;
+                successResponseParticipant = true;
             }
             catch (Exception ex)
             {
@@ -162,7 +162,7 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetTasksByTeamId(_taskParameters, UserTeamId.ToString());
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
@@ -210,9 +210,7 @@ namespace BlazorApplication.Pages
             {
                 Logger.LogError($"Error: {ex}");
                 throw new Exception("Oops! Something went wrong while getting a user team!", ex);
-            }
-
-            
+            }            
         }
         protected override void OnParametersSet()
         {

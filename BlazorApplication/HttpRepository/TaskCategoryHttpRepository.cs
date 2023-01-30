@@ -111,7 +111,6 @@ namespace BlazorApplication.HttpRepository
                 MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
             };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Task category: {content}");
                 return pagingResponse;
             }
@@ -142,7 +141,6 @@ namespace BlazorApplication.HttpRepository
 
                 var taskCategory = JsonSerializer.Deserialize<TaskCategory>(content, _options);
 
-                taskCategory.SuccessRequest = true;
                 _logger.LogInformation($"Success. Task category: {content}");
                 return taskCategory;
             }

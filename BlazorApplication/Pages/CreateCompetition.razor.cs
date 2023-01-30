@@ -28,7 +28,7 @@ namespace BlazorApplication.Pages
         [Inject]
         public ILogger<CreateCompetition> Logger { get; set; }
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		protected async override Task OnInitializedAsync()
 		{
 			await GetStatuses();
             await GetUsers();
@@ -48,8 +48,8 @@ namespace BlazorApplication.Pages
             Logger.LogInformation("Get statuses method is called");
             try
             {
-                var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
-                competitionStatusesList = responseWithStatues.Items;
+				competitionStatusesList = await CompetitionRepo.GetAllCompetitionStatuses();
+                 
                 Logger.LogInformation($"Success. Competition statuses: {JsonSerializer.Serialize(competitionStatusesList)}");
             }
             catch (Exception ex)

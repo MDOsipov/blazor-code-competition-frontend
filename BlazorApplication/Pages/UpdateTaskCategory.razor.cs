@@ -39,7 +39,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting participants!", ex);
+                throw new Exception("Oops! Something went wrong while deleting participants!", ex);
             }
         }
 
@@ -56,7 +56,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the task category!", ex);
+                throw new Exception("Oops! Something went wrong while updating the task category!", ex);
             }
         }
         protected override void OnParametersSet()

@@ -69,7 +69,7 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-		public async Task<ResponseWithSuccess<CompetitionStatus>> GetAllCompetitionStatuses()
+		public async Task<List<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
             _logger.LogInformation("Get all competition statuses http repository method is called");            
 
@@ -88,13 +88,7 @@ namespace BlazorApplication.HttpRepository
 
                 _logger.LogInformation($"Success. Competition statuses: {content}");
 
-				var responseWithStatues = new ResponseWithSuccess<CompetitionStatus>
-				{
-					Items = JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options),
-					SuccessRequest = true
-				};
-
-                return responseWithStatues;
+				return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options); ;
             }
             catch (Exception ex)
             {
@@ -130,7 +124,6 @@ namespace BlazorApplication.HttpRepository
                     CompetitionStatusId = localCompetition.competitionStatus,
                     CompetitionAdministratorId = localCompetition.competitionAdministratorId,
                     HashCode = localCompetition.hashCode,
-                    SuccessRequest = true,
                 };
 
                 _logger.LogInformation($"Success. Competition: {JsonSerializer.Serialize(competition)}");
@@ -171,8 +164,6 @@ namespace BlazorApplication.HttpRepository
                     Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
                     MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
-
-                pagingResponse.SuccessRequest = true;
 
                 _logger.LogInformation($"Success. Competitions: {content}");
 
@@ -270,7 +261,6 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Competitions: {content}");
                 return pagingResponse;
             }

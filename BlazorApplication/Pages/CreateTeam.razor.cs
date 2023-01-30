@@ -33,7 +33,7 @@ namespace BlazorApplication.Pages
 		[Inject]
         public ITeamHttpRepository TeamRepo { get; set; }
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		protected async override Task OnInitializedAsync()
 		{
             await GetCompetitions();
             await GetParticipants();
@@ -56,7 +56,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex) 
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting competitions!", ex);
             }
         }
 
@@ -77,7 +77,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting participants!", ex);
+                throw new Exception("Oops! Something went wrong while getting participants!", ex);
             }
         }
 
@@ -101,7 +101,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new team!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new team!", ex);
             }
         }
         protected override void OnParametersSet()

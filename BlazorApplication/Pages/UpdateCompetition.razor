@@ -11,14 +11,14 @@
 	<a href="myCompetitions">Go Back</a>
 </AuthorizeView>
 
-@*<ErrorBoundary @ref="errorBoundary">
-	<ChildContent>*@
+<ErrorBoundary @ref="errorBoundary">
+	<ChildContent>
 		@if (@_competition != null && boolString == "0")
 		{
 			<EditForm Model="@_competition" OnValidSubmit="Update" class="card card-body bg-light mt-5">
 				<DataAnnotationsValidator />
 
-				@if (_competition.CompetitionName == null || _competition.maxTaskPerGroups == 0 || _competition.HashCode == null || _competition.CompetitionStatusId == 0 || _competition.CompetitionAdministratorId == null)
+				@if (_competition.CompetitionName == null || _competition.maxTaskPerGroups == 0 || _competition.HashCode == null)
 				{
 					<Loading Placeholders="5" />
 				}
@@ -129,9 +129,9 @@
 				</button>
 			</span>
 		}
-@*	</ChildContent>
+	</ChildContent>
 	<ErrorContent Context="Some">
 		<p class="error-message">Oops! Something went wrong while rendering update competition page!</p>
 		<button class="btn btn-warning" @onclick="ResetError">Reset</button>
 	</ErrorContent>
-</ErrorBoundary>*@
+</ErrorBoundary>

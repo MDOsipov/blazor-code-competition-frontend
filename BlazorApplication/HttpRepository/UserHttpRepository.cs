@@ -54,7 +54,6 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Users: {content}");
 
                 return pagingResponse;

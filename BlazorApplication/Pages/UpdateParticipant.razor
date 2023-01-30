@@ -5,75 +5,75 @@
 <a href="/participants">Go Back</a>
 
 <ErrorBoundary @ref="errorBoundary">
-    <ChildContent>
-@if (@_participant != null)
-{
-    <EditForm Model="@_participant" OnValidSubmit="Update" class="card card-body bg-light mt-5">
-        <DataAnnotationsValidator />
+	<ChildContent>
+		@if (@_participant != null)
+		{
+			<EditForm Model="@_participant" OnValidSubmit="Update" class="card card-body bg-light mt-5">
+				<DataAnnotationsValidator />
 
-        @if (teamList == null)
-        {
-            <Loading Placeholders="4" />
-        }
-        else
-        {
-            <div class="mb-3 row">
-                <label for="name" class="col-md-2 col-form-label">First name:</label>
-                <div class="col-md-10">
-                    <InputText id="task name" class="form-control" @bind-Value="_participant.firstName" />
-                    <ValidationMessage For="@(() => _participant.firstName)" />
-                </div>
-            </div>
+				@if (teamList == null)
+				{
+					<Loading Placeholders="4" />
+				}
+				else
+				{
+					<div class="mb-3 row">
+						<label for="name" class="col-md-2 col-form-label">First name:</label>
+						<div class="col-md-10">
+							<InputText id="task name" class="form-control" @bind-Value="_participant.firstName" />
+							<ValidationMessage For="@(() => _participant.firstName)" />
+						</div>
+					</div>
 
-            <div class="mb-3 row">
-                <label for="name" class="col-md-2 col-form-label">Last name:</label>
-                <div class="col-md-10">
-                    <InputText id="name" class="form-control" @bind-Value="_participant.lastName" />
-                    <ValidationMessage For="@(() => _participant.lastName)"></ValidationMessage>
-                </div>
-            </div>
+					<div class="mb-3 row">
+						<label for="name" class="col-md-2 col-form-label">Last name:</label>
+						<div class="col-md-10">
+							<InputText id="name" class="form-control" @bind-Value="_participant.lastName" />
+							<ValidationMessage For="@(() => _participant.lastName)"></ValidationMessage>
+						</div>
+					</div>
 
-            <div class="mb-3 row">
-                <label for="name" class="col-md-2 col-form-label">Email:</label>
-                <div class="col-md-10">
-                    <InputText id="name" class="form-control" @bind-Value="_participant.email" />
-                    <ValidationMessage For="@(() => _participant.email)"></ValidationMessage>
-                </div>
-            </div>
+					<div class="mb-3 row">
+						<label for="name" class="col-md-2 col-form-label">Email:</label>
+						<div class="col-md-10">
+							<InputText id="name" class="form-control" @bind-Value="_participant.email" />
+							<ValidationMessage For="@(() => _participant.email)"></ValidationMessage>
+						</div>
+					</div>
 
-            <div class="mb-3 row">
-                <label for="price" class="col-md-2 col-form-label">Team name:</label>
-                <div class="col-md-10">
-                    <select class="form-select" aria-label="Choose competition" @bind="_participant.teamId">
-                        @foreach (var team in teamList)
-                        {
-                            <option value=@team.Id>@team.TeamName</option>
-                        }
-                    </select>
-                </div>
-            </div>
+					<div class="mb-3 row">
+						<label for="price" class="col-md-2 col-form-label">Team name:</label>
+						<div class="col-md-10">
+							<select class="form-select" aria-label="Choose competition" @bind="_participant.teamId">
+								@foreach (var team in teamList)
+								{
+									<option value=@team.Id>@team.TeamName</option>
+								}
+							</select>
+						</div>
+					</div>
 
-            <div class="row">
-                <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-success">Update</button>
-                </div>
-            </div>
-        }
-    </EditForm>
-    <SuccessNotification @ref="_notification" _navUrl="/participants" />
-}
-else
-{
-    <span>
-		<button class="btn btn-primary" type="button" disabled>
-			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-			Loading tasks...
-		</button>
-	</span>
-}
-    </ChildContent>
-    <ErrorContent Context="Some">
-        <p class="error-message">Oops! Something went wrong while rendering update participant page!</p>
-        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
-    </ErrorContent>
+					<div class="row">
+						<div class="col-md-12 text-right">
+							<button type="submit" class="btn btn-success">Update</button>
+						</div>
+					</div>
+				}
+			</EditForm>
+			<SuccessNotification @ref="_notification" _navUrl="/participants" />
+		}
+		else
+		{
+			<span>
+				<button class="btn btn-primary" type="button" disabled>
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+					Loading tasks...
+				</button>
+			</span>
+		}
+	</ChildContent>
+	<ErrorContent Context="Some">
+		<p class="error-message">Oops! Something went wrong while rendering update participant page!</p>
+		<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+	</ErrorContent>
 </ErrorBoundary>

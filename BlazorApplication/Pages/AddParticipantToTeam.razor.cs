@@ -29,8 +29,7 @@ namespace BlazorApplication.Pages
 		private ParticipantParameters _participantParameters = new ParticipantParameters()
 		{
 			switchOff = true
-		};
-		
+		};		
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -54,15 +53,15 @@ namespace BlazorApplication.Pages
             Logger.LogInformation("Get participants method is called");
             try
 			{
-                var responseWithSuccess = await ParticipantRepo.GetParticipantsLimited();
-                ParticipantList = responseWithSuccess.Items;
+                ParticipantList = await ParticipantRepo.GetParticipantsLimited();
                 newParticipantId = ParticipantList.FirstOrDefault().id;
+
                 Logger.LogInformation($"Success. Participant list: {JsonSerializer.Serialize(ParticipantList)}");
             }
 			catch(Exception ex)
 			{
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
 
@@ -78,7 +77,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while adding a new participant!", ex);
+                throw new Exception("Oops! Something went wrong while adding a new participant!", ex);
             }
 		}
 	}

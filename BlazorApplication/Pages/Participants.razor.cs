@@ -17,10 +17,10 @@ namespace BlazorApplication.Pages
         [Inject]
 		public IParticipantHttpRepository ParticipantRepo { get; set; }
         [Inject]
-        ILogger<Participants> Logger { get; set; }   
+        ILogger<Participants> Logger { get; set; }
 
-		[Parameter]
-		public bool successResponse { get; set; }
+        [Parameter]
+        public bool successResponse { get; set; } = false;
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -43,13 +43,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await ParticipantRepo.GetParticipants(_participantParameters);
                 ParticipantsList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Participant list: {JsonSerializer.Serialize(ParticipantsList)}");
             }
             catch(Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
 
@@ -64,7 +64,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a participant!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a participant!", ex);
             }
 
             _participantParameters.PageNumber = 1;

@@ -21,6 +21,5 @@ namespace BlazorApplication.Models
 		public int CreateUserId { get; set; }
 		public int UpdateUserId { get; set; }
 		public int StatusId { get; set; }
-        public bool SuccessRequest { get; set; } = false;
     }
 }

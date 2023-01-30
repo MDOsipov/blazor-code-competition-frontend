@@ -7,7 +7,7 @@ namespace BlazorApplication.Interfaces
     public interface IParticipantHttpRepository
     {
         Task<PagingResponse<Participant>> GetParticipants(ParticipantParameters participantParameters);
-        Task<ResponseWithSuccess<Participant>> GetParticipantsLimited();
+        Task<List<Participant>> GetParticipantsLimited();
         Task CreateParticipant(Participant participant);
         Task<Participant> GetParticipantById(string id);
         Task<PagingResponse<Participant>> GetParticipantsByEmail(ParticipantParameters participantParameters, string email);

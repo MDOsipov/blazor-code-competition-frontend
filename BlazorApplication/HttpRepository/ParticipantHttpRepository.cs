@@ -156,7 +156,6 @@ namespace BlazorApplication.HttpRepository
                     email = localParticipant.email,
                     userId = localParticipant.userId,
                     teamId = localParticipant.teamId,
-                    SuccessRequest = true,
                 };
 
                 _logger.LogInformation($"Success. Participant: {JsonSerializer.Serialize(participant)}");
@@ -195,8 +194,7 @@ namespace BlazorApplication.HttpRepository
                     Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
                     MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
-
-                pagingResponse.SuccessRequest = true;
+                
                 _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
@@ -235,7 +233,6 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
@@ -273,7 +270,6 @@ namespace BlazorApplication.HttpRepository
                     MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Participants: {content}");
                 return pagingResponse;
             }
@@ -284,7 +280,7 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
-        public async Task<ResponseWithSuccess<Participant>> GetParticipantsLimited()
+        public async Task<List<Participant>> GetParticipantsLimited()
         {
             _logger.LogInformation("Get participants limited http repository method is called");
 
@@ -302,13 +298,7 @@ namespace BlazorApplication.HttpRepository
 
                 _logger.LogInformation($"Success. Participants: {content}");
 
-                var responseWithStatues = new ResponseWithSuccess<Participant>
-                {
-                    Items = JsonSerializer.Deserialize<List<Participant>>(content, _options),
-                    SuccessRequest = true,
-                };
-
-                return responseWithStatues;
+                return JsonSerializer.Deserialize<List<Participant>>(content, _options);
             }
             catch (Exception ex)
             {
