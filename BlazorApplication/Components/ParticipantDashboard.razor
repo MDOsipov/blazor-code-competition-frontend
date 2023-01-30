@@ -7,13 +7,31 @@
 		<th scope="col">User team</th>
 	</thead>
 	<tbody>
-		<tr>
-			<td class="align-middle">
-				@LogedUserEmail
-			</td>
-			<td class="align-middle">
-				@UserTeamName
-			</td>
-		</tr>
+		@if (@LogedUserEmail == string.Empty || @UserTeamName == string.Empty)
+		{
+			<tr>
+				<td class="align-middle">
+					<p class="placeholder-glow">
+						<span class="placeholder col-10"></span>
+					</p>
+				</td>
+				<td class="align-middle">
+					<p class="placeholder-glow">
+						<span class="placeholder col-10"></span>
+					</p>
+				</td>
+			</tr>
+		}
+		else
+		{
+			<tr>
+				<td class="align-middle">
+					@LogedUserEmail
+				</td>
+				<td class="align-middle">
+					@UserTeamName
+				</td>
+			</tr>
+		}
 	</tbody>
 </table>

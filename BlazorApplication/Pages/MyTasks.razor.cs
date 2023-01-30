@@ -28,6 +28,9 @@ namespace BlazorApplication.Pages
 
         [Parameter]
         public bool successResponse { get; set; }
+
+        [Parameter]
+        public bool successResponseParticipant { get; set; }
 		public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
@@ -53,7 +56,7 @@ namespace BlazorApplication.Pages
         {
             var claims = await AuthTest.GetClaims();
             LogedUserId = claims.Where(c => c.Type == "sub").FirstOrDefault().Value.ToString();
-            Console.WriteLine("Our user id: " + LogedUserId);
+            //Console.WriteLine("Our user id: " + LogedUserId);
         }
 
         private async Task GetUserEmail()
@@ -80,12 +83,17 @@ namespace BlazorApplication.Pages
 
             var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
             var participant = pagingResponse.Items.FirstOrDefault();
+            successResponseParticipant = pagingResponse.SuccessRequest;
             //Console.WriteLine("Participant: ");
             //Console.WriteLine(JsonSerializer.Serialize(participant));
 
-            if (participant?.teamId is not null)
+            if(participant == null)
             {
-                UserTeamId = (int)participant.teamId;
+				UserTeamName = "No team";
+			}
+            else if (participant.teamId != null)
+            {
+                UserTeamId = participant.teamId;
                 ParticipantId = participant.id;
                 //Console.WriteLine("User's team id: ");
                 //Console.WriteLine(UserTeamId);
@@ -118,6 +126,8 @@ namespace BlazorApplication.Pages
             TaskList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
             successResponse = pagingResponse.SuccessRequest;
+            Console.WriteLine(successResponse);
+            Console.WriteLine(TaskList.Count);
         }
 
 		private async Task RemoveTaskFromTeam(int taskId)
