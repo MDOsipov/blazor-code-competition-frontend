@@ -29,9 +29,9 @@ namespace BlazorApplication.Components
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
             await GetUserId();
-			//Console.WriteLine("Step 1");
+			
 			await GetUserEmail();
-			//Console.WriteLine("Step 2");
+			
 			await GetUserTeam();
 		}
 
