@@ -12,35 +12,59 @@
     <div class="col-md-4">
         
     </div>
-    <div class="col-md-4">
-        @if(TaskList.Count >= maxNumTasks)
+    
+
+        @if (successResponseParticipant && UserTeamName == "No team")
         {
-            <span>You can't take more tasks now</span>
-        }
-        else
-        {
-            <a href="/addTaskToTeam/@UserTeamId.ToString()/@ParticipantId.ToString()">Add task</a>
-        }
-    </div>
+            <div>
+                <p></p>
+                <p></p>
+                <h5 class="text-primary">You are not assign to any Team, please ask administrator to do it</h5>
+        </div>
+    }
+    else if (UserTeamName != "")
+    {
+
+        <div class="col-md-4">
+                @if (TaskList.Count >= maxNumTasks)
+                {
+                    <span>You can't take more tasks now</span>
+                }
+                else
+                {
+                    <a href="/addTaskToTeam/@UserTeamId.ToString()/@ParticipantId.ToString()">Add task</a>
+                }
+            </div>
+            @if (TaskList == null) 
+            {
+                <div>
+                <p></p>
+                <p></p>
+                <h5 class="text-primary">There is no Task still, please add new one.</h5>
+            </div>
+            }
+            else
+            {
+            <div class="row">
+                <div class="col">
+                    <TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+                </div>
+        </div>
+            }
+    }
+    else
+    {
+        <span>
+            <button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Loading participants...
+            </button>
+        </span>
+    }
+
 </div>
-@if (successResponse && TaskList.Count == 0)
-{
-    <div>
-        <p></p>
-        <p></p>
-        <h5 class="text-primary">There is no Task still, please choose one from the list.</h5>
-    </div>
-}
-else
-{
-	<div class="row">
-		<div class="col">
-			<TaskToTeamTable Tasks="TaskList" OnDeleted="RemoveTaskFromTeam" ParamParticipantId=ParticipantId TeamIdStr=@UserTeamId.ToString() />
-		</div>
-	</div>
-	<div class="row">
-		<div class="col">
-			<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-		</div>
-	</div>
-}

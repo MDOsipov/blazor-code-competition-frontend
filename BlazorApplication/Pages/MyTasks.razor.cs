@@ -30,10 +30,11 @@ namespace BlazorApplication.Pages
         public bool successResponse { get; set; }
 
         [Parameter]
-        public bool successResponseParticipant { get; set; }
+        public bool successResponseParticipant { get; set; } = false;
 		public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
+        private bool successResponseTeam { get; set; } = false;
 
         private string LogedUserId = "";
         private string LogedUserEmail = "";
@@ -45,12 +46,14 @@ namespace BlazorApplication.Pages
 
         protected async override Task OnInitializedAsync()
         {
+
             await GetUserId();
             await GetUserEmail();
             await GetUserTeam();
             await GetCompetitionId();
-            await GetMaxNumTasks();
+            await GetMaxNumTasks(); 
             await GetTasksByTeamId();
+
         }
         private async Task GetUserId()
         {
@@ -126,8 +129,6 @@ namespace BlazorApplication.Pages
             TaskList = pagingResponse.Items;
             MetaData = pagingResponse.MetaData;
             successResponse = pagingResponse.SuccessRequest;
-            Console.WriteLine(successResponse);
-            Console.WriteLine(TaskList.Count);
         }
 
 		private async Task RemoveTaskFromTeam(int taskId)
@@ -139,11 +140,15 @@ namespace BlazorApplication.Pages
 
         private async Task GetCompetitionId()
         {
-            var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
-            if (team.CompetitionId is not null)
+            if (UserTeamName != "No team")
             {
-                CompetitionId = (int)team.CompetitionId;
+                var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
+                if (team.CompetitionId is not null)
+                {
+                    CompetitionId = (int)team.CompetitionId;
+                }
             }
+            
         }
 
         private async Task GetMaxNumTasks()
