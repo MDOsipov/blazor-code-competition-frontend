@@ -11,7 +11,7 @@
 			<DataAnnotationsValidator />
 			<SuccessNotification @ref="_notification" _navUrl="/participants" />
 
-			@if (_participant.firstName == null || _participant.lastName == null || _participant.email == null || _participant.teamId == 0)
+			@if (teamList == null)
 			{
 				<Loading Placeholders="4" />
 			}

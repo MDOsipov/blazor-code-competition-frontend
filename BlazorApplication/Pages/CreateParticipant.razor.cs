@@ -26,8 +26,7 @@ namespace BlazorApplication.Pages
         [Inject]
         public ILogger<CreateParticipant> Logger { get; set; }
 
-
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		protected async override Task OnInitializedAsync()
         {
             await GetTeams();
         }
@@ -35,6 +34,7 @@ namespace BlazorApplication.Pages
         private async Task GetTeams()
         {
             Logger.LogInformation("Get teams method is called");
+
             TeamParameters teamParameters = new TeamParameters
             {
                 switchOff = true
@@ -44,12 +44,13 @@ namespace BlazorApplication.Pages
             {
                 PagingResponse<Team> teamListPaging = await TeamRepo.GetTeams(teamParameters);
                 teamList = teamListPaging.Items;
+
                 Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(teamList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
 
@@ -73,7 +74,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new participant!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new participant!", ex);
             }
         }
     }

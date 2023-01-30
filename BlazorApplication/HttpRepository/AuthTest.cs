@@ -11,13 +11,9 @@ namespace BlazorApplication.HttpRepository
 	{
 		private readonly AuthenticationStateProvider _authenticationStateProvider;
 		private readonly ILogger<AuthTest> _logger;	
-		public AuthTest(ILogger<AuthTest> logger)
+		public AuthTest(ILogger<AuthTest> logger, AuthenticationStateProvider authenticationStateProvider)
 		{
 			_logger = logger;
-		}
-
-		public AuthTest(AuthenticationStateProvider authenticationStateProvider)
-		{
 			_authenticationStateProvider = authenticationStateProvider;
 		}
 
@@ -34,7 +30,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
 			{
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }
 
@@ -51,7 +47,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }
 	}

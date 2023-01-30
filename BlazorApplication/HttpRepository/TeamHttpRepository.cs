@@ -33,13 +33,13 @@ namespace BlazorApplication.HttpRepository
             _logger.LogInformation("Create team http repository method is called");
 
             var content = JsonSerializer.Serialize(team);
-			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");            
 			
 			try
 			{
-                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Team", bodyContent);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "Team", bodyContent);
                 var postContent = await postResult.Content.ReadAsStringAsync();
 
                 if (!postResult.IsSuccessStatusCode)
@@ -52,7 +52,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex) 
 			{
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new team!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new team!", ex);
             }
         }
 
@@ -62,11 +62,11 @@ namespace BlazorApplication.HttpRepository
 
             var url = Path.Combine(_backEndConnections.CSharpUri + "Team", id.ToString());
 
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            try 
+            { 
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
 
-			try
-			{
-                var deleteResult = await _client.DeleteAsync(url);
+			    var deleteResult = await _client.DeleteAsync(url);
                 var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
                 if (!deleteResult.IsSuccessStatusCode)
@@ -79,7 +79,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting the team!", ex);
+                throw new Exception("Oops! Something went wrong while deleting the team!", ex);
             }
         }
 
@@ -87,13 +87,13 @@ namespace BlazorApplication.HttpRepository
 		{
             _logger.LogInformation("Get team by id http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.CSharpUri + "Team", id);
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.CSharpUri + "Team", id);            
 
 			try
 			{
-                var response = await _client.GetAsync(url);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -111,7 +111,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a team by id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a team by id!", ex);
             }
         }
 
@@ -125,11 +125,11 @@ namespace BlazorApplication.HttpRepository
 				["switchOffString"] = teamParameters.switchOff ? "1" : "0"
 			};
 
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
-
 			try
 			{
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team/extended", queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team/extended", queryStringParam));
                 var content = await response.Content.ReadAsStringAsync();
                 
                 if (!response.IsSuccessStatusCode)
@@ -151,7 +151,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
 
@@ -163,13 +163,13 @@ namespace BlazorApplication.HttpRepository
 			{
 				["pageNumber"] = teamParameters.PageNumber.ToString(),
 				["switchOffString"] = teamParameters.switchOff ? "1" : "0"
-			};
-
-			await AddToken.RequestAuthToken(_tokenProvider, _client);
+			};			
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team", queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team", queryStringParam));
                 var content = await response.Content.ReadAsStringAsync();
                 
                 if (!response.IsSuccessStatusCode)
@@ -191,7 +191,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of teams (with limited info)!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of teams (with limited info)!", ex);
             }
         }
 
@@ -203,11 +203,11 @@ namespace BlazorApplication.HttpRepository
 			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
 			var url = Path.Combine(_backEndConnections.CSharpUri + "Team", team.Id.ToString());
 
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
-
             try 
             {
-                var putResult = await _client.PutAsync(url, bodyContent);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var putResult = await _client.PutAsync(url, bodyContent);
                 var putContent = await putResult.Content.ReadAsStringAsync();
 
                 if (!putResult.IsSuccessStatusCode)
@@ -220,7 +220,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the team!", ex);
+                throw new Exception("Oops! Something went wrong while updating the team!", ex);
             }
         }
 
@@ -228,11 +228,11 @@ namespace BlazorApplication.HttpRepository
         {
             _logger.LogInformation("Upload team image http repository method is called");
 
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
-
             try
             {
-                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "api/upload", content);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "api/upload", content);
                 var postContent = await postResult.Content.ReadAsStringAsync();
 
 
@@ -250,7 +250,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while uploading an image to the team!", ex);
+                throw new Exception("Oops! Something went wrong while uploading an image to the team!", ex);
             }
         }
     }
