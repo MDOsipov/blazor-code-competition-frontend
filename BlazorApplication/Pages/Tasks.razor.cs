@@ -17,8 +17,8 @@ namespace BlazorApplication.Pages
         [Inject]
 		public ITaskHttpRepository TaskRepo { get; set; }
 
-		[Parameter]
-		public bool successResponse { get; set; }
+        [Parameter]
+        public bool successResponse { get; set; } = false;
 
 		[Inject]
 		public ILogger<Tasks> Logger { get; set; }
@@ -42,13 +42,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
 			{
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks!", ex);
             }
         }
 
@@ -64,7 +64,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a task!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a task!", ex);
             }
             await GetTasks();
         }

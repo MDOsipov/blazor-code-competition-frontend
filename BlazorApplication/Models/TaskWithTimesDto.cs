@@ -18,6 +18,5 @@
         public int? ParticipantIdForTask { get; set; }
         public string? ParticipantEmailForTask { get; set; }
         public int? TaskStatusId { get; set; }
-        public bool SuccessRequest { get; set; } = false;
     }
 }

@@ -31,11 +31,11 @@ namespace BlazorApplication.Pages
         public ILogger<MyTasks> Logger { get; set; }
 
         [Parameter]
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 
         [Parameter]
         public bool successResponseParticipant { get; set; } = false;
-		public List<Models.TaskWithTimesDto> TaskList { get; set; } = new List<Models.TaskWithTimesDto>();
+		public List<TaskWithTimesDto> TaskList { get; set; } = new List<TaskWithTimesDto>();
         public MetaData MetaData { get; set; } = new MetaData();
         private TaskParameters _taskParameters = new TaskParameters();
         private bool successResponseTeam { get; set; } = false;
@@ -50,14 +50,12 @@ namespace BlazorApplication.Pages
 
         protected async override Task OnInitializedAsync()
         {
-
             await GetUserId();
             await GetUserEmail();
             await GetUserTeam();
             await GetCompetitionId();
             await GetMaxNumTasks(); 
             await GetTasksByTeamId();
-
         }
         private async Task GetUserId()
         {
@@ -93,7 +91,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting user info!", ex);
             }
         }
 
@@ -110,12 +108,12 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await ParticipantRepo.GetParticipantsByEmail(participantParameters, LogedUserEmail);
                 participant = pagingResponse.Items.FirstOrDefault();
-                successResponseParticipant = pagingResponse.SuccessRequest;
+                successResponseParticipant = true;
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting user info!", ex);
+                throw new Exception("Oops! Something went wrong while getting user info!", ex);
             }
 
 
@@ -140,7 +138,7 @@ namespace BlazorApplication.Pages
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error: {ex}");
-                    throw new System.Exception("Oops! Something went wrong while getting user team!", ex);
+                    throw new Exception("Oops! Something went wrong while getting user team!", ex);
                 }
             }
             else
@@ -164,13 +162,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetTasksByTeamId(_taskParameters, UserTeamId.ToString());
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks!", ex);
             }
         }
 
@@ -186,13 +184,13 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while removing a task!", ex);
+                throw new Exception("Oops! Something went wrong while removing a task!", ex);
             }
             
 			await GetTasksByTeamId();
 		}
 
-        private async System.Threading.Tasks.Task GetCompetitionId()
+        private async Task GetCompetitionId()
         {
             Logger.LogInformation("Get competition id method is called");
             Team team;
@@ -201,19 +199,18 @@ namespace BlazorApplication.Pages
                 if (UserTeamName != "No team")
                 {
                     team = await TeamRepo.GetTeamById(UserTeamId.ToString());
-                }
+					if (team.CompetitionId is not null)
+					{
+						CompetitionId = (int)team.CompetitionId;
+						Logger.LogInformation($"Success. Competition id: {JsonSerializer.Serialize(CompetitionId)}");
+					}
+				}
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a user team!", ex);
-            }
-
-            if (team.CompetitionId is not null)
-            {
-                CompetitionId = (int)team.CompetitionId;
-                Logger.LogInformation($"Success. Competition id: {JsonSerializer.Serialize(CompetitionId)}");
-            }
+                throw new Exception("Oops! Something went wrong while getting a user team!", ex);
+            }            
         }
         protected override void OnParametersSet()
         {
@@ -237,7 +234,7 @@ namespace BlazorApplication.Pages
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error: {ex}");
-                    throw new System.Exception("Oops! Something went wrong while getting current competition!", ex);
+                    throw new Exception("Oops! Something went wrong while getting current competition!", ex);
                 }
 
                 if (competition is not null)

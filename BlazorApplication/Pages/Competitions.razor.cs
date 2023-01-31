@@ -16,7 +16,7 @@ namespace BlazorApplication.Pages
 
         [Parameter]
 
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 
         [Inject]
         public ICompetitionHttpRepository CompetitionRepo { get; set; }
@@ -49,13 +49,14 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await CompetitionRepo.GetCompetitions(_competitionParameters);
                 CompetitionList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
+
                 Logger.LogInformation($"Success. Competitions: {JsonSerializer.Serialize(CompetitionList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
@@ -71,7 +72,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a competition!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a competition!", ex);
             }
             await GetCompetitions();
         }

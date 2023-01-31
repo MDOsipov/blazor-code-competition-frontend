@@ -35,7 +35,7 @@ namespace BlazorApplication.Pages
             catch(Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new task category!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new task category!", ex);
             }
 
         }

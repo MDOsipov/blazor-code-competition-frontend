@@ -58,7 +58,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting the team to update!", ex);
+                throw new Exception("Oops! Something went wrong while getting the team to update!", ex);
             }
         }
 
@@ -79,7 +79,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
@@ -100,7 +100,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of participants!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of participants!", ex);
             }
         }
         private async Task Update()
@@ -119,7 +119,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the team!", ex);
+                throw new Exception("Oops! Something went wrong while updating the team!", ex);
             }
         }
         protected override void OnParametersSet()

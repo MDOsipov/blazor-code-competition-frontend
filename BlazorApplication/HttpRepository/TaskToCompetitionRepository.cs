@@ -32,13 +32,13 @@ namespace BlazorApplication.HttpRepository
             _logger.LogInformation("Add task to competition http repository method is called");
 
             var content = JsonSerializer.Serialize(taskToCompetition);
-            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");            
 
             try
             {
-                var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskToCompetition", bodyContent);
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var postResult = await _client.PostAsync(_backEndConnections.CSharpUri + "TaskToCompetition", bodyContent);
                 var postContent = await postResult.Content.ReadAsStringAsync();
 
                 if (!postResult.IsSuccessStatusCode)
@@ -51,7 +51,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex) 
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while adding a task to the competition!", ex);
+                throw new Exception("Oops! Something went wrong while adding a task to the competition!", ex);
             }
         }
 
@@ -65,13 +65,13 @@ namespace BlazorApplication.HttpRepository
                 ["competitionId"] = competitionId.ToString()
             };
 
-            var url = Path.Combine(_backEndConnections.CSharpUri + "TaskToCompetition");
-
-            await AddToken.RequestAuthToken(_tokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.CSharpUri + "TaskToCompetition");            
 
             try
             {
-                var deleteResult = await _client.DeleteAsync(QueryHelpers.AddQueryString(url, queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var deleteResult = await _client.DeleteAsync(QueryHelpers.AddQueryString(url, queryStringParam));
                 var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
                 if (!deleteResult.IsSuccessStatusCode)
@@ -84,7 +84,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while removing a task from the competition!", ex);
+                throw new Exception("Oops! Something went wrong while removing a task from the competition!", ex);
             }
         }
     }

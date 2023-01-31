@@ -18,7 +18,7 @@ namespace BlazorApplication.Pages
         private SuccessNotification _notification;
 
         [Parameter]
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 
         [Parameter]
         public string Id { get; set; }
@@ -32,15 +32,12 @@ namespace BlazorApplication.Pages
         [Inject]
         public ILogger<UpdateTask> Logger { get; set; }
 
-        [Parameter]
-        public string Id { get; set; }
-
         protected async override Task OnInitializedAsync()
         {
             await GetTask();
             await GetTaskCategories();
             _taskCategory = TaskCategories.Where(tc => tc.Id == _task.TaskCategoryId).Select(tc => tc.CategoryName).FirstOrDefault();
-            successResponse = _task.SuccessRequest;
+            successResponse = true;
         }
 
         private async Task GetTask()
@@ -55,7 +52,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting participants!", ex);
+                throw new Exception("Oops! Something went wrong while deleting participants!", ex);
             }
         }
 		private async Task Update()
@@ -131,7 +128,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the task", ex);
+                throw new Exception("Oops! Something went wrong while updating the task", ex);
             }
         }
 
@@ -152,7 +149,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of task categories", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of task categories", ex);
             }
         }
         protected override void OnParametersSet()

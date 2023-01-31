@@ -3,39 +3,39 @@
 
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-<h2>Create Task Category Form</h2>
-<a href="/taskCategories">Go Back</a>
+		<h2>Create Task Category Form</h2>
+		<a href="/taskCategories">Go Back</a>
 
-        <EditForm Model="_taskCategory" OnValidSubmit="Create" class="card card-body bg-light mt-5">
-            <DataAnnotationsValidator />
-            <SuccessNotification @ref="_notification" _navUrl="/taskCategories" />
+		<EditForm Model="_taskCategory" OnValidSubmit="Create" class="card card-body bg-light mt-5">
+			<DataAnnotationsValidator />
+			<SuccessNotification @ref="_notification" _navUrl="/taskCategories" />
 
-            <div class="mb-3 row">
-                <label for="taskName" class="col-md-2 col-form-label">Category:</label>
-                <div class="col-md-10">
-                    <InputText id="taskName" class="form-control" @bind-Value="_taskCategory.CategoryName" />
-                    <ValidationMessage For="@(() => _taskCategory.CategoryName)"></ValidationMessage>
-                </div>
-            </div>
+			<div class="mb-3 row">
+				<label for="taskName" class="col-md-2 col-form-label">Category:</label>
+				<div class="col-md-10">
+					<InputText id="taskName" class="form-control" @bind-Value="_taskCategory.CategoryName" />
+					<ValidationMessage For="@(() => _taskCategory.CategoryName)"></ValidationMessage>
+				</div>
+			</div>
 
-            <div class="mb-3 row">
-                <label for="taskDescription" class="col-md-2 col-form-label">Description:</label>
-                <div class="col-md-10">
-                    <InputText id="taskDescription" class="form-control" @bind-Value="_taskCategory.CategoryDescription" />
-                    <ValidationMessage For="@(() => _taskCategory.CategoryDescription)"></ValidationMessage>
-                </div>
-            </div>
+			<div class="mb-3 row">
+				<label for="taskDescription" class="col-md-2 col-form-label">Description:</label>
+				<div class="col-md-10">
+					<InputText id="taskDescription" class="form-control" @bind-Value="_taskCategory.CategoryDescription" />
+					<ValidationMessage For="@(() => _taskCategory.CategoryDescription)"></ValidationMessage>
+				</div>
+			</div>
 
-            <div class="row">
-                <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-success">Create</button>
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="submit" class="btn btn-success">Create</button>
+				</div>
+			</div>
 
-        </EditForm>
-    </ChildContent>
-    <ErrorContent Context="Some">
-        <p class="error-message">Oops! Something went wrong while rendering create task category page!</p>
-        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
-    </ErrorContent>
+		</EditForm>
+	</ChildContent>
+	<ErrorContent Context="Some">
+		<p class="error-message">Oops! Something went wrong while rendering create task category page!</p>
+		<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+	</ErrorContent>
 </ErrorBoundary>

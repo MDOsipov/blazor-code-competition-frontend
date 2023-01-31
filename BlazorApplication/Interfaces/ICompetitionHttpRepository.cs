@@ -8,7 +8,7 @@ namespace BlazorApplication.Interfaces
     {
         Task<PagingResponse<Competition>> GetCompetitions(CompetitionParameters competitionParameters);
 		Task<PagingResponse<Competition>> GetCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters);
-		Task<ResponseWithSuccess<CompetitionStatus>> GetAllCompetitionStatuses();
+		Task<List<CompetitionStatus>> GetAllCompetitionStatuses();
 		Task CreateCompetition(Competition competition);
         Task<Competition> GetCompetitionById(string id);
         Task UpdateCompetition(Competition competition);

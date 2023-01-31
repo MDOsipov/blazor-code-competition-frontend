@@ -16,7 +16,5 @@ namespace BlazorApplication.Models
 		public int userId { get; set; }
 		public string teamName { get; set; } = string.Empty;
 		public int teamId { get; set; }
-        public bool SuccessRequest { get; set; } = false;
-
     }
 }

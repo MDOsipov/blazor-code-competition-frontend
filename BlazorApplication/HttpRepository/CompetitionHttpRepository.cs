@@ -37,7 +37,7 @@ namespace BlazorApplication.HttpRepository
             _client = client;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _configuration = configuration;
-            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<Models.BackEndConnections>();
+            _backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
 			_accessTokenProvider = accessTokenProvider;
             _logger = logger;
 		}
@@ -46,13 +46,13 @@ namespace BlazorApplication.HttpRepository
         {
             _logger.LogInformation("Get competition http repository method is called");
             var content = JsonSerializer.Serialize(competition);
-			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");			
 
             try 
             {
-                var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "competition", bodyContent);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var postResult = await _client.PostAsync(_backEndConnections.NodeJSUri + "competition", bodyContent);
                 var postContent = await postResult.Content.ReadAsStringAsync();
 
                 if (!postResult.IsSuccessStatusCode)
@@ -65,18 +65,19 @@ namespace BlazorApplication.HttpRepository
             catch(Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new competition!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new competition!", ex);
             }
         }
 
-		public async Task<ResponseWithSuccess<CompetitionStatus>> GetAllCompetitionStatuses()
+		public async Task<List<CompetitionStatus>> GetAllCompetitionStatuses()
 		{
-            _logger.LogInformation("Get all competition statuses http repository method is called");
-            await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            _logger.LogInformation("Get all competition statuses http repository method is called");            
 
             try
             {
-                var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(_backEndConnections.NodeJSUri + "competition/status/all");
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -86,12 +87,13 @@ namespace BlazorApplication.HttpRepository
                 }
 
                 _logger.LogInformation($"Success. Competition statuses: {content}");
-                return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options);
+
+				return JsonSerializer.Deserialize<List<CompetitionStatus>>(content, _options); ;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
             }
         }
 
@@ -99,12 +101,13 @@ namespace BlazorApplication.HttpRepository
         {
             _logger.LogInformation("Get competition by id http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id);
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id);			
 
             try
             {
-                var response = await _client.GetAsync(url);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -121,7 +124,6 @@ namespace BlazorApplication.HttpRepository
                     CompetitionStatusId = localCompetition.competitionStatus,
                     CompetitionAdministratorId = localCompetition.competitionAdministratorId,
                     HashCode = localCompetition.hashCode,
-                    SuccessRequest = true,
                 };
 
                 _logger.LogInformation($"Success. Competition: {JsonSerializer.Serialize(competition)}");
@@ -130,7 +132,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions by id!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions by id!", ex);
             }
         }
 
@@ -142,13 +144,13 @@ namespace BlazorApplication.HttpRepository
             {
                 ["pageNumber"] = competitionParameters.PageNumber.ToString(),
                 ["switchOff"] = competitionParameters.switchOff ? "1" : "0"
-            };
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            };			
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/extended", queryStringParam));
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -157,13 +159,12 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Competition>
+                var pagingResponse = new PagingResponse<Competition>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Competitions: {content}");
 
                 return pagingResponse;
@@ -171,7 +172,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
@@ -181,13 +182,13 @@ namespace BlazorApplication.HttpRepository
 
             var content = JsonSerializer.Serialize(competition);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", competition.id.ToString());
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", competition.id.ToString());			
 
             try
             {
-                var putResult = await _client.PutAsync(url, bodyContent);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var putResult = await _client.PutAsync(url, bodyContent);
                 var putContent = await putResult.Content.ReadAsStringAsync();
 
                 if (!putResult.IsSuccessStatusCode)
@@ -200,7 +201,7 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the competition!", ex);
+                throw new Exception("Oops! Something went wrong while updating the competition!", ex);
             }
         }
 
@@ -208,13 +209,13 @@ namespace BlazorApplication.HttpRepository
         {
             _logger.LogInformation("Delete competition http repository method is called");
 
-            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id.ToString());
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+            var url = Path.Combine(_backEndConnections.NodeJSUri + "competition", id.ToString());			
 
             try
             {
-                var deleteResult = await _client.DeleteAsync(url);
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var deleteResult = await _client.DeleteAsync(url);
                 var deleteContent = await deleteResult.Content.ReadAsStringAsync();
 
                 if (!deleteResult.IsSuccessStatusCode)
@@ -227,9 +228,8 @@ namespace BlazorApplication.HttpRepository
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting the competition!", ex);
+                throw new Exception("Oops! Something went wrong while deleting the competition!", ex);
             }
-
         }
 
 		public async Task<PagingResponse<Competition>> GetCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters)
@@ -240,13 +240,13 @@ namespace BlazorApplication.HttpRepository
 			{
 				["pageNumber"] = competitionParameters.PageNumber.ToString(),
 				["switchOff"] = competitionParameters.switchOff ? "1" : "0"
-			};
-
-			await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+			};			
 
             try
             {
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/byAdmin/" + adminId, queryStringParam));
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/byAdmin/" + adminId, queryStringParam));
 
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -255,20 +255,19 @@ namespace BlazorApplication.HttpRepository
                     throw new ApplicationException(content);
                 }
 
-                var pagingResponse = new PagingResponse<Models.Competition>
+                var pagingResponse = new PagingResponse<Competition>
                 {
-                    Items = JsonSerializer.Deserialize<List<Models.Competition>>(content, _options),
-                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                    Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
                 };
 
-                pagingResponse.SuccessRequest = true;
                 _logger.LogInformation($"Success. Competitions: {content}");
                 return pagingResponse;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
+                throw new Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
             }
         }
 	}

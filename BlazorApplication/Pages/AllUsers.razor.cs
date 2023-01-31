@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using System.Data.SqlTypes;
 
 namespace BlazorApplication.Pages
 {
@@ -20,7 +21,7 @@ namespace BlazorApplication.Pages
         public MetaData MetaData { get; set; } = new MetaData();
 
         [Parameter]
-        public bool successResponce { get; set; }
+        public bool successResponce { get; set; } = false;
 
         [Inject]
         public IParticipantHttpRepository participantRepo { get; set; }
@@ -37,7 +38,7 @@ namespace BlazorApplication.Pages
         [Inject]
         public IUserHttpRepository UserRepo { get; set; }
 
-        private Models.BackEndConnections _backEndConnections;
+        private BackEndConnections _backEndConnections;
 
         protected override async System.Threading.Tasks.Task OnInitializedAsync()
         {
@@ -57,14 +58,14 @@ namespace BlazorApplication.Pages
             var userPagingResponse = await UserRepo.GetUsersExtended(userParameters);
             userList = userPagingResponse.Items;
             MetaData = userPagingResponse.MetaData;
-            successResponce = userPagingResponse.SuccessRequest;
-        }
+
+            successResponce = true;
+		}
 
         public async void ChangeModeFun(string userIdToChange)
         {
             ChangeMode = !ChangeMode;
             CurrentUserIdToChange = userIdToChange;
-
 
             if (ChangeMode)
             {
@@ -122,6 +123,7 @@ namespace BlazorApplication.Pages
                     {
                         switchOff = true
                     };
+
                     var pagingResponse = await participantRepo.GetParticipantsByEmail(participantParameters, newUser.Email);
                     var currentUsers = pagingResponse.Items;
 

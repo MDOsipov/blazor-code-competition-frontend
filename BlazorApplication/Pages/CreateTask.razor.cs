@@ -103,7 +103,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new task!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new task!", ex);
             }
 
         }
@@ -125,7 +125,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of task categories!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of task categories!", ex);
             }
 
         }

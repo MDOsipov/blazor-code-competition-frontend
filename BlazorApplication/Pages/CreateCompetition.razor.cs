@@ -28,7 +28,7 @@ namespace BlazorApplication.Pages
         [Inject]
         public ILogger<CreateCompetition> Logger { get; set; }
 
-		protected async override System.Threading.Tasks.Task OnInitializedAsync()
+		protected async override Task OnInitializedAsync()
 		{
 			await GetStatuses();
             await GetUsers();
@@ -48,14 +48,14 @@ namespace BlazorApplication.Pages
             Logger.LogInformation("Get statuses method is called");
             try
             {
-                var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
-                competitionStatusesList = responseWithStatues.Items;
+				competitionStatusesList = await CompetitionRepo.GetAllCompetitionStatuses();
+                 
                 Logger.LogInformation($"Success. Competition statuses: {JsonSerializer.Serialize(competitionStatusesList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
             }
         }
 
@@ -75,7 +75,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of users!", ex);
             }
         }
 
@@ -91,7 +91,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while creating a new competition!", ex);
+                throw new Exception("Oops! Something went wrong while creating a new competition!", ex);
             }
 		}
 

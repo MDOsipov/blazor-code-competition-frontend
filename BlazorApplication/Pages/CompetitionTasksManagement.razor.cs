@@ -58,13 +58,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskRepo.GetTasksByCompetitionId(_taskParameters, id);
                 TaskList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Tasks: {JsonSerializer.Serialize(TaskList)}");
             }
             catch (Exception ex)
 			{
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of tasks for this competition!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of tasks for this competition!", ex);
             }
         }
 
@@ -80,7 +80,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a task for this competition!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a task for this competition!", ex);
             }
             await GetTasks();
         }

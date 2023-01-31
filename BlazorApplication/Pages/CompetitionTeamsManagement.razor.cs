@@ -15,7 +15,7 @@ namespace BlazorApplication.Pages
         public string id { get; set; } = "";
 
         [Parameter]
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 
         [Inject]
         public ITaskToCompetitionRepository taskToCompetitionRepo { get; set; }
@@ -56,16 +56,15 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
                 TeamList = pagingResponse.Items.Where(t => t.CompetitionId == Int32.Parse(id)).ToList();
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(TeamList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of teams for this competition!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of teams for this competition!", ex);
             }
         }
-
         
         private async System.Threading.Tasks.Task DeleteTeam(int teamId)
         {
@@ -79,7 +78,7 @@ namespace BlazorApplication.Pages
             catch(Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a team to delete!", ex);
+                throw new Exception("Oops! Something went wrong while getting a team to delete!", ex);
             }
 
             try
@@ -91,7 +90,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a team for the competition!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a team for the competition!", ex);
             }
             
             await GetTeams();

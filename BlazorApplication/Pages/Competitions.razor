@@ -6,38 +6,38 @@
 
 <ErrorBoundary @ref="errorBoundary">
 	<ChildContent>
-<div class="row">
-    <div class="col-md-10">
-        @*Place for search and sort*@
-    </div>
-    <div class="col-md-2">
-        <a href="/createCompetition">Create Competition</a>
-    </div>
-</div>
-@if (successResponse && CompetitionList.Count == 0)
-{
-    <div>
-        <p></p>
-        <p></p>
-        <h5 class="text-primary">There is no Competition now, please add new</h5>
-    </div>
-}
-else
-{
-    <div class="row">
-        <div class="col">
-            <CompetitionTable Competitions="CompetitionList" OnDeleted="DeleteCompetition" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
-        </div>
-    </div>
-}
-    </ChildContent>
-    <ErrorContent Context="Some">
-        <p class="error-message">Oops! Something went wrong while rendering competitions page!</p>
-        <button class="btn btn-warning" @onclick="ResetError">Reset</button>
-    </ErrorContent>
+		<div class="row">
+			<div class="col-md-10">
+				@*Place for search and sort*@
+			</div>
+			<div class="col-md-2">
+				<a href="/createCompetition">Create Competition</a>
+			</div>
+		</div>
+		@if (successResponse && CompetitionList.Count == 0)
+		{
+			<div>
+				<p></p>
+				<p></p>
+				<h5 class="text-primary">There is no Competition now, please add new</h5>
+			</div>
+		}
+		else 
+		{
+			<div class="row">
+				<div class="col">
+					<CompetitionTable Competitions="CompetitionList" OnDeleted="DeleteCompetition" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+				</div>
+			</div>
+		}
+	</ChildContent>
+	<ErrorContent Context="Some">
+		<p class="error-message">Oops! Something went wrong while rendering competitions page!</p>
+		<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+	</ErrorContent>
 </ErrorBoundary>

@@ -21,7 +21,7 @@ namespace BlazorApplication.Pages
         public ILogger<Teams> Logger { get; set; }
 
         [Parameter]
-		public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -41,13 +41,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TeamRepo.GetTeams(_teamParameters);
                 TeamList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Teams: {JsonSerializer.Serialize(TeamList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
 
@@ -63,7 +63,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a team!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a team!", ex);
             }
             await GetTeams();
         }

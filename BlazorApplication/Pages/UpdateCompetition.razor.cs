@@ -56,7 +56,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of users!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of users!", ex);
             }
         }
 
@@ -65,14 +65,13 @@ namespace BlazorApplication.Pages
             Logger.LogInformation("Get statuses method is called");
             try
             {
-                var responseWithStatues = await CompetitionRepo.GetAllCompetitionStatuses();
-                competitionStatusesList = responseWithStatues.Items;
+                competitionStatusesList = await CompetitionRepo.GetAllCompetitionStatuses();
                 Logger.LogInformation($"Success. Competition statuses: {JsonSerializer.Serialize(competitionStatusesList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competition statuses!", ex);
             }
         }
 
@@ -87,7 +86,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of competitions!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of competitions!", ex);
             }
         }
 
@@ -104,7 +103,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the competition!", ex);
+                throw new Exception("Oops! Something went wrong while updating the competition!", ex);
             }
         }
         protected override void OnParametersSet()

@@ -49,7 +49,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
 
@@ -64,7 +64,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting the participant to update!", ex);
+                throw new Exception("Oops! Something went wrong while getting the participant to update!", ex);
             }
         }
         private async System.Threading.Tasks.Task Update()
@@ -79,7 +79,7 @@ namespace BlazorApplication.Pages
            catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while updating the participant!", ex);
+                throw new Exception("Oops! Something went wrong while updating the participant!", ex);
             }
 
         }

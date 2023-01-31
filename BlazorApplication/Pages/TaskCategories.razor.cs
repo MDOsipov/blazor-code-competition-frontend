@@ -21,7 +21,7 @@ namespace BlazorApplication.Pages
         public ILogger<TaskCategories> Logger { get; set; }
 
         [Parameter]
-        public bool successResponse { get; set; }
+        public bool successResponse { get; set; } = false;
         protected async override System.Threading.Tasks.Task OnInitializedAsync()
         {
             await GetTaskСategories();
@@ -41,13 +41,13 @@ namespace BlazorApplication.Pages
                 var pagingResponse = await TaskCategoryRepo.GetTaskCategory(_taskCategoryParameters);
                 TaskCategoryList = pagingResponse.Items;
                 MetaData = pagingResponse.MetaData;
-                successResponse = pagingResponse.SuccessRequest;
+                successResponse = true;
                 Logger.LogInformation($"Success. Task categories: {JsonSerializer.Serialize(TaskCategoryList)}");
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting a list of task categories!", ex);
+                throw new Exception("Oops! Something went wrong while getting a list of task categories!", ex);
             }
         }
 
@@ -64,7 +64,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while deleting a task category!", ex);
+                throw new Exception("Oops! Something went wrong while deleting a task category!", ex);
             }
             await GetTaskСategories();
         }

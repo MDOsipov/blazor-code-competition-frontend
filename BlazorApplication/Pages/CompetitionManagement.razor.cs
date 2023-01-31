@@ -38,7 +38,7 @@ namespace BlazorApplication.Pages
             catch (Exception ex)
             {
                 Logger.LogError($"Error: {ex}");
-                throw new System.Exception("Oops! Something went wrong while getting the competition!", ex);
+                throw new Exception("Oops! Something went wrong while getting the competition!", ex);
             }
         }
         protected override void OnParametersSet()
