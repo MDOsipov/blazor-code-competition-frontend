@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace BlazorApplication.HttpRepository
 {
@@ -180,6 +181,37 @@ namespace BlazorApplication.HttpRepository
 			{
 				_logger.LogError($"Error: {ex}");
 				throw new Exception("Oops! Something went wrong while getting a task by id!", ex);
+			}
+		}
+
+		public async Task<int> GetOverallScoreByTeamIdAndCompetitionId(string teamId, string competitionId)
+		{
+			_logger.LogInformation($"GetOverallScoreByTeamIdAndCompetitionId http repository method is called with parameters: team id: {teamId}, competition id: {competitionId}");
+
+			var url = Path.Combine(_backEndConnections.CSharpUri + "TaskToTeam/overallScore/", teamId, competitionId);
+
+			try
+			{
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(url);
+				var content = await response.Content.ReadAsStringAsync();
+
+				if (!response.IsSuccessStatusCode)
+				{
+					throw new ApplicationException(content);
+				}
+
+				int overallScore = JsonSerializer.Deserialize<int>(content, _options);
+				
+				_logger.LogInformation($"Success. Overall score: {JsonSerializer.Serialize(overallScore)}");
+
+				return overallScore;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"Error: {ex}");
+				throw new Exception("Oops! Something went wrong while getting overall score!", ex);
 			}
 		}
 	}

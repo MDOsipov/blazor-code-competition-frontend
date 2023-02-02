@@ -1,9 +1,11 @@
 ﻿using BlazorApplication.Features;
 using BlazorApplication.HttpRepository;
 using BlazorApplication.Interfaces;
+using BlazorApplication.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System.Text.Json;
+using Task = System.Threading.Tasks.Task;
 
 namespace BlazorApplication.Components
 {
@@ -22,11 +24,18 @@ namespace BlazorApplication.Components
 		[Inject]
 		public ITeamHttpRepository TeamRepo { get; set; }
 
+		[Inject]
+		public ITaskToTeamHttpRepository TaskToTeamRepo { get; set; }
+
+        [Inject]
+        ILogger<ParticipantDashboard> Logger { get; set; }
+
 		private string LogedUserId = "";
         private string LogedUserEmail = string.Empty;
         private int UserTeamId = 0;
         private string UserTeamName = string.Empty;
-
+        private int TeamOverallScore = -1;
+        private int UserCompetitionId = 0;
 
         protected async override Task OnInitializedAsync()
         {
@@ -35,6 +44,24 @@ namespace BlazorApplication.Components
 			await GetUserEmail();
 			
 			await GetUserTeam();
+
+            await GetTeamOverallScore();
+		}
+
+        private async Task GetTeamOverallScore()
+        {
+			Logger.LogInformation("Get team overall score http repository method is called");
+
+            try
+            {
+				TeamOverallScore = await TaskToTeamRepo.GetOverallScoreByTeamIdAndCompetitionId(UserTeamId.ToString(), UserCompetitionId.ToString());
+                Logger.LogInformation($"Success. Team overall score: {TeamOverallScore}");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError($"Error: {ex}");
+				throw new Exception("Oops! Something went wrong while getting a task by id!", ex);
+			}
 		}
 
         private async Task GetUserId()
@@ -82,6 +109,7 @@ namespace BlazorApplication.Components
             {
 				var team = await TeamRepo.GetTeamById(UserTeamId.ToString());
                 UserTeamName = team.TeamName;
+                UserCompetitionId = (team.CompetitionId is int) ? (int)team.CompetitionId : 0;
 				//Console.WriteLine("User's team name: ");
 				//Console.WriteLine(UserTeamName);
 			}
