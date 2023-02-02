@@ -31,7 +31,7 @@ namespace BlazorApplication.Pages
 			switchOff = true
 		};
 		public List<Team> TeamList { get; set; } = new List<Team>();
-
+		public List<Team> CurrentTeamList { get; set; } = new List<Team>();
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
 			if (competitionIdStr != "")
@@ -39,6 +39,7 @@ namespace BlazorApplication.Pages
 				competitionId = Int32.Parse(competitionIdStr);
 				navUrlToSend = "/competitionTeamsManagement/" + competitionIdStr.ToString();
 			}
+			await GetCurrentTeams();
 			await GetTeams();
 		}
         protected override void OnParametersSet()
@@ -56,6 +57,7 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await TeamRepo.GetTeamsLimited(_teamParameters);
                 TeamList = pagingResponse.Items;
+				TeamList = TeamList.Where(tl => CurrentTeamList.Select(ctl => ctl.Id).ToList().IndexOf(tl.Id) == -1).ToList();
 				newTeamId = TeamList.FirstOrDefault().Id;
                 Logger.LogInformation($"Success. Team list: {JsonSerializer.Serialize(TeamList)}");
             }
@@ -65,6 +67,22 @@ namespace BlazorApplication.Pages
                 throw new System.Exception("Oops! Something went wrong while getting a list of teams!", ex);
             }
         }
+
+		protected async System.Threading.Tasks.Task GetCurrentTeams()
+		{
+			Logger.LogInformation("Get current teams method is called");
+			try
+			{
+				var pagingResponse = await TeamRepo.GetTeamsByCompetitionId(_teamParameters, competitionIdStr);
+				CurrentTeamList = pagingResponse.Items;
+				Logger.LogInformation($"Success. Current team list: {JsonSerializer.Serialize(CurrentTeamList)}");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError($"Error: {ex}");
+				throw new System.Exception("Oops! Something went wrong while getting a list of current teams!", ex);
+			}
+		}
 
 		private async void Create()
 		{
