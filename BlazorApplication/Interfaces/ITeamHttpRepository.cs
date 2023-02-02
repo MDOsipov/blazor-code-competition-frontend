@@ -7,7 +7,6 @@ namespace BlazorApplication.Interfaces
         Task<PagingResponse<Models.Team>> GetTeams(TeamParameters teamParameters);
 		Task<PagingResponse<Models.Team>> GetTeamsByCompetitionId(TeamParameters teamParameters, string competitionId);
 		Task<PagingResponse<Models.Team>> GetTeamsLimited(TeamParameters teamParameters);
-
 		Task CreateTeam(Models.Team team);
         Task<Models.Team> GetTeamById(string id);
         Task UpdateTeam(Models.Team team);

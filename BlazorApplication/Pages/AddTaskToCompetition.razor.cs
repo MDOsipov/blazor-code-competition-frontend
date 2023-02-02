@@ -42,6 +42,8 @@ namespace BlazorApplication.Pages
 			switchOff = true
 		};
 		public List<Task> TaskList { get; set; } = new List<Task>();
+		public List<Task> CurrentTaskList { get; set; } = new List<Task>();
+
 
 		protected async override System.Threading.Tasks.Task OnInitializedAsync()
 		{
@@ -50,7 +52,24 @@ namespace BlazorApplication.Pages
 				competitionId = Int32.Parse(competitionIdStr);
 				navUrlToSend = "/competitionTasksManagement/" + competitionIdStr.ToString();
             }
+            await GetCurrentTaskList();
 			await GetTasks();
+		}
+
+		protected async System.Threading.Tasks.Task GetCurrentTaskList()
+		{
+			Logger.LogInformation("Get current task list method is called");
+			try
+			{
+				var pagingResponse = await TaskRepo.GetTasksByCompetitionId(_taskParameters, competitionIdStr);
+				CurrentTaskList = pagingResponse.Items;
+				Logger.LogInformation($"Success. Current task list: {JsonSerializer.Serialize(CurrentTaskList)}");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError($"Error: {ex}");
+				throw new System.Exception("Oops! Something went wrong while getting a list of tasks!", ex);
+			}
 		}
 
 		protected async System.Threading.Tasks.Task GetTasks()
@@ -60,6 +79,7 @@ namespace BlazorApplication.Pages
             {
                 var pagingResponse = await TaskRepo.GetTasks(_taskParameters);
                 TaskList = pagingResponse.Items;
+                TaskList = TaskList.Where(tl => CurrentTaskList.Select(ctl => ctl.Id).ToList().IndexOf(tl.Id) == -1).ToList();
                 newTaskId = TaskList.FirstOrDefault().Id;
                 Logger.LogInformation($"Success. Task list: {JsonSerializer.Serialize(TaskList)}");
             }
