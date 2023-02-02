@@ -120,6 +120,44 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
+        public async Task<PagingResponse<Models.SubmittedTaskDto>> GetAllSubmittedTasksByCompetitionIdAndTeamId(TaskParameters taskParameters, string competitionId, string teamId)
+        {
+            _logger.LogInformation("Get all submitted tasks http repository method is called");
+
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = taskParameters.PageNumber.ToString(),
+                ["switchOffString"] = taskParameters.switchOff ? "1" : "0"
+            };
+
+            try
+            {
+                await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Task/submitted/all/" + competitionId + "/" + teamId, queryStringParam));
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(content);
+                }
+                var pagingResponse = new PagingResponse<Models.SubmittedTaskDto>
+                {
+                    Items = JsonSerializer.Deserialize<List<Models.SubmittedTaskDto>>(content, _options),
+                    MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+                };
+
+                _logger.LogInformation($"Success. Submitted tasks for all teams: {content}");
+
+                return pagingResponse;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex}");
+                throw new Exception("Oops! Something went wrong while getting a list of submitted tasks for all teams!", ex);
+            }
+        }
         public async Task<Models.Task> GetTaskById(string id)
 		{
             _logger.LogInformation("Get task by id http repository method is called");

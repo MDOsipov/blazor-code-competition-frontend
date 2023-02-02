@@ -4,6 +4,7 @@ using BlazorApplication.Models;
 using BlazorApplication.Pages;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.WebUtilities;
+using System;
 using System.Text;
 using System.Text.Json;
 
@@ -121,5 +122,65 @@ namespace BlazorApplication.HttpRepository
                 throw new Exception("Oops! Something went wrong while submitting a task!", ex);
             }
         }
+
+        public async System.Threading.Tasks.Task EvaluateTask(EvaluateTaskDataDto evaluateTaskDataDto)
+        {
+            _logger.LogInformation($"Evaluate task http repository method with parameters: evaluateTaskDataDto: {evaluateTaskDataDto} is called");
+
+			var bodyContent = new StringContent(JsonSerializer.Serialize(evaluateTaskDataDto), Encoding.UTF8, "application/json");
+
+            var url = Path.Combine(_backEndConnections.CSharpUri + "TaskToTeam/evaluate");
+
+            try
+            {
+                await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+                var putResult = await _client.PutAsync(url, bodyContent);
+                var putContent = await putResult.Content.ReadAsStringAsync();
+
+                if (!putResult.IsSuccessStatusCode)
+                {
+                    throw new ApplicationException(putContent);
+                }
+
+                _logger.LogInformation($"Success. The task is evaluated");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex}");
+                throw new Exception("Oops! Something went wrong while evaluating a task!", ex);
+            }
+        }
+
+		public async Task<TaskToTeam> GetTaskToTeamByTaskIdAndTeamIdAndCompetitionId(string taskId, string teamId, string competitionId)
+		{
+			_logger.LogInformation($"Get task to team by task id and team id and competition id http repository method is called with parameters: task id: {taskId}, team id: {teamId}, competition id: {competitionId}");
+
+			var url = Path.Combine(_backEndConnections.CSharpUri + "TaskToTeam/byTaskIdAndTeamIdAndCompetitionId/", taskId, teamId, competitionId);
+
+			try
+			{
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(url);
+				var content = await response.Content.ReadAsStringAsync();
+				
+				if (!response.IsSuccessStatusCode)
+				{
+					throw new ApplicationException(content);
+				}
+
+				var taskToTeamList = JsonSerializer.Deserialize<List<TaskToTeam>>(content, _options);
+				var taskToTeam = taskToTeamList.FirstOrDefault();
+				_logger.LogInformation($"Success. Task to team: {JsonSerializer.Serialize(taskToTeam)}");
+
+				return taskToTeam;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"Error: {ex}");
+				throw new Exception("Oops! Something went wrong while getting a task by id!", ex);
+			}
+		}
 	}
 }

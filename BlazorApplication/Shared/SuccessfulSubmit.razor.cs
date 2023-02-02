@@ -7,7 +7,10 @@ namespace BlazorApplication.Shared
         [Parameter]
         public string _navUrl { get; set; }
 
-        private string _modalDisplay;
+		[Parameter]
+		public string _message { get; set; }
+
+		private string _modalDisplay;
         private string _modalClass;
         private bool _showBackdrop;
 

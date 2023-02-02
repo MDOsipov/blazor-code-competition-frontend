@@ -8,7 +8,7 @@
 	<ChildContent>
 		<EditForm Model="_submitData" OnValidSubmit="Submit" class="card card-body bg-light mt-5">
 			<DataAnnotationsValidator />
-			<SuccessfulSubmit @ref="_notification" _navUrl="/myTasks" />
+			<SuccessfulSubmit @ref="_notification" _message="The task is successfully submitted" _navUrl="/myTasks" />
 
 			<div class="mb-3 row">
 				<label for="name" class="col-md-2 col-form-label">Github url:</label>

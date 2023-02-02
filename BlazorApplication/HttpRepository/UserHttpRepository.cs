@@ -8,19 +8,22 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Json;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace BlazorApplication.HttpRepository
 {
 	public class UserHttpRepository : IUserHttpRepository
 	{
+		private readonly IAccessTokenProvider _tokenProvider;
 		private readonly HttpClient _client;
 		private readonly IConfiguration _configuration;
 		private readonly Models.BackEndConnections _backEndConnections;
 		private readonly JsonSerializerOptions _options;
         private readonly ILogger<UserHttpRepository> _logger;
 
-        public UserHttpRepository(HttpClient client, IConfiguration configuration, ILogger<UserHttpRepository> logger)
+        public UserHttpRepository(IAccessTokenProvider tokenProvider, HttpClient client, IConfiguration configuration, ILogger<UserHttpRepository> logger)
 		{
+			_tokenProvider = tokenProvider;
 			_client = client;
 			_configuration = configuration;
 			_backEndConnections = _configuration.GetSection("ConnectionStrings").Get<BackEndConnections>();
@@ -40,7 +43,9 @@ namespace BlazorApplication.HttpRepository
 
 			try
 			{
-                var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "user/withRoles", queryStringParam));
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "user/withRoles", queryStringParam));
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)

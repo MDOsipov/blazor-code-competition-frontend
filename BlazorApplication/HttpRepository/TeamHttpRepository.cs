@@ -153,6 +153,45 @@ namespace BlazorApplication.HttpRepository
             }
         }
 
+		public async Task<PagingResponse<Models.Team>> GetTeamsByCompetitionId(TeamParameters teamParameters, string competitionId)
+		{
+			_logger.LogInformation($"Get teams by competition id with team parameters {teamParameters} and competition id {competitionId} http repository method is called");
+
+			var queryStringParam = new Dictionary<string, string>
+			{
+				["pageNumber"] = teamParameters.PageNumber.ToString(),
+				["switchOffString"] = teamParameters.switchOff ? "1" : "0"
+			};
+
+			try
+			{
+				await AddToken.RequestAuthToken(_tokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.CSharpUri + "Team/extended/byCompetitionId/" + competitionId, queryStringParam));
+				var content = await response.Content.ReadAsStringAsync();
+
+				if (!response.IsSuccessStatusCode)
+				{
+					throw new ApplicationException(content);
+				}
+
+				var pagingResponse = new PagingResponse<Models.Team>
+				{
+					Items = JsonSerializer.Deserialize<List<Models.Team>>(content, _options),
+					MetaData = JsonSerializer.Deserialize<Models.MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+				};
+
+				_logger.LogInformation($"Success. Teams: {content}");
+
+				return pagingResponse;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"Error: {ex}");
+				throw new Exception("Oops! Something went wrong while getting a list of teams by competition id!", ex);
+			}
+		}
+
 		public async Task<PagingResponse<Models.Team>> GetTeamsLimited(TeamParameters teamParameters)
 		{
             _logger.LogInformation("Get teams limited http repository method is called");

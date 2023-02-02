@@ -1,0 +1,70 @@
+﻿@if (Tasks.Count > 0)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Description</th>
+				<th scope="col">Content</th>
+				<th scope="col">Task value (in score)</th>
+				<th scope="col">Received score</th>
+				<th scope="col">Category</th>
+				<th scope="col">Responsible participant</th>
+				<th scope="col">Start time</th>
+				<th scope="col">End time</th>
+				<th scope="col">Status</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var task in Tasks)
+			{
+				<tr>
+					<td class="align-middle">
+						@task.TaskName
+					</td>
+					<td class="align-middle">
+						@task.TaskDescription
+					</td>
+					<td class="align-middle">
+						@task.TaskContent
+					</td>
+					<td class="align-middle">
+						@task.Points
+					</td>
+					<td class="align-middle">
+						@task.ReachedScore
+					</td>
+					<td class="align-middle">
+						@task.TaskCategoryName
+					</td>
+					<td class="align-middle">
+						@task.ParticipantEmailForTask
+					</td>
+					<td class="align-middle">
+						@task.StartTime.Value.Hour:@task.StartTime.Value.Minute:@task.StartTime.Value.Second
+					</td>
+					<td class="align-middle">
+						@task.EndTime.Value.Hour:@task.EndTime.Value.Minute:@task.EndTime.Value.Second
+					</td>
+					<td class="align-middle">
+						@StatusDict[(int)@task.TaskStatusId]
+					</td>
+					<td class="align-middle">
+						<button type="button" class="btn btn-info" @onclick="() => RedirectToUpdate(task.Id)">Evaluate</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<span>
+		<button class="btn btn-primary" type="button" disabled>
+			<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			Loading tasks...
+		</button>
+	</span>
+}
