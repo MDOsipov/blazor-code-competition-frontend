@@ -5,11 +5,17 @@
 	<thead>
 		<th scope="col">User email</th>
 		<th scope="col">User team</th>
+		<th scope="col">Team total score</th>
 	</thead>
 	<tbody>
-		@if (@LogedUserEmail == string.Empty || @UserTeamName == string.Empty)
+		@if (@LogedUserEmail == string.Empty || @UserTeamName == string.Empty || TeamOverallScore == -1)
 		{
 			<tr>
+				<td class="align-middle">
+					<p class="placeholder-glow">
+						<span class="placeholder col-10"></span>
+					</p>
+				</td>
 				<td class="align-middle">
 					<p class="placeholder-glow">
 						<span class="placeholder col-10"></span>
@@ -30,6 +36,9 @@
 				</td>
 				<td class="align-middle">
 					@UserTeamName
+				</td>
+				<td class="align-middle">
+					@TeamOverallScore
 				</td>
 			</tr>
 		}
