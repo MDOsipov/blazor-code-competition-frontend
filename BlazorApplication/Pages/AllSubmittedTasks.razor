@@ -1,0 +1,64 @@
+﻿@page "/allSubmittedTasks"
+@attribute [Authorize(Roles = "competition administrator")]
+
+@using BlazorApplication.Components.TaskTable
+@using BlazorApplication.Components
+
+<ErrorBoundary @ref="errorBoundary">
+	<ChildContent>
+		<EditForm Model="@_runningCompetitions" class="card card-body bg-light mt-2">
+			<div class="mb-3 row">
+				<label for="price" class="col-md-2 col-form-label">Choose competition:</label>
+				<div class="col-md-10">
+					<select class="form-select" aria-label="Choose category" @onchange="HandleMyPropertyChangeCompetition">
+						@foreach (var competition in _runningCompetitions)
+						{
+							<option value=@competition.id>@competition.CompetitionName</option>
+						}
+					</select>
+				</div>
+			</div>
+		</EditForm>
+		<EditForm Model="@TeamList" class="card card-body bg-light mt-2">
+			<div class="mb-3 row">
+				<label for="price" class="col-md-2 col-form-label">Choose team:</label>
+				<div class="col-md-10">
+					<select class="form-select" aria-label="Choose category" @onchange="HandleMyPropertyChangeTeam">
+						@foreach (var team in TeamList)
+						{
+							<option value=@team.Id>@team.TeamName</option>
+						}
+					</select>
+				</div>
+			</div>
+		</EditForm>
+		<div>
+			@if (successResponse && TaskList.Count == 0)
+			{
+				<div>
+					<p></p>
+					<p></p>
+					<h5 class="text-primary">There are no submited tasks yet, when somebody submit a task, you will see it here.</h5>
+				</div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col">
+						<TaskTableAllSubmitted Tasks="TaskList" TeamId="CurrentTeamId" CompetitionId="CurrentRunningCompetitionId" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<Pagination MetaData="MetaData" Spread="2" SelectedPage="SelectedPage" />
+					</div>
+				</div>
+			}
+		</div>
+		
+	</ChildContent>
+	<ErrorContent Context="Some">
+		<p class="error-message">Oops! Something went wrong while rendering all submitted tasks page!</p>
+		<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+	</ErrorContent>
+</ErrorBoundary>

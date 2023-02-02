@@ -1,0 +1,59 @@
+﻿@page "/evaluateTask/{taskIdStr}/{teamIdStr}/{competitionIdStr}"
+@attribute [Authorize(Roles = "competition administrator")]
+
+<h2>Submitting Task</h2>
+<a href="/allSubmittedTasks">Go Back</a>
+
+<ErrorBoundary @ref="errorBoundary">
+
+	<ChildContent>
+		
+		<ul class="list-group mt-3">
+			<li class="list-group-item">Submitter comment: @TaskToTeam.SubmitterComment</li>
+			<li class="list-group-item"><a href="@TaskToTeam.GithubUrl">Github link</a></li>
+		</ul>
+
+		<EditForm Model="evaluateTaskData" OnValidSubmit="Evaluate" class="card card-body bg-light mt-3">
+			<DataAnnotationsValidator />
+			<SuccessfulSubmit @ref="_notification" _message="The task is successfully evaluated" _navUrl="/allSubmittedTasks" />
+
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Score:</label>
+				<div class="col-md-10">
+					<InputNumber id="name" class="form-control" @bind-Value="evaluateTaskData.Score" />
+					<ValidationMessage For="@(() => evaluateTaskData.Score)"></ValidationMessage>
+				</div>
+			</div>
+
+			<div class="mb-3 row">
+				<label for="price" class="col-md-2 col-form-label">New task status:</label>
+				<div class="col-md-10">
+					<select class="form-select" aria-label="Choose a new task status" @bind="taskStatus">
+							<option value=@Enums.TaskStatus.Success>Success</option>
+							<option value=@Enums.TaskStatus.PartialSuccess>Partial success</option>
+							<option value=@Enums.TaskStatus.Fail>Fail</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="mb-3 row">
+				<label for="name" class="col-md-2 col-form-label">Your comment:</label>
+				<div class="col-md-10">
+					<InputText id="name" class="form-control" @bind-Value="evaluateTaskData.Comment" />
+					<ValidationMessage For="@(() => evaluateTaskData.Comment)"></ValidationMessage>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="submit" class="btn btn-success">Evaluate</button>
+				</div>
+			</div>
+
+		</EditForm>
+	</ChildContent>
+	<ErrorContent Context="Some">
+		<p class="error-message">Oops! Something went wrong while rendering submit task page!</p>
+		<button class="btn btn-warning" @onclick="ResetError">Reset</button>
+	</ErrorContent>
+</ErrorBoundary>	

@@ -270,5 +270,44 @@ namespace BlazorApplication.HttpRepository
                 throw new Exception("Oops! Something went wrong while getting the competitions by admin id!", ex);
             }
         }
+
+		public async Task<PagingResponse<Competition>> GetRunningCompetitionsByAdminId(string adminId, CompetitionParameters competitionParameters)
+        {
+			_logger.LogInformation("Get running competitions by admin id http repository method is called");
+
+			var queryStringParam = new Dictionary<string, string>
+			{
+				["pageNumber"] = competitionParameters.PageNumber.ToString(),
+				["switchOff"] = competitionParameters.switchOff ? "1" : "0"
+			};
+
+			try
+			{
+				await AddToken.RequestAuthToken(_accessTokenProvider, _client);
+
+				var response = await _client.GetAsync(QueryHelpers.AddQueryString(_backEndConnections.NodeJSUri + "competition/running/byAdmin/" + adminId, queryStringParam));
+
+				var content = await response.Content.ReadAsStringAsync();
+
+				if (!response.IsSuccessStatusCode)
+				{
+					throw new ApplicationException(content);
+				}
+
+				var pagingResponse = new PagingResponse<Competition>
+				{
+					Items = JsonSerializer.Deserialize<List<Competition>>(content, _options),
+					MetaData = JsonSerializer.Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options)
+				};
+
+				_logger.LogInformation($"Success. Competitions: {content}");
+				return pagingResponse;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"Error: {ex}");
+				throw new Exception("Oops! Something went wrong while getting running competitions by admin id!", ex);
+			}
+		}
 	}
 }
